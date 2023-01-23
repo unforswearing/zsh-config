@@ -86,5 +86,5 @@
 	unsetopt monitor
 }
 
-ln -sF ~/.zshrc ~/zsh-config/.zshrc
-ln -sF ~/.zshenv ~/zsh-config/.zshenv
+ln -sF ~/zsh-config/.zshrc ~/.zshrc 
+ln -sF ~/zsh-config/.zshenv ~/.zshenv 
