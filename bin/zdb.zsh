@@ -1,7 +1,7 @@
 #!/bin/zsh
 db() {
   # a simple k/v db using sqlite ------------------------------------------
-  readonly zdb="$HOME/zsh_db.db"
+  readonly zdb="/Users/unforswearing/zsh_db.db"
   local opt="$1"
   local key="$2"
   local val="$3"

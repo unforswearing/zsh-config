@@ -38,6 +38,25 @@ debug() {
     ;;
   esac
 }
+retry() {
+  local retries=$1
+  shift
+
+  local count=0
+  until "$@"; do
+    local exit=$?
+    local wait=$((2 ** $count))
+    local count=$(($count + 1))
+    if [ $count -lt $retries ]; then
+      echo "Retry $count/$retries exited $exit, retrying in $wait seconds..."
+      sleep $wait
+    else
+      echo "Retry $count/$retries exited $exit, no more retries left."
+      return $exit
+    fi
+  done
+  return 0
+}
 # inspied by nushell
 skip() { awk '(NR>'"$1"')'; }
 drop() { ghead -n -"$1"; }
