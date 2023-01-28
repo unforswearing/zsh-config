@@ -15,6 +15,7 @@ up() {
 }
 path() { echo $(pwd)/"${2}" | pee "pbcopy" "echo $(pwd)/${1}"; }
 path.abs() { echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
+files() { fd --type file; }
 file.read() { echo "$(<"$1")"; }
 file.backup() { cp -i "${1}"{,.bak}; }
 file.restore() { cp "${1}"{.bak,}; }
@@ -22,6 +23,7 @@ file.copy() { pbcopy <"$@"; }
 file.page() { <"$1"; }
 file.exists() { test true -a "${1}" && echo true || echo false; }  # -a
 file.isempty() { test true -s "${1}" && echo true || echo false; } # -s
+dir() { fd --type directory; }
 dir.exists() { test true -d "${1}" && echo true || echo false; }   # -d
 var.exists() { test true -v "${1}" && echo true || echo false; }   # -v
 # ---------------------------------------
