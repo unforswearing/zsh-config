@@ -43,6 +43,9 @@ function $name.len() { echo ${value} | len ; }
   }
   _n "${value}"
 }
+functions["@str"]="@str"  
+alias -g @str="@str"
+##
 contains() { nu -c "echo $(cat -) | str contains $@"; }
 lpad() { nu -c "echo $(cat -) | str lpad --length=$1 --character=$2"; }
 rpad() { nu -c "echo $(cat -) | str rpad --length=$1 --character=$2"; }

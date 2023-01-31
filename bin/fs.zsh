@@ -3,7 +3,6 @@
 ################
 #
 # # file / path stuff -------------------------
-z() { cd $(zoxide query "$1"); }
 ccd() { mkdir -p "$1" && cd "$1"; }
 tilde() { hash -d "$1"="$PWD"; }
 untilde() { unhash -d "$1"; }
@@ -15,6 +14,10 @@ up() {
 }
 path() { echo $(pwd)/"${2}" | pee "pbcopy" "echo $(pwd)/${1}"; }
 path.abs() { echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
+
+# alias -g new:dir='mkdir'
+# alias -g new:file='touch'
+
 files() { fd --type file --maxdepth="${1:-1}"; }
 file.read() { echo "$(<"$1")"; }
 file.backup() { cp -i "${1}"{,.bak}; }

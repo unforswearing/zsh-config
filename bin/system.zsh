@@ -1,3 +1,21 @@
+##
+debug() {
+  case "${1}" in
+  "t" | "true")
+    sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
+    sed -i "s/local CLEAR='clear'/local CLEAR=/" ~/.zshrc
+    ;;
+  "f" | "false")
+    sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
+    sed -i "s/local CLEAR=/local CLEAR='clear'/" ~/.zshrc
+    ;;
+  *) echo $DEBUG ;;
+  esac
+}
+declare -rg debug="debug"
+functions["debug"]="debug"  
+alias -g debug="debug"
+## 
 # hot reload recently updated files w/o reloading the entire env
 hs() {
   hash -r 
@@ -19,67 +37,10 @@ hs() {
     while read item; do source "${item}"; done
   setopt warn_create_global
 }
-cpl() {
-  OIFS="$IFS"
-  IFS=$'\n\t'
-  local comm=$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')
-  echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
-  IFS="$OIFS"
-}
-debug() {
-  case "${1}" in
-  "t" | "true")
-    sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
-    sed -i "s/local CLEAR='clear'/local CLEAR=/" ~/.zshrc
-    ;;
-  "f" | "false")
-    sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
-    sed -i "s/local CLEAR=/local CLEAR='clear'/" ~/.zshrc
-    ;;
-  esac
-}
-retry() {
-  local retries=$1
-  shift
-
-  local count=0
-  until "$@"; do
-    local exit=$?
-    local wait=$((2 ** $count))
-    local count=$(($count + 1))
-    if [ $count -lt $retries ]; then
-      echo "Retry $count/$retries exited $exit, retrying in $wait seconds..."
-      sleep $wait
-    else
-      echo "Retry $count/$retries exited $exit, no more retries left."
-      return $exit
-    fi
-  done
-  return 0
-}
-# inspied by nushell
-skip() { awk '(NR>'"$1"')'; }
-drop() { ghead -n -"$1"; }
-xman() { man "${1}" | man2html | browser; }
-sman() {
-  # type a command to read the man page
-  echo '' |
-    fzf --prompt='man> ' \
-      --height=$(tput lines) \
-      --padding=0 \
-      --margin=0% \
-      --preview-window=down,75% \
-      --layout=reverse \
-      --border \
-      --preview 'man {q}'
-}
-external() {
-  { # list commands installed with homebrew or macports
-    port installed requested |
-      grep 'active' | sd '^ *' '' | sd " @.*$" ""
-    brew leaves
-  } | sort -d
-}
+declare -rg hs="hs"
+functions["hs"]="hs"  
+alias -g hs="hs"
+##
 # # typecheck -------------------------------------------
 is() {
   unsetopt warn_create_global
@@ -152,6 +113,10 @@ is() {
   esac
   setopt warn_create_global
 }
+declare -rg is="is"
+functions["is"]="is"  
+alias -g is="is"
+##
 # nushell system info
 sys() {
   case $1 in
@@ -173,3 +138,53 @@ lang() {
   typescript | ts) /usr/local/bin/ts-node -e "$2" ;;
   esac
 }
+cpl() {
+  unsetopt warn_create_global
+  OIFS="$IFS"
+  IFS=$'\n\t'
+  local comm=$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')
+  echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
+  IFS="$OIFS"
+  setopt warn_create_global
+}
+# inspied by nushell
+skip() { awk '(NR>'"$1"')'; }
+drop() { ghead -n -"$1"; }
+xman() { man "${1}" | man2html | browser; }
+sman() {
+  # type a command to read the man page
+  echo '' |
+    fzf --prompt='man> ' \
+      --height=$(tput lines) \
+      --padding=0 \
+      --margin=0% \
+      --preview-window=down,75% \
+      --layout=reverse \
+      --border \
+      --preview 'man {q}'
+}
+external() {
+  { # list commands installed with homebrew or macports
+    port installed requested |
+      grep 'active' | sd '^ *' '' | sd " @.*$" ""
+    brew leaves
+  } | sort -d
+}
+# retry() {
+#   local retries=$1
+#   shift
+#   local count=0
+#   until "$@"; do
+#     local exit=$?
+#     local wait=$((2 ** $count))
+#     local count=$(($count + 1))
+#     if [ $count -lt $retries ]; then
+#       echo "Retry $count/$retries exited $exit, retrying in $wait seconds..."
+#       sleep $wait
+#     else
+#       echo "Retry $count/$retries exited $exit, no more retries left."
+#       return $exit
+#     fi
+#   done
+#   return 0
+# }

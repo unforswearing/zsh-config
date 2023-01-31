@@ -15,11 +15,10 @@ hash -d scripts="$HOME/Documents/Scripts"
 # suffix aliases
 alias -s html='open'
 alias -s git='git clone'
-alias -s {txt,md,bash,zsh,sh}='nvim'
+alias -s {txt,md,bash,zsh,sh}='micro'
 alias -s {js,ts,lua,py}='code'
 ######################
 # -g == global alias. global as in expands anywhere on the current line
-alias -g null='>/dev/null 2>&1'
 # --------------------
 alias -g @u='ssh 192.168.0.187'
 alias -g @b='ssh 192.168.0.151'

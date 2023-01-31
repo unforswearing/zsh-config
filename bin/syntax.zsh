@@ -13,40 +13,31 @@ __@() {
 }
 alias -g @='__@'
 # ----------------
-alias -g :here='.'
-alias -g :use='source'
-alias -g :bkg='&'
-alias -g :hide='&'
-alias -g :this='cat -'
-alias -g :dump='cat'
-alias -g :tmp='local'
-alias -g :const='readonly'
-alias -g :array='declare -a'
-alias -g :assoc='declare -A'
-alias -g :if='test'
-alias -g :then='&&'
-alias -g :else='||'
-alias -g :not='!'
-alias -g not='!'
-alias -g :match='grep'
-# the alias '::' can only be used after closing bracket
-#    and not a semicolon!
-alias -g ::='done'
-# ls | :foreach line; do {
-#	echo $line
-# } ::
-alias -g :foreach='while read'
-alias -g :each='while read line' # :each; do $@; done
-alias -g :in='read -r input && echo "$input"'
-alias -g :out='echo'
+alias -g const='readonly'
+alias -g tmp='local'
 
-# syntax that adds or removes files /dirs is not prepended with ':'
-alias -g redo='eval $(cpl)'
-alias -g saveas='>'
-alias -g replaces='>|'
+alias -g null='>/dev/null 2>&1'
+
+alias -g list='declare -a'
+alias -g assoc='declare -A'
+
+alias -g try='test'
+alias -g and='&&'
+alias -g not='!'
+alias -g ifnot='||'
+
+alias -g each='while read line' # :each; do $@; done
+
+alias -g passthru='cat -'
+alias -g async='&'
+alias -g use='source'
+alias -g filter='grep'
+
+alias -g getin='read -r input && echo "$input"'
+
+alias -g saveto='>'
+alias -g clobber='>|'
 alias -g appendto='>>'
-alias -g new:dir='mkdir'
-alias -g new:file='touch'
 
 # 6.5 Reserved Words
 # The following words are recognized as reserved words when used as the first word of a

@@ -1,4 +1,5 @@
 path=(
+  $path
 	"/Users/unforswearing/.cargo/bin"
 	"/Users/unforswearing/.deno/bin"
 	"/Users/unforswearing/.dotnet/bin"	
@@ -18,6 +19,5 @@ path=(
 	"/Users/unforswearing/plan9port/bin"
 	"/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 	"/usr/local/opt/fzf/bin"
-	$path
 )
 

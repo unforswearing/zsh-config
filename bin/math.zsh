@@ -46,7 +46,8 @@ alias -g $name="$name"
   }
   _n "$value"
 }
-
+functions["@num"]="@num"  
+alias -g @num="@num"
 #################
 # random.int 1..20
 random.int() { nu -c "random integer $1"; }

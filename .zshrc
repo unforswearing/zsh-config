@@ -13,7 +13,6 @@ trap "exec zsh" USR1
 #########################################################################
 fpath+=("/usr/share/zsh")
 #########################################################################
-source "$ZSH_CONFIG_DIR/plugin/romkatv/zsh-defer/zsh-defer.plugin.zsh"
 # .zshrc and .zshenv are hardlinked to ~zsh-config 
 # in the bin/config.zsh file
 ## ---------------------------------------------
@@ -22,11 +21,11 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 export ZSH_ETC_DIR="$ZSH_CONFIG_DIR/etc"
 ## ---------------------------------------------
+source "${ZSH_PLUGIN_DIR}/romkatv/zsh-defer/zsh-defer.plugin.zsh"
 source "${ZSH_PLUGIN_DIR}/Tarrasch/zsh-colors/colors.plugin.zsh"
 fd . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
   source "$_config_file_" && {
-  # zsh-defer -c "source $_config_file_" && {
     green "using: $shortname"
   } || {
     red "failed: $shortname"
@@ -49,8 +48,6 @@ precmd() {
     local prev="$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')"
     sqlite3 /Users/unforswearing/zsh_history.db "insert into history (val) values ('$prev')"
   })
-  # add or increment dir w/ zoxide
-  zoxide add "$(pwd | sd ' ' '\\ ')" >|/dev/null 2>&1
 }
 periodic() {
   ({ python3 ~/hosts.py; } &) >|/dev/null 2>&1
