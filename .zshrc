@@ -59,6 +59,8 @@ periodic() {
   ({ fd -H '^\.DS_Store$' -tf -X rm; } &) >|/dev/null 2>&1
 }
 ##########################################################################
+# update path in db
+db put "path" "${PATH}"
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 test $DEBUG == true || eval $CLEAR
 
