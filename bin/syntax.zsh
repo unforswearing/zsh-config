@@ -47,3 +47,12 @@ alias -g replaces='>|'
 alias -g appendto='>>'
 alias -g new:dir='mkdir'
 alias -g new:file='touch'
+
+# 6.5 Reserved Words
+# The following words are recognized as reserved words when used as the first word of a
+# command unless quoted or disabled using disable -r:
+# do done esac then elif else fi for case if while function repeat time until
+# select coproc nocorrect foreach end ! [[ { } declare export float integer
+# local readonly typeset
+# Additionally, ‘}’ is recognized in any position if neither the IGNORE_BRACES option nor the
+# IGNORE_CLOSE_BRACES option is set.

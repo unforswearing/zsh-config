@@ -15,14 +15,16 @@
 # https://www.nushell.sh/book/commands/math_stddev.html
 # https://www.nushell.sh/book/commands/math_variance.html
 #
-##
+## a "num" object
 @num() {
   unsetopt warn_create_global
   local name="${1}"
   local value=${2}
+  declare -rg $name=$value
+  functions[$name]="echo ${value}"  
   eval "
-$name=$value
-function $name { echo ${value} }
+function $name { echo ${value}; }
+alias -g $name="$name"
 "
   function _n() {
     val="$1"

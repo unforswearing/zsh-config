@@ -15,20 +15,23 @@ up() {
 }
 path() { echo $(pwd)/"${2}" | pee "pbcopy" "echo $(pwd)/${1}"; }
 path.abs() { echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
-files() { fd --type file; }
+files() { fd --type file --maxdepth="${1:-1}"; }
 file.read() { echo "$(<"$1")"; }
 file.backup() { cp -i "${1}"{,.bak}; }
 file.restore() { cp "${1}"{.bak,}; }
+
 file.copy() { pbcopy <"$@"; }
+copy() { file.copy "${@}"; }
+
 file.page() { <"$1"; }
+page() { <"$1"; }
+
 file.exists() { test true -a "${1}" && echo true || echo false; }  # -a
 file.isempty() { test true -s "${1}" && echo true || echo false; } # -s
-dir() { fd --type directory; }
+dir() { fd --type directory --maxdepth="${1:-1}"; }
 dir.exists() { test true -d "${1}" && echo true || echo false; }   # -d
-var.exists() { test true -v "${1}" && echo true || echo false; }   # -v
+# var.exists() { test true -v "${1}" && echo true || echo false; }   # -v
 # ---------------------------------------
-copy() { file.copy "${@}"; }
-page() { <"$1"; }
 # #######################################
 ls.new() {
   # recency=2
@@ -87,3 +90,12 @@ m4a::wav() {
   fi
 }
 #
+# app:exec() {
+#   prepend_dir() { sd '^' "${1}"; }
+#   exec_fzf() { fzf --query="${1}"; }
+#   local list_all=$(
+#     local homeapps="/Applications"
+#     fd --prune -e "app" --base-directory "$homeapps" | prepend_dir "${homeapps}/"
+#   )
+#   open -a "$( print "${list_all}" | exec_fzf )" || print "exited";
+# }

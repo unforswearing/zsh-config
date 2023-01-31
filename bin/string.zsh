@@ -4,9 +4,11 @@ tostr() { nu -c "\"${@:-$(cat -)}\" | into string"; }
   unsetopt warn_create_global
   local name="${1}" && shift
   local value="\"${@}\""
+  declare -rg $name=$value
+  functions[$name]="echo ${value}"  
   eval "
-"$name"="${value}";
 function "$name" { echo "${value}"; }
+alias -g $name="$name"
 function $name.upper() { echo ${value} | upper ; }
 function $name.lower() { echo ${value} | lower ; }
 function $name.trim() { echo ${value} | trim ; }
