@@ -129,9 +129,9 @@ sum() {
     echo "${@:-$(cat -)}" | 
         awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}' 
 }
-count.lines() { wc -l | trim }
-count.words() { wc -w | trim }
-count.chars() { wc -m | trim }
+count.lines() { wc -l | trim; }
+count.words() { wc -w | trim; }
+count.chars() { wc -m | trim; }
 
 
 
