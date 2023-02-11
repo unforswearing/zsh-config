@@ -89,4 +89,4 @@
 # use hardlinks to keep stuff in the zsh-config dir instead of home dir
 ln -sF ~/zsh-config/.zshenv ~/.zshenv
 ln -sF ~/zsh-config/.zshrc ~/.zshrc 
-ln -sF ~/zsh-config/hosts.py ~/hosts.py
+ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
