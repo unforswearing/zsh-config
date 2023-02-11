@@ -29,7 +29,7 @@ Startup files for the interactive shell. These files are sourced via `.zshrc`.
 
 ## `zsh-config/etc`
 
-The `zsh-config/etc` directory contains zsh user-contributed functions, found [here](https://github.com/zsh-users/zsh). I only use a few:
+The `zsh-config/etc` directory contains zsh user-contributed functions, found at [zsh-users/zsh](https://github.com/zsh-users/zsh). I only use a few:
 
 - reporter
 - zed
