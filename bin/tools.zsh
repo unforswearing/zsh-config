@@ -1,15 +1,14 @@
 # #######################################
 rgb::hex() {
   unsetopt warncreateglobal
-  for var in "$@"
-    do
-        printf '%x' "$var";
-    done
-    printf '\n'
+  for var in "$@"; do
+    printf '%x' "$var";
+  done
+  printf '\n'
 }
 hex::rgb() {
   unsetopt warncreateglobal
-  hex="11001A"
+  hex="$@"
   printf "%d %d %d\n" 0x${hex:0:2} 0x${hex:2:2} 0x${hex:4:2}
 }
 # #######################################
@@ -17,7 +16,6 @@ html::md() { pandoc -f html -t markdown "${1}"; }
 md::html() { pandoc -f markdown -t html "${1}"; }
 md::jupyter() { pandoc -f markdown -t ipynb "${1}"; }
 # #######################################
-# source "$ZSH_CONFIG_DIR/plugin/thetic/extract/extract.plugin.zsh"
 mp4::wav() {
   if [[ -z "$1" ]] || [[ -z "$2" ]]; then
     echo "usage: mp42wav <input_file>.mp4 <output_file>.wav"

@@ -20,7 +20,7 @@ file.copy() { pbcopy <"$@"; }
 file.exists() { test true -a "${1}" && echo true || echo false; }  # -a
 file.isempty() { test true -s "${1}" && echo true || echo false; } # -s
 file.new() { touch "$@"; }
-file.page() { <"$1"; }
+# file.page() { <"${1:-<(cat -)}"; }
 file.read() { echo "$(<"$1")"; }
 file.restore() { cp "${1}"{.bak,}; }
 

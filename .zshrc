@@ -20,6 +20,7 @@ export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 export ZSH_ETC_DIR="$ZSH_CONFIG_DIR/etc"
+export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
 source "${ZSH_PLUGIN_DIR}/romkatv/zsh-defer/zsh-defer.plugin.zsh"
 source "${ZSH_PLUGIN_DIR}/Tarrasch/zsh-colors/colors.plugin.zsh"
@@ -35,6 +36,8 @@ done
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.p10k.zsh
 ##########################################################################
+source "${ZSH_USR_DIR}/lnks.bash"
+##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
 ####### hooks / builtin event handlers
 # command_not_found_handler() {;}
@@ -46,18 +49,18 @@ precmd() {
   # add history to (new) db for history file zsh_history.db
   ({
     local prev="$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')"
-    sqlite3 /Users/unforswearing/zsh_history.db "insert into history (val) values ('$prev')"
+    sqlite3 /Users/unforswearing/zsh_history.db "insert into history (val) values (\"$prev\")"
   })
 }
 periodic() {
-  ({ python3 ~/hosts.py; } &) >|/dev/null 2>&1
+  ({ python3 "${ZSH_USR_DIR}/hosts.py"; } &) >|/dev/null 2>&1
   ({ port selfupdate; } &) >|/dev/null 2>&1
   ({ tldr --update; } &) >|/dev/null 2>&1
   ({ fd -H '^\.DS_Store$' -tf -X rm; } &) >|/dev/null 2>&1
 }
 ##########################################################################
 # update path in db
-db put "path" "${PATH}"
+# db put "path" "${PATH}"
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 test $DEBUG == true || eval $CLEAR
 

@@ -18,7 +18,7 @@ alias -g tmp='local'
 
 alias -g null='>/dev/null 2>&1'
 
-alias -g list='declare -a'
+alias -g arr='declare -a'
 alias -g assoc='declare -A'
 
 alias -g try='test'

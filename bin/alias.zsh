@@ -30,6 +30,7 @@ alias cfg='/opt/local/bin/git --git-dir="$HOME/.cfg/" --work-tree="$HOME"'
 alias {reload.all,rall}='pkill -usr1 zsh'
 alias purj='sudo purge && sudo purge && sudo purge'
 alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
+alias pip='pip3'
 # editor stuff ===========
 alias edit='hx' #'nvim'
 alias subl="/Applications/Sublime\ Text.app/Contents/MacOS/sublime_text"

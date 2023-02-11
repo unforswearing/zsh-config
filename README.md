@@ -1,6 +1,6 @@
 # Zsh Config
 
-My overly complicated z-shell configuration files. This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. Additionally, I wanted to take advantage of the extensive cusomtization zsh offers by creating a light DSL / command syntax atop the standard z-shell builtins (see `fs.zsh`, `math.zsh`, `string.zsh`, and `syntax.zsh`). And for even more fun, I added a lightweight `sqlite` key-value store (`zdb.zsh`).
+My overly complicated z-shell configuration files. This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. Additionally, I wanted to take advantage of the extensive customization zsh offers by creating a light DSL / command syntax atop the standard z-shell builtins (see `fs.zsh`, `math.zsh`, `string.zsh`, and `syntax.zsh`). And for even more fun, I added a lightweight `sqlite` key-value store (`zdb.zsh`).
 
 Below is a list of files and a brief description of what they do. 
 
