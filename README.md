@@ -38,3 +38,15 @@ The `zsh-config/etc` directory contains zsh user-contributed functions, found [h
 ## `zsh-config/plugin`
 
 Zsh plugins that would typically be installed via framework. See directory for details of each item. 
+
+## `zsh-config/usr`
+
+User scripts not necessarily written in Z-shell. Currently includes
+
+- hosts.py
+
+Automated updates of [StevenBlack/hosts](https://github.com/StevenBlack/hosts) directly to `/etc/hosts`
+
+- [lnks.bash](https://github.com/unforswearing/lnks)
+
+A script for printing / saving Google Chrome urls from the terminal on MacOS. 
