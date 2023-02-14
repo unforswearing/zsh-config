@@ -1,12 +1,23 @@
 # Zsh Config
 
-My overly complicated z-shell configuration files. This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. Additionally, I wanted to take advantage of the extensive customization zsh offers by creating a light DSL / command syntax atop the standard z-shell builtins (see `fs.zsh`, `math.zsh`, `string.zsh`, and `syntax.zsh`). And for even more fun, I added a lightweight `sqlite` key-value store (`zdb.zsh`).
+My overly complicated z-shell configuration files. 
 
-Below is a list of files and a brief description of what they do. 
+This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. 
+
+Finally, I used the customization options in `zsh` to create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions.
+
+Below is a list of files and folders along with a brief description of their contents and purpose. 
 
 ## `.zshenv`
 
-Store the system $PATH as an array.
+<move these to the .zshrc section below>
+- Set a `DEBUG` environment variable, which can be toggled with the `debug` function
+- Create environment variables for configuration directories
+- Source the `zsh-defer` and `colors` plugins
+- Source files from the `/bin` directory
+- Source `powerlevel10k` theme
+- Declare `precmd` and `periodic` hook functions
+- Navigate to the directory listed in `reload_dir.txt`
 
 ## `.zshrc`
 

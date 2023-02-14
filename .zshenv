@@ -10,6 +10,7 @@ path=(
 	"/Users/unforswearing/.zsh_bin"
 	"/Users/unforswearing/bin"
 	"/usr/local/bin"
+  "/usr/local/lib/node_modules"
 	"/usr/bin"
 	"/bin"
 	"/usr/sbin"

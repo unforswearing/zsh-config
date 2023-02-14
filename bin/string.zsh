@@ -1,5 +1,5 @@
 tostr() { nu -c "\"${@:-$(cat -)}\" | into string"; }
-
+printstr() { echo "$@";  }
 @str() {
   unsetopt warn_create_global
   local name="${1}" && shift
