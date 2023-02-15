@@ -1,6 +1,6 @@
 tostr() { nu -c "\"${@:-$(cat -)}\" | into string"; }
 printstr() { echo -en "$@";  }
-##
+###
 contains() { nu -c "echo $(cat -) | str contains $@"; }
 lpad() { nu -c "echo $(cat -) | str lpad --length=$1 --character=$2"; }
 rpad() { nu -c "echo $(cat -) | str rpad --length=$1 --character=$2"; }

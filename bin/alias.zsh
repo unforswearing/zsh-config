@@ -16,9 +16,9 @@ alias -g @u='ssh 192.168.0.187'
 alias -g @b='ssh 192.168.0.151'
 alias -g @m='ssh 192.168.0.150'
 ######################
-alias reload='exec zsh'
 # reload all terminals. use with `trap "exec zsh" USR1` in .zshrc
-alias {reload.all,rall}='pkill -usr1 zsh'
+alias reload.all='pkill -usr1 zsh'
+alias reload='exec zsh'
 alias purj='sudo purge && sudo purge && sudo purge'
 alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
 alias pip='pip3'
@@ -45,5 +45,4 @@ alias sed='/usr/local/bin/gsed'
 alias now="$(command -v gdate) \"+%Y-%m-%dT%H:%M\""
 ################
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
-# ls | each; do echo "$line"; done
 ######################

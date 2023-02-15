@@ -57,13 +57,3 @@ rm.empty_files() { find . -type f -empty -print -delete; }
 rm.empty_dirs() { find . -type d -empty -print -delete; }
 rm.empty() { rm.empty_dirs && rm.empty_files; }
 # #######################################
-#
-# app:exec() {
-#   prepend_dir() { sd '^' "${1}"; }
-#   exec_fzf() { fzf --query="${1}"; }
-#   local list_all=$(
-#     local homeapps="/Applications"
-#     fd --prune -e "app" --base-directory "$homeapps" | prepend_dir "${homeapps}/"
-#   )
-#   open -a "$( print "${list_all}" | exec_fzf )" || print "exited";
-# }

@@ -1,21 +1,5 @@
-##
-# as function 'math_extension'
-# https://www.nushell.sh/book/commands/math_abs.html
-# https://www.nushell.sh/book/commands/math_avg.html
-# https://www.nushell.sh/book/commands/math_ceil.html
-# https://www.nushell.sh/book/commands/math_eval.html
-# https://www.nushell.sh/book/commands/math_floor.html
-# https://www.nushell.sh/book/commands/math_max.html
-# https://www.nushell.sh/book/commands/math_median.html
-# https://www.nushell.sh/book/commands/math_min.html
-# https://www.nushell.sh/book/commands/math_mode.html
-# https://www.nushell.sh/book/commands/math_product.html
-# https://www.nushell.sh/book/commands/math_round.html
-# https://www.nushell.sh/book/commands/math_sqrt.html
-# https://www.nushell.sh/book/commands/math_stddev.html
-# https://www.nushell.sh/book/commands/math_variance.html
-#
 #################
+calc() { echo "$@" | bc; }
 # random.int 1..20
 random.int() { nu -c "random integer $1"; }
 # https://www.nushell.sh/book/commands/random_bool.html

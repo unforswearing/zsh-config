@@ -16,6 +16,9 @@ declare -rg debug="debug"
 functions["debug"]="debug"  
 alias -g debug="debug"
 ## 
+log() { blue "$@"; }
+log.warn() { yellow "$@"; }
+log.err() { red "$@"; }
 # hot reload recently updated files w/o reloading the entire env
 hs() {
   hash -r 
@@ -51,11 +54,6 @@ is() {
     is_function=$(type -w "$2" | awk -F: '{print $2}' | trim.left)
     [[ ${is_function} == "function" ]] && echo true || echo false
     ;;
-  # fix: is array
-  # "array" | "arr")
-  #   local is_array=$(typeset + | grep -o "array.*${2}")
-  #   [[ -n $is_array ]] && echo true || echo false
-  #   ;;
   "number" | "num" | "int")
     [[ "${2}" =~ $RE_NUMBER ]] && echo true || echo false
     ;;
@@ -70,26 +68,20 @@ is() {
     local alt_opt="${2}"
     [[ -z $alt_opt ]] && echo true || echo false
     ;;
-    #  "whitespace" | "ws")
-    #    [[ "${2}" =~ $RE_WHITESPACE ]] && echo true || echo false
-    #    ;;
   "upper") [[ "${2}" =~ $POSIX_UPPER ]] && echo false || echo true ;;
   "lower") [[ "${2}" =~ $POSIX_LOWER ]] && echo false || echo true ;;
   "alnum") [[ "${2}" =~ $POSIX_ALNUM ]] && echo false || echo true ;;
-  "punct" | "punctuation") [[ "${2}" =~ $POSIX_PUNCT ]] && echo false || echo true ;;
+  "punct") [[ "${2}" =~ $POSIX_PUNCT ]] && echo false || echo true ;;
   "newline") [[ "${2}" =~ $RE_NEWLINE ]] && echo true || echo false ;;
   "tab") [[ "${2}" =~ $RE_TAB ]] && echo true || echo false ;;
   "space") [[ "${2}" =~ $RE_SPACE ]] && echo true || echo false ;;
-    # "dir")
-    #  :: python "import os; os.path.isdir(\"${2}\")"
-    #  ;;
-    # "file")
-    #  [ -e "${2}" ] && echo true || echo false
-    #  ;;
-  "empty_or_null" | "empty" | "null") [[ -z "${2}" || "${2}" == "null" ]] && echo false || echo true;;
-  # "bool")
-  #   [[ "${2}" == true || "${2}" == false || "${2}" -eq 0 || "${2}" -eq 1 ]] && echo true || echo false
-  #   ;;
+  "empty_or_null" | "empty" | "null") 
+    [[ -z "${2}" || "${2}" == "null" ]] && {
+      echo false 
+    } || {
+      echo true
+    }
+    ;;
   # the 'test_truth_string' function will only load
   # if "$opt" is true or false. the ';&' at the end of 
   # this section is a pass through -- test_truth_string
@@ -103,10 +95,18 @@ is() {
     }
     ;&
   "true")
-    test $(is string "${2}") == true && test_truth_string "${2}" || test_truth_number "${2}"
+    test $(is string "${2}") == true && {
+      test_truth_string "${2}" 
+    } || {
+      test_truth_number "${2}"
+    }
     ;;
   "false")
-    test $(is string "${2}") == true && test_truth_string "${2}" || test_truth_number "${2}"
+    test $(is string "${2}") == true && {
+      test_truth_string "${2}" 
+    } || {
+      test_truth_number "${2}"
+    }
     ;;
   "bool") echo "bool is not a valid option." ;;
   *)
@@ -119,6 +119,21 @@ declare -rg is="is"
 functions["is"]="is"  
 alias -g is="is"
 ##
+# very simple time and date
+# https://geek.co.il/2015/09/10/script-day-persistent-memoize-in-bash
+datetime() {
+  local opt="${1}"
+  case "${opt}" in
+    "day") gdate +%d ;;
+    "month") gdate +%m ;;
+    "year") gdate +%Y ;;
+    "hour") gdate +%H ;;
+    "minute") gdate +%M ;;
+    "now") gdate --universal ;;
+      # a la new gDate().getTime() in javascript
+    "get_time") gdate -d "${2}" +"%s" ;;
+  esac
+}
 # nushell system info
 sys() {
   case $1 in
@@ -173,3 +188,13 @@ external() {
     brew leaves
   } | sort -d
 }
+#
+# app:exec() {
+#   prepend_dir() { sd '^' "${1}"; }
+#   exec_fzf() { fzf --query="${1}"; }
+#   local list_all=$(
+#     local homeapps="/Applications"
+#     fd --prune -e "app" --base-directory "$homeapps" | prepend_dir "${homeapps}/"
+#   )
+#   open -a "$( print "${list_all}" | exec_fzf )" || print "exited";
+# }

@@ -1,4 +1,4 @@
-# SYNTAX.ZSH
+# DSL.ZSH
 # this file contains code that attempts to make zsh more like a 
 # traditional programming language via new keywords, env variables, and "objects"
 __@() {
@@ -15,14 +15,12 @@ __@() {
 alias -g @='__@'
 # ----------------
 alias -g const='readonly'
+alias -g let='local'
 
-alias -g tmp='local'
-
-alias -g null='>/dev/null 2>&1'
+alias -g nil='>/dev/null 2>&1'
 
 alias -g arr='declare -a'
 alias -g assoc='declare -A'
-alias -g let='readonly'
 
 alias -g try='test'
 alias -g and='&&'
@@ -30,10 +28,6 @@ alias -g not='!'
 alias -g ifnt='||'
 
 alias -g each='while read line' # :each; do $@; done
-
-# alias -g passthru='cat -'
-# alias -g async='&'
-# alias -g filter='grep'
 
 alias -g use='source'
 
@@ -120,7 +114,9 @@ function $name.len() { echo ${value} | len ; }
 }
 functions["@str"]="@str"  
 alias -g @str="@str"
-
+###
+# or() { (($? == 0)) || "$@"; }
+# and() { (($? == 0)) && "$@"; }
 ## a number "object"
 @num() {
   unsetopt warn_create_global
@@ -155,5 +151,13 @@ alias -g $name="$name"
 functions["@num"]="@num"  
 alias -g @num="@num"
 
-
+###
+# use namespace to load vars and functions into an environment
+# eg:
+# block example {
+#   let value 12;
+#   func show_value print $value;
+#   }
+# }
+alias block='function'
 
