@@ -1,50 +1,5 @@
 tostr() { nu -c "\"${@:-$(cat -)}\" | into string"; }
-printstr() { echo "$@";  }
-@str() {
-  unsetopt warn_create_global
-  local name="${1}" && shift
-  local value="\"${@}\""
-  declare -rg $name=$value
-  functions[$name]="echo ${value}"  
-  eval "
-function "$name" { echo "${value}"; }
-alias -g $name="$name"
-function $name.upper() { echo ${value} | upper ; }
-function $name.lower() { echo ${value} | lower ; }
-function $name.trim() { echo ${value} | trim ; }
-function $name.trim.left() { echo ${value} | trim.left ; }
-function $name.trim.right() { echo ${value} | trim.right ; }
-function $name.len() { echo ${value} | len ; }
-"
-  _n() {
-    val="${1}"
-    funtion "$name".squeeze() { 
-      local opt=$1; echo ${val} | squeeze "$val" "$opt"
-    }
-    funtion "$name".detox() { 
-      local opt=$1; echo ${val} | detox "$val" "$opt"
-    }
-    funtion "$name".camel() { 
-      local opt=$1; echo ${val} | trim | camel "$val" "$opt"
-    }
-    funtion "$name".snake() { 
-      local opt=$1; echo ${val} | trim | snake "$val" "$opt"
-    }
-    funtion "$name".extract() { 
-      local opt=$1; 
-      local delim="$2"
-      echo ${val//\"/} | awk -F"$delim" '{print $'$opt'}' 
-    }
-    funtion "$name".replace() { 
-      local opt=$1; 
-      local repl="$2"
-      echo ${val//\"/} | replace "$opt" "$repl"
-    }
-  }
-  _n "${value}"
-}
-functions["@str"]="@str"  
-alias -g @str="@str"
+printstr() { echo -en "$@";  }
 ##
 contains() { nu -c "echo $(cat -) | str contains $@"; }
 lpad() { nu -c "echo $(cat -) | str lpad --length=$1 --character=$2"; }
@@ -105,12 +60,6 @@ len() {
   local item="${1:-$(cat -)}"
   echo "${#item}"
 }
-idx() {
-  local opt="$1"
-  shift 
-  gexpr index "${opt:-$(cat -)}" "${1}"
-}
-str.exists() { ; } # -n
 
 
 

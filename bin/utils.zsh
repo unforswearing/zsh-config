@@ -51,10 +51,11 @@ is() {
     is_function=$(type -w "$2" | awk -F: '{print $2}' | trim.left)
     [[ ${is_function} == "function" ]] && echo true || echo false
     ;;
-  "array" | "arr")
-    local is_array=$(typeset + | grep -o "array.*${2}")
-    [[ -n $is_array ]] && echo true || echo false
-    ;;
+  # fix: is array
+  # "array" | "arr")
+  #   local is_array=$(typeset + | grep -o "array.*${2}")
+  #   [[ -n $is_array ]] && echo true || echo false
+  #   ;;
   "number" | "num" | "int")
     [[ "${2}" =~ $RE_NUMBER ]] && echo true || echo false
     ;;
@@ -72,10 +73,10 @@ is() {
     #  "whitespace" | "ws")
     #    [[ "${2}" =~ $RE_WHITESPACE ]] && echo true || echo false
     #    ;;
-  "upper") [[ "${2}" =~ $POSIX_UPPER ]] && echo true || echo false ;;
-  "lower") [[ "${2}" =~ $POSIX_LOWER ]] && echo true || echo false ;;
-  "alnum") [[ "${2}" =~ $POSIX_ALNUM ]] && echo true || echo false ;;
-  "punct" | "punctuation") [[ "${2}" =~ $POSIX_PUNCT ]] && echo true || echo false ;;
+  "upper") [[ "${2}" =~ $POSIX_UPPER ]] && echo false || echo true ;;
+  "lower") [[ "${2}" =~ $POSIX_LOWER ]] && echo false || echo true ;;
+  "alnum") [[ "${2}" =~ $POSIX_ALNUM ]] && echo false || echo true ;;
+  "punct" | "punctuation") [[ "${2}" =~ $POSIX_PUNCT ]] && echo false || echo true ;;
   "newline") [[ "${2}" =~ $RE_NEWLINE ]] && echo true || echo false ;;
   "tab") [[ "${2}" =~ $RE_TAB ]] && echo true || echo false ;;
   "space") [[ "${2}" =~ $RE_SPACE ]] && echo true || echo false ;;
@@ -85,10 +86,10 @@ is() {
     # "file")
     #  [ -e "${2}" ] && echo true || echo false
     #  ;;
-  "empty_or_null" | "empty" | "null") [[ -z "${2}" || "${2}" == "null" ]] && echo true || echo false ;;
-  "bool")
-    [[ "${2}" == true || "${2}" == false || "${2}" -eq 0 || "${2}" -eq 1 ]] && echo true || echo false
-    ;;
+  "empty_or_null" | "empty" | "null") [[ -z "${2}" || "${2}" == "null" ]] && echo false || echo true;;
+  # "bool")
+  #   [[ "${2}" == true || "${2}" == false || "${2}" -eq 0 || "${2}" -eq 1 ]] && echo true || echo false
+  #   ;;
   # the 'test_truth_string' function will only load
   # if "$opt" is true or false. the ';&' at the end of 
   # this section is a pass through -- test_truth_string
@@ -107,6 +108,7 @@ is() {
   "false")
     test $(is string "${2}") == true && test_truth_string "${2}" || test_truth_number "${2}"
     ;;
+  "bool") echo "bool is not a valid option." ;;
   *)
     [[ "${1}" =~ ${2} ]] && echo true || echo false
     ;;
@@ -150,6 +152,7 @@ cpl() {
 # inspied by nushell
 skip() { awk '(NR>'"$1"')'; }
 drop() { ghead -n -"$1"; }
+###
 xman() { man "${1}" | man2html | browser; }
 sman() {
   # type a command to read the man page
@@ -170,21 +173,3 @@ external() {
     brew leaves
   } | sort -d
 }
-# retry() {
-#   local retries=$1
-#   shift
-#   local count=0
-#   until "$@"; do
-#     local exit=$?
-#     local wait=$((2 ** $count))
-#     local count=$(($count + 1))
-#     if [ $count -lt $retries ]; then
-#       echo "Retry $count/$retries exited $exit, retrying in $wait seconds..."
-#       sleep $wait
-#     else
-#       echo "Retry $count/$retries exited $exit, no more retries left."
-#       return $exit
-#     fi
-#   done
-#   return 0
-# }

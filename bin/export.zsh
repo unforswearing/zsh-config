@@ -26,21 +26,4 @@ export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
 export GOPATH="$HOME/go"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_AUTO_UPDATE=0
-################
-export RE_ALPHA="[aA-zZ]"
-export RE_STRING="([aA-zZ]|[0-9])+"
-export RE_WORD="\w"
-export RE_NUMBER="^[0-9]+$"
-export RE_NUMERIC="^[0-9]+$"
-export RE_NEWLINE="\n"
-export RE_SPACE=" "
-export RE_TAB="\t"
-export RE_WHITESPACE="\s"
-export POSIX_UPPER="[:upper:]"
-export POSIX_LOWER="[:lower:]"
-export POSIX_ALPHA="[:alpha:]"
-export POSIX_DIGIT="[:digit:]"
-export POSIX_ALNUM="[:alnum:]"
-export POSIX_PUNCT="[:punct:]"
-export POSIX_SPACE="[:space:]"
-export POSIX_WORD="[:word:]"
+
