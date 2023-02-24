@@ -37,6 +37,7 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.p10k.zsh
 ##########################################################################
 source "${ZSH_USR_DIR}/lnks.bash"
+source "${ZSH_USR_DIR}/marks.bash"
 ##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
 ####### hooks / builtin event handlers

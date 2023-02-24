@@ -60,8 +60,14 @@ len() {
   local item="${1:-$(cat -)}"
   echo "${#item}"
 }
-
-
+quote() {
+  test ${#[@]} -gt 1 && {
+    printf '"%s" ' "$@"
+  } || {
+    printf '"%s"' "$1"  
+  }
+  print "\n" 
+}
 
 
 

@@ -1,3 +1,5 @@
+export GITHUB_API_TOKEN=$(grep '^.*$' "$HOME/.github.token")
+
 path=(
   $path
 	"/Users/unforswearing/.cargo/bin"

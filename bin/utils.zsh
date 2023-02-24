@@ -17,6 +17,7 @@ functions["debug"]="debug"
 alias -g debug="debug"
 ## 
 log() { blue "$@"; }
+log.ok() { green "$@"; }
 log.warn() { yellow "$@"; }
 log.err() { red "$@"; }
 # hot reload recently updated files w/o reloading the entire env
@@ -169,6 +170,7 @@ skip() { awk '(NR>'"$1"')'; }
 drop() { ghead -n -"$1"; }
 ###
 xman() { man "${1}" | man2html | browser; }
+pman() { man -t "${1}" | open -f -a /Applications/Preview.app; }
 sman() {
   # type a command to read the man page
   echo '' |
@@ -189,6 +191,39 @@ external() {
   } | sort -d
 }
 #
+# from various githubs and gists around the internet
+confirm() {
+  vared -p  "Are you sure? [y/N] " -c response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      true
+    ;;
+    *) false ;;
+    esac
+}
+rm.trash() {
+  sudo rm -rfv /Volumes/*/.Trashes
+  sudo rm -rfv ~/.Trash
+}
+rm.ds_store() {
+  find . -name '*.DS_Store' -type f -ls -delete
+}
+flush() {
+  dscacheutil -flushcache
+}
+repair() {
+  diskutil repairPermissions /
+}
+ip() {
+  dig +short myip.opendns.com @resolver1.opendns.com
+}
+ip.local() {
+  ipconfig getifaddr en1
+}
+gist.new() {
+  # $1 = description; $2 = file name
+  gh gist create -d "$1" -f "$2"
+}
 # app:exec() {
 #   prepend_dir() { sd '^' "${1}"; }
 #   exec_fzf() { fzf --query="${1}"; }

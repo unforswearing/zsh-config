@@ -38,6 +38,8 @@ alias rmf='sudo rm -rf'
 alias plux='chmod +x'
 alias shuf='gshuf'
 alias ll='exa $EXA_DEFAULT_OPTIONS'
+alias ll.bw='exa $EXA_DEFAULT_OPTIONS --color=never'
+alias ll.r='exa $EXA_DEFAULT_OPTIONS -R'
 alias namesingle='vidir'
 ##########################################################################
 alias sed='/usr/local/bin/gsed'
@@ -46,3 +48,4 @@ alias now="$(command -v gdate) \"+%Y-%m-%dT%H:%M\""
 ################
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
 ######################
+alias source.clipboard='source <(pbpaste)'
