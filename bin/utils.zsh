@@ -1,4 +1,17 @@
 ##
+__@() {
+	{
+	 	# if file, cat
+		test -f "$1" && cat "$1" 2>/dev/null ||
+		# if dir, ls
+		test -d "$1" && ls "$1" 2>/dev/null
+	} || {
+		# if var, get vlaue
+		<<<"$1" 2>/dev/null
+	}
+}
+alias -g @='__@'
+##
 debug() {
   case "${1}" in
   "t" | "true")
@@ -20,6 +33,7 @@ log() { blue "$@"; }
 log.ok() { green "$@"; }
 log.warn() { yellow "$@"; }
 log.err() { red "$@"; }
+##
 # hot reload recently updated files w/o reloading the entire env
 hs() {
   hash -r 
@@ -45,96 +59,7 @@ declare -rg hs="hs"
 functions["hs"]="hs"  
 alias -g hs="hs"
 ##
-# # typecheck -------------------------------------------
-is() {
-  unsetopt warn_create_global
-  local opt="${1}"
-  case "${opt}" in
-  "function" | "fun")
-    local is_function
-    is_function=$(type -w "$2" | awk -F: '{print $2}' | trim.left)
-    [[ ${is_function} == "function" ]] && echo true || echo false
-    ;;
-  "number" | "num" | "int")
-    [[ "${2}" =~ $RE_NUMBER ]] && echo true || echo false
-    ;;
-  "string" | "str")
-    [[ "${2}" =~ $RE_ALPHA ]] && echo true || echo false
-    ;;
-  "set" | "declared" | "decl")
-    local alt_opt="${2}"
-    [[ -n $alt_opt ]] && echo true || echo false
-    ;;
-  "unset" | "empty")
-    local alt_opt="${2}"
-    [[ -z $alt_opt ]] && echo true || echo false
-    ;;
-  "upper") [[ "${2}" =~ $POSIX_UPPER ]] && echo false || echo true ;;
-  "lower") [[ "${2}" =~ $POSIX_LOWER ]] && echo false || echo true ;;
-  "alnum") [[ "${2}" =~ $POSIX_ALNUM ]] && echo false || echo true ;;
-  "punct") [[ "${2}" =~ $POSIX_PUNCT ]] && echo false || echo true ;;
-  "newline") [[ "${2}" =~ $RE_NEWLINE ]] && echo true || echo false ;;
-  "tab") [[ "${2}" =~ $RE_TAB ]] && echo true || echo false ;;
-  "space") [[ "${2}" =~ $RE_SPACE ]] && echo true || echo false ;;
-  "empty_or_null" | "empty" | "null") 
-    [[ -z "${2}" || "${2}" == "null" ]] && {
-      echo false 
-    } || {
-      echo true
-    }
-    ;;
-  # the 'test_truth_string' function will only load
-  # if "$opt" is true or false. the ';&' at the end of 
-  # this section is a pass through -- test_truth_string
-  # is available in the context of options "true" and "false"
-  "true" | "false")
-    test_truth_string() {
-      test "$1" == "true" && echo true || echo false
-    }
-    test_truth_number() {
-      test "$1" -eq 0 && echo true || echo false
-    }
-    ;&
-  "true")
-    test $(is string "${2}") == true && {
-      test_truth_string "${2}" 
-    } || {
-      test_truth_number "${2}"
-    }
-    ;;
-  "false")
-    test $(is string "${2}") == true && {
-      test_truth_string "${2}" 
-    } || {
-      test_truth_number "${2}"
-    }
-    ;;
-  "bool") echo "bool is not a valid option." ;;
-  *)
-    [[ "${1}" =~ ${2} ]] && echo true || echo false
-    ;;
-  esac
-  setopt warn_create_global
-}
-declare -rg is="is"
-functions["is"]="is"  
-alias -g is="is"
-##
-# very simple time and date
-# https://geek.co.il/2015/09/10/script-day-persistent-memoize-in-bash
-datetime() {
-  local opt="${1}"
-  case "${opt}" in
-    "day") gdate +%d ;;
-    "month") gdate +%m ;;
-    "year") gdate +%Y ;;
-    "hour") gdate +%H ;;
-    "minute") gdate +%M ;;
-    "now") gdate --universal ;;
-      # a la new gDate().getTime() in javascript
-    "get_time") gdate -d "${2}" +"%s" ;;
-  esac
-}
+
 # nushell system info
 sys() {
   case $1 in
@@ -146,16 +71,6 @@ sys() {
   net | io) lang nu "sys|get net" ;;
   esac
 }
-lang() {
-  # language stuff ===========
-  case "$1" in
-  lua) /usr/local/bin/lua -e "$2" ;;
-  node | js) /usr/local/bin/node -e "$2" ;;
-  nu) /Users/unforswearing/.cargo/bin/nu -c "$2" ;;
-  python | py) /opt/local/bin/python -c "$2" ;;
-  typescript | ts) /usr/local/bin/ts-node -e "$2" ;;
-  esac
-}
 cpl() {
   unsetopt warn_create_global
   OIFS="$IFS"
@@ -165,9 +80,6 @@ cpl() {
   IFS="$OIFS"
   setopt warn_create_global
 }
-# inspied by nushell
-skip() { awk '(NR>'"$1"')'; }
-drop() { ghead -n -"$1"; }
 ###
 xman() { man "${1}" | man2html | browser; }
 pman() { man -t "${1}" | open -f -a /Applications/Preview.app; }
@@ -191,16 +103,6 @@ external() {
   } | sort -d
 }
 #
-# from various githubs and gists around the internet
-confirm() {
-  vared -p  "Are you sure? [y/N] " -c response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      true
-    ;;
-    *) false ;;
-    esac
-}
 rm.trash() {
   sudo rm -rfv /Volumes/*/.Trashes
   sudo rm -rfv ~/.Trash
@@ -208,18 +110,7 @@ rm.trash() {
 rm.ds_store() {
   find . -name '*.DS_Store' -type f -ls -delete
 }
-flush() {
-  dscacheutil -flushcache
-}
-repair() {
-  diskutil repairPermissions /
-}
-ip() {
-  dig +short myip.opendns.com @resolver1.opendns.com
-}
-ip.local() {
-  ipconfig getifaddr en1
-}
+
 gist.new() {
   # $1 = description; $2 = file name
   gh gist create -d "$1" -f "$2"

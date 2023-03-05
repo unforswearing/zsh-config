@@ -24,7 +24,7 @@ export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
 source "${ZSH_PLUGIN_DIR}/romkatv/zsh-defer/zsh-defer.plugin.zsh"
 source "${ZSH_PLUGIN_DIR}/Tarrasch/zsh-colors/colors.plugin.zsh"
-fd . "$ZSH_BIN_DIR" | while read _config_file_; do
+fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
   source "$_config_file_" && {
     green "using: $shortname"
@@ -38,6 +38,8 @@ source ~/.p10k.zsh
 ##########################################################################
 source "${ZSH_USR_DIR}/lnks.bash"
 source "${ZSH_USR_DIR}/marks.bash"
+##########################################################################
+alias ns::dsl='source $ZSH_BIN_DIR/dsl/dsl.zsh'
 ##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
 ####### hooks / builtin event handlers
@@ -56,7 +58,7 @@ precmd() {
 periodic() {
   ({ python3 "${ZSH_USR_DIR}/hosts.py"; } &) >|/dev/null 2>&1
   ({ port selfupdate; } &) >|/dev/null 2>&1
-  ({ tldr --update; } &) >|/dev/null 2>&1
+  # ({ tldr --update; } &) >|/dev/null 2>&1
   ({ fd -H '^\.DS_Store$' -tf -X rm; } &) >|/dev/null 2>&1
 }
 ##########################################################################

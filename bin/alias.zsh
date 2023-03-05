@@ -5,7 +5,9 @@ hash -d zconf="$HOME/zsh-config"
 hash -d zetc="$HOME/zsh-config/etc"
 hash -d zlib="$HOME/zsh-config/lib"
 hash -d zplug="$HOME/zsh-config/plugin"
-hash -d cloud="/Users/unforswearing/Library/Mobile Documents/com~apple~CloudDocs"
+hash -d cloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+hash -d documents="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents"
+hash -d github="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents/__Github"
 ################
 # suffix aliases
 alias -s git='git clone'
@@ -23,7 +25,7 @@ alias purj='sudo purge && sudo purge && sudo purge'
 alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
 alias pip='pip3'
 # editor stuff ===========
-alias edit='hx' #'nvim'
+alias edit='micro' #'nvim'
 alias subl="/Applications/Sublime\ Text.app/Contents/MacOS/sublime_text"
 # navigation ===============
 alias prev="cd -"
@@ -44,8 +46,9 @@ alias namesingle='vidir'
 ##########################################################################
 alias sed='/usr/local/bin/gsed'
 ##########################################################################
-alias now="$(command -v gdate) \"+%Y-%m-%dT%H:%M\""
 ################
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
 ######################
 alias source.clipboard='source <(pbpaste)'
+#################
+alias poyml='python "/Users/unforswearing/Library/Mobile Documents/com~apple~CloudDocs/Documents/__Github/poyml/poyml.py"'

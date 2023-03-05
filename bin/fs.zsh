@@ -2,32 +2,16 @@
 # fs.zsh -> file system things
 ################
 # # file / path stuff -------------------------
-tilde() { hash -d "$1"="$PWD"; }
-untilde() { unhash -d "$1"; }
 up() {
   case "${1}" in
   "") cd .. || return ;;
   *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
   esac
 }
-path() { pwd; }
-path.copy() { echo $(pwd)/"${2}" | pee "pbcopy" "echo $(pwd)/${1}"; }
-path.abs() { echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
-
 files() { fd --type file --maxdepth="${1:-1}"; }
-file.backup() { cp -i "${1}"{,.bak}; }
-file.copy() { pbcopy <"$@"; }
-file.exists() { test true -a "${1}" && echo true || echo false; }  # -a
-file.isempty() { test true -s "${1}" && echo true || echo false; } # -s
-file.new() { touch "$@"; }
-# file.page() { <"${1:-<(cat -)}"; }
-file.read() { echo "$(<"$1")"; }
-file.restore() { cp "${1}"{.bak,}; }
-
 copy() { file.copy "${@}"; }
 
 dir() { fd --type directory --maxdepth="${1:-1}"; }
-dir.exists() { test true -d "${1}" && echo true || echo false; }   # -d
 dir.new() { 
   ccd() { mkdir -p "$1" && cd "$1"; }
   # mkdir "$@"; 
