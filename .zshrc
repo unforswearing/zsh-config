@@ -51,8 +51,14 @@ precmd() {
   db put "reload_dir" "$(pwd)" &
   # add history to (new) db for history file zsh_history.db
   ({
-    local prev="$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')"
-    sqlite3 /Users/unforswearing/zsh_history.db "insert into history (val) values (\"$prev\")"
+    local prev="$(
+      history | \
+        gtail -n 1 | \
+        awk '{first=$1; $1=""; print $0;}' | \
+        sed 's/"//g'
+    )"
+    sqlite3 /Users/unforswearing/zsh_history.db "insert into history (val) values (\"$prev\")" 
+    # >|/dev/null 2>&1
   })
 }
 periodic() {

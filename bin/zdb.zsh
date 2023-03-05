@@ -1,22 +1,55 @@
 #!/bin/zsh
 db() {
   # a simple k/v db using sqlite ------------------------------------------
-  readonly zdb="/Users/unforswearing/zsh_db.db"
   local opt="$1"
   local key="$2"
   local val="$3"
+
+  local zdb="/Users/unforswearing/zsh_db.db"
+  
+  local table="kv"
+  local keyname="key"
+  local valuename="value"
+
+  # db hist get 405
+  local histopt
+  local idx
+  if [[ $opt == "hist" ]] && {
+    histopt="true"
+    zdb="/Users/unforswearing/zsh_history.db"
+  
+    table="history"
+    keyname="idx"
+    valuename="val"
+  
+    shift
+
+    opt="$1"
+    key="$2"
+    val="$3"
+  }
+
   case "$opt" in
+  # db put fish delightful
   "put")
-    sqlite3 "${zdb}" "insert or replace into kv (key, value) values ('$key', '$val')"
+    if [[ $histopt == "true" ]] && {
+      idx=$(sqlite3 ${zdb} "select idx from history order by idx desc limit 1");
+      key="$(( ++idx ))"
+      val=" $val"
+    }
+    sqlite3 "${zdb}" "insert or replace into $table ($keyname, $valuename) values ('$key', '$val')"
     ;;
+  # db get fish
   "get")
-    sqlite3 "${zdb}" "select value from kv where key = '$key'"
+    sqlite3 "${zdb}" "select $valuename from $table where $keyname = '$key'"
     ;;
+  # db delete fish
   "del" | "delete")
-    sqlite3 "${zdb}" "delete from kv where key = '$key'"
+    sqlite3 "${zdb}" "delete from $table where $keyname = '$key'"
     ;;
+  # db list
   "list" | "ls")
-    sqlite3 "${zdb}" "select * from kv"
+    sqlite3 "${zdb}" "select * from $table"
     ;;
   *) 
     red "error: '$opt' is not a db command" 
