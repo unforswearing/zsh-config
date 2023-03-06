@@ -1,63 +1,61 @@
 # DSL MATHNUM
-calc() { print "$@" | bc; }
-
 # math -------------------------------------------
-add() { 
+math.add() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}"; 
   print "$((left + right))"; 
 }
-sub() { 
+math.sub() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}"; 
   print "$((left - right))"; 
 }
-mul() { 
+math.mul() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}"; 
   print "$((left * right))"; 
 }
-div() { 
+math.div() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}"; 
   print "$((left / right))"; 
 }
-pow() { 
+math.pow() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}"; 
   print "$((left ** right))"; 
 }
-mod() { 
+math.mod() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}"; 
   print "$((left % right))"; 
 }
-eq() { 
+math.eq() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}";  
   return "$((left == right))"; 
 }
-ne() { 
+math.ne() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}";  
   return "$((left != right))"; 
 }
-gt() { 
+math.gt() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}";  
   return "$((left > right))"; 
 }
-lt() { 
+math.lt() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}";  
   return "$((left < right))"; 
 }
-ge() { 
+math.ge() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}";  
   return "$((left >= right))"; 
 }
-le() { 
+math.le() { 
   local left="${1}"; 
   local right="${2:-$(cat -)}";  
   return "$((left <= right))"; 
@@ -81,18 +79,18 @@ alias -g $name="$name"
 "
   function _n() {
     val="$1"
-    function "$name".add() { local opt=$1; add "$val" "$opt" }
-    function "$name".sub() { local opt=$1; sub "$val" "$opt" }
-    function "$name".mul() { local opt=$1; mul "$val" "$opt" }
-    function "$name".div() { local opt=$1; div "$val" "$opt" }
-    function "$name".pow() { local opt=$1; pow "$val" "$opt" }
-    function "$name".mod() { local opt=$1; mod "$val" "$opt" }
-    function "$name".eq() { local opt=$1; eq "$val" "$opt" }
-    function "$name".ne() { local opt=$1; ne "$val" "$opt" }
-    function "$name".gt() { local opt=$1; gt "$val" "$opt" }
-    function "$name".lt() { local opt=$1; lt "$val" "$opt" }
-    function "$name".ge() { local opt=$1; ge "$val" "$opt" }
-    function "$name".le() { local opt=$1; le "$val" "$opt" }
+    function "$name".add() { local opt=$1; math.add "$val" "$opt" }
+    function "$name".sub() { local opt=$1; math.sub "$val" "$opt" }
+    function "$name".mul() { local opt=$1; math.mul "$val" "$opt" }
+    function "$name".div() { local opt=$1; math.div "$val" "$opt" }
+    function "$name".pow() { local opt=$1; math.pow "$val" "$opt" }
+    function "$name".mod() { local opt=$1; math.mod "$val" "$opt" }
+    function "$name".eq() { local opt=$1; math.eq "$val" "$opt" }
+    function "$name".ne() { local opt=$1; math.ne "$val" "$opt" }
+    function "$name".gt() { local opt=$1; math.gt "$val" "$opt" }
+    function "$name".lt() { local opt=$1; math.lt "$val" "$opt" }
+    function "$name".ge() { local opt=$1; math.ge "$val" "$opt" }
+    function "$name".le() { local opt=$1; math.le "$val" "$opt" }
     function "$name".incr() { incr $val }
     function "$name".decr() { decr $val }
     function "$name".sum() { local args="$@"; sum "$args" }

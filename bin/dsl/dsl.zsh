@@ -17,103 +17,63 @@
 ###
 ## DSL MAIN (this file. Loader function TBD)
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
-ns::disable() {
+################################################
+dsl::disable() {
   eval "disable -r let if elif else fi for case esac"
   eval "disable -r repeat time until select coproc nocorrect"
 }
-ns::filepath() { source "${DSL_DIR}/filepath.zsh"; }
-ns::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
-ns::string() { source "${DSL_DIR}/string.zsh"; }
-################
-export RE_ALPHA="[aA-zZ]"
-export RE_STRING="([aA-zZ]|[0-9])+"
-export RE_WORD="\w"
-export RE_NUMBER="^[0-9]+$"
-export RE_NUMERIC="^[0-9]+$"
-export RE_NEWLINE="\n"
-export RE_SPACE=" "
-export RE_TAB="\t"
-export RE_WHITESPACE="\s"
-export POSIX_UPPER="[:upper:]"
-export POSIX_LOWER="[:lower:]"
-export POSIX_ALPHA="[:alpha:]"
-export POSIX_DIGIT="[:digit:]"
-export POSIX_ALNUM="[:alnum:]"
-export POSIX_PUNCT="[:punct:]"
-export POSIX_SPACE="[:space:]"
-export POSIX_WORD="[:word:]"
-# ----------------
-# from various githubs and gists around the internet
-confirm() {
-  vared -p  "Are you sure? [y/N] " -c response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      true
-    ;;
-    *) false ;;
-    esac
-}
-################
-# # typecheck -------------------------------------------
+use::filepath() { source "${DSL_DIR}/filepath.zsh"; }
+use::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
+use::string() { source "${DSL_DIR}/string.zsh"; }
+################################################
+alias -g {use,load}='source'
+################################################
+declare -rg RE_ALPHA="[aA-zZ]"
+declare -rg RE_STRING="([aA-zZ]|[0-9])+"
+declare -rg RE_WORD="\w"
+declare -rg RE_NUMBER="^[0-9]+$"
+declare -rg RE_NUMERIC="^[0-9]+$"
+declare -rg RE_NEWLINE="\n"
+declare -rg RE_SPACE=" "
+declare -rg RE_TAB="\t"
+declare -rg RE_WHITESPACE="\s"
+declare -rg POSIX_UPPER="[:upper:]"
+declare -rg POSIX_LOWER="[:lower:]"
+declare -rg POSIX_ALPHA="[:alpha:]"
+declare -rg POSIX_DIGIT="[:digit:]"
+declare -rg POSIX_ALNUM="[:alnum:]"
+declare -rg POSIX_PUNCT="[:punct:]"
+declare -rg POSIX_SPACE="[:space:]"
+declare -rg POSIX_WORD="[:word:]"
+################################################
+# assertions with "is"
 is() {
+  use::string >|/dev/null 2>&1
   unsetopt warn_create_global
   local opt="${1}"
   case "${opt}" in
-  "function" | "fun")
+  "fn")
     local is_function
     is_function=$(type -w "$2" | awk -F: '{print $2}' | trim.left)
-    [[ ${is_function} == "function" ]] && print true || print false
+    [[ ${is_function} == "function" ]];
     ;;
-  "number" | "num" | "int")
-    [[ "${2}" =~ $RE_NUMBER ]] && print true || print false
+  "num" | "int")
+    [[ "${2}" =~ $RE_NUMBER ]];
     ;;
-  "string" | "str")
-    [[ "${2}" =~ $RE_ALPHA ]] && print true || print false
+  "str")
+    [[ "${2}" =~ $RE_ALPHA ]];
     ;;
-  "set" | "declared" | "decl")
-    local alt_opt="${2}"
-    [[ -n $alt_opt ]] && print true || print false
+  "set")
+    [[ -v "${2}" ]];
     ;;
-  "unset" | "empty")
-    local alt_opt="${2}"
-    [[ -z $alt_opt ]] && print true || print false
+  "unset" | "null")
+    [[ ! -v "${2}" ]] || [[ -z "${2}" ]];
     ;;
-  "empty_or_null" | "empty" | "null") 
-    [[ -z "${2}" || "${2}" == "null" ]] && {
-      print false 
-    } || {
-      print true
-    }
+  "zero")
+    [[ "${2}" -eq 0 ]]; 
     ;;
-  # the 'test_truth_string' function will only load
-  # if "$opt" is true or false. the ';&' at the end of 
-  # this section is a pass through -- test_truth_string
-  # is available in the context of options "true" and "false"
-  "true" | "false")
-    test_truth_string() {
-      test "$1" == "true" && print true || print false
-    }
-    test_truth_number() {
-      test "$1" -eq 0 && print true || print false
-    }
-    ;&
-  "true")
-    test $(is string "${2}") == true && {
-      test_truth_string "${2}" 
-    } || {
-      test_truth_number "${2}"
-    }
-    ;;
-  "false")
-    test $(is string "${2}") == true && {
-      test_truth_string "${2}" 
-    } || {
-      test_truth_number "${2}"
-    }
-    ;;
-  "bool") print "bool is not a valid option." ;;
   *)
-    [[ "${1}" =~ ${2} ]] && print true || print false
+    print "is [fn | num | str | set | unset | null | zero] <arg>"  
     ;;
   esac
   setopt warn_create_global
@@ -121,37 +81,53 @@ is() {
 # declare -rg is="is"
 functions["is"]="is"  
 alias -g is="is"
-##
-
+################################################
 alias -g nil='>/dev/null 2>&1'
-# try 1 -eq 2 ? print "yes" :: print "no"
+# use aliases instead of usual comparisons
+alias -g eq='-eq'
+alias -g ne='-ne'
+alias -g gt='-gt'
+alias -g lt='-lt'
+alias -g ge='-ge'
+alias -g le='-le'
+# [[ "a" bef "b" ]] => true
+alias -g be='<'
+# [[ "a" aft "b" ]] => false
+alias -g af='>'
+################################################
+# try 1 eq 2 ? puts "yes" :: puts "no"
+# try (is fn puts) ? puts "yes" :: puts "no"
 alias -g try='test'
 alias -g ?='&&'
 alias -g ::='||'
 alias -g not='!'
-
-alias -g use='source'
-
+################################################
 # with file in $(ls) run print $file fin
 alias -g with='foreach'
 alias -g run=';'
 alias -g fin='; end'
-
+################################################
 # i/o
-alias -g puts='print'
-alias -g putf='printf'
-
-function readin() {
+puts(){
+  print "$@"
+}
+putf() {
+  local str="$1"
+  shift
+  printf "$str" "$@"  
+}
+getinput() {
   # get user input, with options
+  read "inputvar?$1"
 }
 # write file.txt "ls"
-function write() {
+write() {
   local file="$1"
   shift
   eval "$@" >| "$file"
 }
 # append file.txt "print file stuff"
-function append() {
+append() {
   local file="$1"
   shift
   eval "$@" >> "$file"
@@ -162,23 +138,78 @@ function append() {
 #   let value=12;
 # }
 alias block='function'
-alias -g const='readonly'
-alias -g let='local'
+################################################
+const() {
+  local name="$1"
+  shift
+  declare -rg "$name=$@"
+}
+# a regular variable that can be whatever
+def() {
+  local name="$1"
+  shift
+  print "$@" | read "$name"
+}
 # atom, single item of data. a number or word
 # useage: atom name "value"
-function atom { 
-  unsetopt warncreateglobal
-  print $2 | read $1
+atom() {
+  print $2 | read "$1"
 }
 # formatted ranges
-range() { print {$1..$2}; }
-range.nl() { range $1 $2 | tr ' ' '\n'; }
-range.rev() { range.newline $1 $2 | sort -r; }
+# do not quote - range can be alpha or num
+range() { 
+  print {$1..$2}
+}
+range.nl() { 
+  print {$1..$2} | tr ' ' '\n'
+}
+range.rev() { 
+  print {$1..$2} | tr ' ' '\n' | sort -r
+}
+## arrays are readonly
+arr() {
+  local name="$1"
+  local arrarg="$2"
+  eval "declare -rga $name=${arrarg[@]}"
+}
+# arrays will split into their indexes when used as arg
+arr.topair() {
+  pair $1 $2
+}
+arr.tostr() {
+  print "$@"
+}
 ## a very simple data structure --------------------------
-pair() { print "${1};${2}"; }
-pair.delim() { print "${1}""${3}""${2}"; }
-pair.cons() { print "${1:-$(cat -)}" | awk -F";" '{print $1}'; }
-pair.cdr() { print "${1:-$(cat -)}" | awk -F";" '{print $2}'; }
-
-##########################################################################
+pair() { 
+  print "${1};${2}"
+}
+pair.cons() { 
+  print "${1:-$(cat -)}" | awk -F";" '{print $1}'
+}
+pair.cdr() { 
+  print "${1:-$(cat -)}" | awk -F";" '{print $2}' 
+}
+pair.setcons() {
+  print "$1" | sed 's/^.*;/'"$2"';/'
+}
+# change ; to \n so pair can be used with loops
+pair.iter() {
+  print $(pair.cons "$1")
+  print $(pair.cdr "$1")
+}
+pair.torange() {
+  range $(pair.cons "$1") $(pair.cdr "$1")
+}
+pair.toatom() {
+  atom $(pair.cons "$1") $(pair.cdr "$1")
+}
+pair.toarr() {
+  local name="$1"
+  local cons=$(pair.cons "$2") 
+  local cdr=$(pair.cdr "$2")
+  arr "$name" ($cons $cdr)
+}
+################################################
+calc() { print "$@" | bc; }
+################################################
 green "dsl loaded"

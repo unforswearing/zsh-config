@@ -39,7 +39,7 @@ source ~/.p10k.zsh
 source "${ZSH_USR_DIR}/lnks.bash"
 source "${ZSH_USR_DIR}/marks.bash"
 ##########################################################################
-alias ns::dsl='source $ZSH_BIN_DIR/dsl/dsl.zsh'
+source "${ZSH_BIN_DIR}/dsl/dsl.zsh"
 ##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
 ####### hooks / builtin event handlers
