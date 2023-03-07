@@ -1,5 +1,5 @@
 # DSL STRING
-## string "objects"
+
 lower() { tr '[:upper:]' '[:lower:]'; }
 upper() { tr '[:lower:]' '[:upper:]'; }
 
@@ -19,6 +19,7 @@ len() {
   local item="${1:-$(cat -)}"
   print "${#item}"
 }
+## string "objects"
 @str() {
   unsetopt warn_create_global
   local name="${1}" && shift

@@ -19,11 +19,15 @@
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
 ################################################
 dsl::disable() {
-  eval "disable -r let if elif else fi for case esac"
-  eval "disable -r repeat time until select coproc nocorrect"
+  # eval "disable -r repeat let if elif else fi for case esac"
+  eval "disable -r time until select coproc nocorrect"
+}
+dsl::compile() {
+  cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh
 }
 use::filepath() { source "${DSL_DIR}/filepath.zsh"; }
 use::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
+use::pairs() { source "${DSL_DIR}/pairs.zsh"; }
 use::string() { source "${DSL_DIR}/string.zsh"; }
 ################################################
 alias -g {use,load}='source'
@@ -82,6 +86,8 @@ is() {
 functions["is"]="is"  
 alias -g is="is"
 ################################################
+
+################################################
 alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
 alias -g eq='-eq'
@@ -95,20 +101,22 @@ alias -g be='<'
 # [[ "a" aft "b" ]] => false
 alias -g af='>'
 ################################################
-# try 1 eq 2 ? puts "yes" :: puts "no"
-# try (is fn puts) ? puts "yes" :: puts "no"
+# try 1 eq 2 ?? puts "yes" :: puts "no"
+# try (is fn puts) ?? puts "yes" :: puts "no"
 alias -g try='test'
-alias -g ?='&&'
+alias -g ??='&&'
 alias -g ::='||'
 alias -g not='!'
 ################################################
 # with file in $(ls) run print $file fin
+# with file in $(ls) apply print $file fin
 alias -g with='foreach'
 alias -g run=';'
+alias -g apply=';'
 alias -g fin='; end'
 ################################################
 # i/o
-puts(){
+puts() {
   print "$@"
 }
 putf() {
@@ -132,13 +140,17 @@ append() {
   shift
   eval "$@" >> "$file"
 }
+################################################
 # use block to load vars and functions into an environment
 # eg:
 # block example {
 #   let value=12;
 # }
 alias block='function'
-################################################
+# use fn to create single line funcs without braces
+# fn printsix run puts 6
+alias fn='function'
+# anonymous functions = () { puts 6; }
 const() {
   local name="$1"
   shift
@@ -157,16 +169,27 @@ atom() {
 }
 # formatted ranges
 # do not quote - range can be alpha or num
+#  - maybe: range int $1 $2 / range str "$1" "$2"
+# todo: incorporate seq and / or jot to do more stuff
+# also: https://linuxize.com/post/bash-sequence-expression/
 range() { 
-  print {$1..$2}
+  local incrementor="..${3:-1}"
+  print {$1..$2$incrementor}
 }
+range.int() {;}
+range.str() {;}
+# range.wrap "a" 4 5 "zz" => a4zz a5zz
+range.wrap() {;}
 range.nl() { 
-  print {$1..$2} | tr ' ' '\n'
+  local incrementor="..${3:-1}"
+  print {$1..$2$incrementor} | tr ' ' '\n'
 }
 range.rev() { 
-  print {$1..$2} | tr ' ' '\n' | sort -r
+  local incrementor="..${3:-1}"
+  print {$1..$2$incrementor} | tr ' ' '\n' | sort -r
 }
 ## arrays are readonly
+## see 'rs' tool for array stuff
 arr() {
   local name="$1"
   local arrarg="$2"
@@ -178,36 +201,6 @@ arr.topair() {
 }
 arr.tostr() {
   print "$@"
-}
-## a very simple data structure --------------------------
-pair() { 
-  print "${1};${2}"
-}
-pair.cons() { 
-  print "${1:-$(cat -)}" | awk -F";" '{print $1}'
-}
-pair.cdr() { 
-  print "${1:-$(cat -)}" | awk -F";" '{print $2}' 
-}
-pair.setcons() {
-  print "$1" | sed 's/^.*;/'"$2"';/'
-}
-# change ; to \n so pair can be used with loops
-pair.iter() {
-  print $(pair.cons "$1")
-  print $(pair.cdr "$1")
-}
-pair.torange() {
-  range $(pair.cons "$1") $(pair.cdr "$1")
-}
-pair.toatom() {
-  atom $(pair.cons "$1") $(pair.cdr "$1")
-}
-pair.toarr() {
-  local name="$1"
-  local cons=$(pair.cons "$2") 
-  local cdr=$(pair.cdr "$2")
-  arr "$name" ($cons $cdr)
 }
 ################################################
 calc() { print "$@" | bc; }

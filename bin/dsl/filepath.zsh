@@ -23,6 +23,7 @@ dir.isempty() {
 }
 
 filepath() { print "$(pwd)/${1}"; }
+# filepath.abs "../../file.txt"
 filepath.abs() { print "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
 
 # fs prefix works for files and dirs
