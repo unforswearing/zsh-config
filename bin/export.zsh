@@ -7,6 +7,7 @@ export HISTFILE="$HOME/.history"
 export HISTSIZE=50000000
 export SAVEHIST=10000000
 export HISTTIMEFORMAT='%F %T '
+export HISTIGNORE="exit:bg:fg:history:clear:reload"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LSCOLORS=ExFxBxDxCxegedabagacad
