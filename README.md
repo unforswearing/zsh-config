@@ -10,7 +10,12 @@ Below is a list of files and folders along with a brief description of their con
 
 ## `.zshenv`
 
-<move these to the .zshrc section below>
+Settin the $PATH environment variable 
+
+## `.zshrc`
+
+Soucing files, some basic commands, and setting the builtin `precmd` and `periodic` functions. 
+
 - Set a `DEBUG` environment variable, which can be toggled with the `debug` function
 - Create environment variables for configuration directories
 - Source the `zsh-defer` and `colors` plugins
@@ -19,11 +24,6 @@ Below is a list of files and folders along with a brief description of their con
 - Declare `precmd` and `periodic` hook functions
 - Navigate to the directory listed in `reload_dir.txt`
 
-## `.zshrc`
-
-Soucing files, some basic commands, and setting the builtin `precmd` and `periodic` functions. 
-
-
 ## `zsh-config/bin`
 
 Startup files for the interactive shell. These files are sourced via `.zshrc`. 
@@ -31,12 +31,24 @@ Startup files for the interactive shell. These files are sourced via `.zshrc`.
 - alias.zsh
 - config.zsh
 - export.zsh
+- conv.zsh
+- exprt.zsh
 - fs.zsh
-- math.zsh
-- string.zsh
-- syntax.zsh
-- system.zsh
+- utils.zsh
 - zdb.zsh
+
+### `zsh-config/bin/dsl`
+
+An attempt to create an alternate syntax and a "standard library" for zsh. 
+
+With the exception of dsl.zsh, all dsl files can be loaded via `use::<filename>`
+
+- dsl.zsh
+  - loaded via zshrc
+- filepath.zsh
+- mathnum.zsh
+- pairs.zsh
+- string.zsh
 
 ## `zsh-config/etc`
 
