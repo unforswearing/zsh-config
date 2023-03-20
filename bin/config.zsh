@@ -50,36 +50,37 @@
 {
 	# setopt 
 	# setopt equals
-	setopt hashall
-	setopt interactive_comments
-	setopt automenu
-	setopt menucomplete
 	setopt allexport
 	setopt alwaystoend
-	setopt c_precedences
-	setopt cshjunkie_loops
-	setopt cshjunkie_history
-	setopt INC_APPEND_HISTORY
 	setopt append_history
-	setopt hist_expire_dups_first
-	setopt hist_reduce_blanks
-	setopt hist_lex_words
-	setopt share_history
 	setopt auto_cd
 	setopt auto_pushd
-	setopt cdable_vars
-	setopt pushd_to_home
-	setopt numeric_glob_sort
-	setopt local_loops
-	setopt sh_word_split
-	setopt ksh_option_print
-	setopt function_argzero
-	setopt warn_create_global
+	setopt automenu
 	setopt bsd_echo
-	setopt no_nomatch
+	setopt c_precedences
+	setopt cdable_vars
+	setopt cshjunkie_history
+	setopt cshjunkie_loops
+	setopt function_argzero
+	setopt hashall
+	setopt hist_expire_dups_first
+	setopt hist_lex_words
+	setopt hist_reduce_blanks
+	setopt inc_append_history
+	setopt interactive_comments
+	setopt ksh_option_print
+	setopt ksh_zero_subscript
+	setopt local_loops
+	setopt menucomplete
+	setopt no_append_create
 	setopt no_bare_glob_qual
 	setopt no_clobber
-	setopt no_append_create
+	setopt no_nomatch
+	setopt numeric_glob_sort
+	setopt pushd_to_home
+	setopt sh_word_split
+	setopt share_history
+	setopt warn_create_global
 	# UNSETOPT ----------------------------------------------- ::
 	# unsetopt bad_pattern
 	unsetopt ksh_glob

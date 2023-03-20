@@ -101,11 +101,11 @@ alias -g be='<'
 # [[ "a" aft "b" ]] => false
 alias -g af='>'
 ################################################
-# try 1 eq 2 ?? puts "yes" :: puts "no"
-# try (is fn puts) ?? puts "yes" :: puts "no"
+# try 1 eq 2 && puts "yes" ||  puts "no"
+# try (is fn puts) && puts "yes" || puts "no"
 alias -g try='test'
-alias -g ??='&&'
-alias -g ::='||'
+# alias -g ??='&&'
+# alias -g ::='||'
 alias -g not='!'
 ################################################
 # with file in $(ls) run print $file fin
@@ -119,7 +119,7 @@ alias -g fin='; end'
 puts() {
   print "$@"
 }
-putf() {
+putf() {s
   local str="$1"
   shift
   printf "$str" "$@"  
@@ -163,9 +163,14 @@ def() {
   print "$@" | read "$name"
 }
 # atom, single item of data. a number or word
-# useage: atom name "value"
+# atoms are taken from elixir - a constant whose value is its name
+# eg atom hello => hello=hello
+# useage: atom value
 atom() {
-  print $2 | read "$1"
+  local nameval="$1"
+  eval "function $nameval() print $nameval;"
+  declare -rg $nameval="$nameval"
+  functions["$nameval"]="$nameval"
 }
 # formatted ranges
 # do not quote - range can be alpha or num

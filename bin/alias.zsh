@@ -45,6 +45,7 @@ alias ll.r='exa $EXA_DEFAULT_OPTIONS -R'
 alias namesingle='vidir'
 ##########################################################################
 alias sed='/usr/local/bin/gsed'
+alias julia='/Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia'
 ##########################################################################
 ################
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
