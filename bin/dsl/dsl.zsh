@@ -73,11 +73,8 @@ is() {
   "unset" | "null")
     [[ ! -v "${2}" ]] || [[ -z "${2}" ]];
     ;;
-  "zero")
-    [[ "${2}" -eq 0 ]]; 
-    ;;
   *)
-    print "is [fn | num | str | set | unset | null | zero] <arg>"  
+    print "is [fn | num | str | set | unset | null ] <arg>"  
     ;;
   esac
   setopt warn_create_global
