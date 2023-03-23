@@ -166,6 +166,7 @@ def() {
 atom() {
   local nameval="$1"
   eval "function $nameval() print $nameval;"
+  # if $1 is a number, don't use declare 
   declare -rg $nameval="$nameval"
   functions["$nameval"]="$nameval"
 }
@@ -178,7 +179,9 @@ range() {
   local incrementor="..${3:-1}"
   print {$1..$2$incrementor}
 }
+# a range of integers
 range.int() {;}
+# a range of letters
 range.str() {;}
 # range.wrap "a" 4 5 "zz" => a4zz a5zz
 range.wrap() {;}
