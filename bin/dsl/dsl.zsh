@@ -83,8 +83,6 @@ is() {
 functions["is"]="is"  
 alias -g is="is"
 ################################################
-
-################################################
 alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
 alias -g eq='-eq'
@@ -97,6 +95,8 @@ alias -g le='-le'
 alias -g be='<'
 # [[ "a" aft "b" ]] => false
 alias -g af='>'
+################################################
+# perhaps the aliases below should be functions
 ################################################
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
