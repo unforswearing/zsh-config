@@ -91,3 +91,15 @@
 ln -sF ~/zsh-config/.zshenv ~/.zshenv
 ln -sF ~/zsh-config/.zshrc ~/.zshrc 
 ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
+
+function zc() {
+  function getfiles() fd . -t f --max-depth 1 "$1";
+  local currentdir=$(pwd)
+
+  local dirselection=$(fd . -t d --max-depth 1 $ZSH_CONFIG_DIR | fzf) 
+
+  cd "$currentdir"
+  local selectedfile=$(getfiles "$dirselection" | fzf)
+  
+  micro $selectedfile && cd "$currentdir"
+}
