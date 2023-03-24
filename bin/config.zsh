@@ -93,13 +93,29 @@ ln -sF ~/zsh-config/.zshrc ~/.zshrc
 ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
 
 function zc() {
-  function getfiles() fd . -t f --max-depth 1 "$1";
+  function getfiles() fd . -t f --max-depth 2 "$1";
   local currentdir=$(pwd)
 
-  local dirselection=$(fd . -t d --max-depth 1 $ZSH_CONFIG_DIR | fzf) 
+  local dirselection=$(
+    { 
+      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR; 
+      print "$ZSH_CONFIG_DIR/.zshrc"; 
+      print "$ZSH_CONFIG_DIR/.zshenv"; 
+    } | fzf
+  ) 
+  
+  [[ -z $dirselection ]] && {
+    print "no directory selected."
+    return 1
+  }
 
   cd "$currentdir"
   local selectedfile=$(getfiles "$dirselection" | fzf)
-  
-  micro $selectedfile && cd "$currentdir"
+
+  [[ -z $selectedfile ]] && { 
+    print "no file selected."
+  } || {
+    micro $selectedfile && cd "$currentdir"
+    exec zsh
+  }
 }
