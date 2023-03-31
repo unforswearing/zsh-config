@@ -94,6 +94,7 @@ use() {
 discard() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
 # @todo some of these don't work. use a language that has strict typing (TBD)
+#   - it would be nice to just use typescript types, ts may be too heavy for just this
 is() {
   discard use::string
   discard use::patterns
