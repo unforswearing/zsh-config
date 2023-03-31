@@ -93,7 +93,7 @@ use() {
 # send the result of evaluated arguments to dev null
 discard() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
-# @todo some of these don't work. maybe use *gasp* python to do type checking
+# @todo some of these don't work. use a language that has strict typing (TBD)
 is() {
   discard use::string
   discard use::patterns
