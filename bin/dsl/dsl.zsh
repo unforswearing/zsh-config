@@ -211,3 +211,4 @@ arr.tostr() {
 calc() { print "$@" | bc; }
 ################################################
 green "dsl loaded"
+use::filepath
