@@ -208,6 +208,7 @@ arr() {
 }
 # arrays will split into their indexes when used as arg
 arr.topair() {
+  use::pairs
   pair $1 $2
 }
 arr.tostr() {
