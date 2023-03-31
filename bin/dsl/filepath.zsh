@@ -1,4 +1,4 @@
-ns::string >|/dev/null 2>&1
+use::string >|/dev/null 2>&1
 #############
 # DSL FS
 file.new() { touch "$@"; }

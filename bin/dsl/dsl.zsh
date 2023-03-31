@@ -51,6 +51,7 @@ declare -rg POSIX_SPACE="[:space:]"
 declare -rg POSIX_WORD="[:word:]"
 ################################################
 # assertions with "is"
+# @todo some of these don't work. maybe use *gasp* python to do type checking
 is() {
   use::string >|/dev/null 2>&1
   unsetopt warn_create_global
