@@ -55,6 +55,25 @@ use::filepath() { source "${DSL_DIR}/filepath.zsh"; }
 use::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
 use::pairs() { source "${DSL_DIR}/pairs.zsh"; }
 use::string() { source "${DSL_DIR}/string.zsh"; }
+use::patterns() { 
+  declare -rg RE_ALPHA="[aA-zZ]"
+  declare -rg RE_STRING="([aA-zZ]|[0-9])+"
+  declare -rg RE_WORD="\w"
+  declare -rg RE_NUMBER="^[0-9]+$"
+  declare -rg RE_NUMERIC="^[0-9]+$"
+  declare -rg RE_NEWLINE="\n"
+  declare -rg RE_SPACE=" "
+  declare -rg RE_TAB="\t"
+  declare -rg RE_WHITESPACE="\s"
+  declare -rg POSIX_UPPER="[:upper:]"
+  declare -rg POSIX_LOWER="[:lower:]"
+  declare -rg POSIX_ALPHA="[:alpha:]"
+  declare -rg POSIX_DIGIT="[:digit:]"
+  declare -rg POSIX_ALNUM="[:alnum:]"
+  declare -rg POSIX_PUNCT="[:punct:]"
+  declare -rg POSIX_SPACE="[:space:]"
+  declare -rg POSIX_WORD="[:word:]"
+}
 use() {
   local opt="$1"
   shift
@@ -63,37 +82,19 @@ use() {
     "::filepath") use::filepath ;;
     "::mathnum") use::mathnum ;;
     "::pairs") use::pairs ;;
+    "::patterns") use::pairs ;;
     "::string") use::string ;;
     *) source "$@" ;;
   esac
 }
-################################################
-# alias -g {use,load}='source'
-################################################
-declare -rg RE_ALPHA="[aA-zZ]"
-declare -rg RE_STRING="([aA-zZ]|[0-9])+"
-declare -rg RE_WORD="\w"
-declare -rg RE_NUMBER="^[0-9]+$"
-declare -rg RE_NUMERIC="^[0-9]+$"
-declare -rg RE_NEWLINE="\n"
-declare -rg RE_SPACE=" "
-declare -rg RE_TAB="\t"
-declare -rg RE_WHITESPACE="\s"
-declare -rg POSIX_UPPER="[:upper:]"
-declare -rg POSIX_LOWER="[:lower:]"
-declare -rg POSIX_ALPHA="[:alpha:]"
-declare -rg POSIX_DIGIT="[:digit:]"
-declare -rg POSIX_ALNUM="[:alnum:]"
-declare -rg POSIX_PUNCT="[:punct:]"
-declare -rg POSIX_SPACE="[:space:]"
-declare -rg POSIX_WORD="[:word:]"
 ################################################
 # send the result of evaluated arguments to dev null
 discard() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
 # @todo some of these don't work. maybe use *gasp* python to do type checking
 is() {
-  use::string >|/dev/null 2>&1
+  discard use::string
+  discard use::patterns
   unsetopt warn_create_global
   local opt="${1}"
   case "${opt}" in
