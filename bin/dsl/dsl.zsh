@@ -257,5 +257,9 @@ arr.tostr() {
 ################################################
 calc() { print "$@" | bc; }
 ################################################
-green "dsl loaded"
+# { 
+#  disable -r time until select coproc nocorrect
+# }
+
 use::filepath
+green "dsl loaded"
