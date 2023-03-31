@@ -1,9 +1,18 @@
 # @todo split dsl into loadable modules, create loader function
-# DSL.ZSH
+#
 # this file contains code that attempts to make zsh more like a 
 # traditional programming language via new keywords, env variables, and "objects"
 # NB. use this DSL in scripts, not interactively!
-
+# 
+## Uncommon Zsh Syntax to use 
+# in some cases it is easier to just use the uncommon versions of zsh syntax
+### examples:
+# - anonymous functions
+#   () {
+#     local thisvar="inside function" 
+#     print "this will show $thisvar immediately"
+#   }
+# Notes from Zsh documentation --------------------------------------
 # 6.5 Reserved Words
 # The following words are recognized as reserved words when 
 # used as the first word of a
@@ -14,8 +23,8 @@
 # Additionally, ‘}’ is recognized in any position if neither 
 # the IGNORE_BRACES option nor the
 # IGNORE_CLOSE_BRACES option is set.
-###
-## DSL MAIN (this file. Loader function TBD)
+# ------------------------------------------------------------------
+## DSL MAIN ========================================================
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
 ################################################
 dsl::disable() {
@@ -50,6 +59,7 @@ declare -rg POSIX_PUNCT="[:punct:]"
 declare -rg POSIX_SPACE="[:space:]"
 declare -rg POSIX_WORD="[:word:]"
 ################################################
+# send the result of evaluated arguments to dev null
 discard() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
 # @todo some of these don't work. maybe use *gasp* python to do type checking
@@ -85,7 +95,8 @@ is() {
 functions["is"]="is"  
 alias -g is="is"
 ################################################
-alias -g nil='>/dev/null 2>&1'
+# use discard instead of nil
+# alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
 alias -g eq='-eq'
 alias -g ne='-ne'
@@ -140,13 +151,8 @@ append() {
   eval "$@" >> "$file"
 }
 ################################################
-# use block to load vars and functions into an environment
-# eg:
-# block example {
-#   let value=12;
-# }
-alias block='function'
-# use ns to create "name spaces", basically the same as source
+# use ns to load vars and functions into an environment
+# ns == "name space", basically the same as source
 # except they must be called using ::name
 ns() {
   local name="$1"
@@ -154,7 +160,6 @@ ns() {
   local nsbody="$@"
   eval "function ::$name() { $nsbody; }"
 }
-# anonymous functions = () { puts 6; }
 const() {
   local name="$1"
   shift
