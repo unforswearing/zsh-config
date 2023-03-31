@@ -29,6 +29,12 @@
 ## DSL MAIN ========================================================
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
 ################################################
+# these options are already enabled in my interactive zsh sessions
+# use `dsl::setopt` when using the dsl in scripts
+dsl::setopt() {
+  setopt bsdecho noclobber cprecedences cshjunkieloops 
+  setopt kshzerosubscript localloops shwordsplit warncreateglobal
+}
 #  use dsl::disable to unset builtins i never use
 dsl::disable() {
   eval "disable -r time until select coproc nocorrect"
