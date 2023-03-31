@@ -50,6 +50,7 @@ declare -rg POSIX_PUNCT="[:punct:]"
 declare -rg POSIX_SPACE="[:space:]"
 declare -rg POSIX_WORD="[:word:]"
 ################################################
+discard() { >|/dev/null 2>&1; }
 # assertions with "is"
 # @todo some of these don't work. maybe use *gasp* python to do type checking
 is() {
