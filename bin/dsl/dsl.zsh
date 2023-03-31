@@ -39,9 +39,15 @@ dsl::unset() {
 dsl::compile() {
   cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh
 }
-# these options are already enabled in my interactive zsh sessions
-# add `use::dslenv` to the top of scripts that use dsl
+################################################
+# functions named use::<name> are for dsl internal use.
+# the standalone `use` function should be run when loading these 
+# in a script file or an interactive zsh session.
+# this is done to take advantage of the double colon `::` namespace syntax
+# see the `ns` function below
 use::dslenv() {
+  # these options are already enabled in my interactive zsh sessions
+  # add `use::dslenv` to the top of scripts that use dsl
   setopt bsdecho noclobber cprecedences cshjunkieloops 
   setopt kshzerosubscript localloops shwordsplit warncreateglobal
 }
@@ -49,8 +55,20 @@ use::filepath() { source "${DSL_DIR}/filepath.zsh"; }
 use::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
 use::pairs() { source "${DSL_DIR}/pairs.zsh"; }
 use::string() { source "${DSL_DIR}/string.zsh"; }
+use() {
+  local opt="$1"
+  shift
+  case "$opt" in
+    "::dslenv") use::dslenv ;;
+    "::filepath") use::filepath ;;
+    "::mathnum") use::mathnum ;;
+    "::pairs") use::pairs ;;
+    "::string") use::string ;;
+    *) source "$@" ;;
+  esac
+}
 ################################################
-alias -g {use,load}='source'
+# alias -g {use,load}='source'
 ################################################
 declare -rg RE_ALPHA="[aA-zZ]"
 declare -rg RE_STRING="([aA-zZ]|[0-9])+"
