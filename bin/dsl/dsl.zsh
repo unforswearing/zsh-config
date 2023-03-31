@@ -204,7 +204,8 @@ def() {
   print "$@" | read "$name"
 }
 # atom, single item of data. a number or word
-# atoms are taken from elixir - a constant whose value is its name
+# the concept of atoms are taken from elixir 
+#   - a constant whose value is its name
 # eg atom hello => hello=hello
 # useage: atom value
 atom() {
