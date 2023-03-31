@@ -84,7 +84,7 @@ use() {
     "::filepath") use::filepath ;;
     "::mathnum") use::mathnum ;;
     "::pairs") use::pairs ;;
-    "::patterns") use::pairs ;;
+    "::patterns") use::patterns ;;
     "::string") use::string ;;
     *) source "$@" ;;
   esac
