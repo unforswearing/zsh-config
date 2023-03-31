@@ -27,9 +27,12 @@
 ## DSL MAIN ========================================================
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
 ################################################
+#  use dsl::disable to unset builtins i never use
 dsl::disable() {
-  # eval "disable -r repeat let if elif else fi for case esac"
   eval "disable -r time until select coproc nocorrect"
+}
+dsl::unset() {
+  # eval "disable -r repeat let if elif else fi for case esac"
 }
 dsl::compile() {
   cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh
