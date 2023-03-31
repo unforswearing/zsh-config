@@ -1,6 +1,9 @@
 #########################################################################
 # edit PATH in zshenv
 #########################################################################
+autoload -U +X bashcompinit && bashcompinit
+autoload -U +X compinit && compinit
+#########################################################################
 local DEBUG=false
 local CLEAR='clear' # or '' to stop clearing screen
 ########################################################################
@@ -41,7 +44,12 @@ source "${ZSH_USR_DIR}/marks.bash"
 ##########################################################################
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh"
 ##########################################################################
+if type brew &>/dev/null; then
+ FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
+ autoload -Uz compinit
+ compinit
+fi
 ##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
 ####### hooks / builtin event handlers
