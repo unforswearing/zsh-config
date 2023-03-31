@@ -7,6 +7,8 @@
 ## Uncommon Zsh Syntax to use 
 # in some cases it is easier to just use the uncommon versions of zsh syntax
 ### examples:
+# - short versions of commands
+#   - these can be changed using various options via 'setopt'
 # - anonymous functions
 #   () {
 #     local thisvar="inside function" 
