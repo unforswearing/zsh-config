@@ -145,9 +145,14 @@ append() {
 #   let value=12;
 # }
 alias block='function'
-# use fn to create single line funcs without braces
-# fn printsix run puts 6
-alias fn='function'
+# use ns to create "name spaces", basically the same as source
+# except they must be called using ::name
+ns() {
+  local name="$1"
+  shift
+  local nsbody="$@"
+  eval "function ::$name() { $nsbody; }"
+}
 # anonymous functions = () { puts 6; }
 const() {
   local name="$1"
