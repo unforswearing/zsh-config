@@ -108,6 +108,11 @@ alias -g af='>'
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
 # alias -g with='foreach'
+with() {
+  local iter="$1"
+  shift
+  
+}
 # alias -g run=';'
 # alias -g apply=';'
 # alias -g fin='; end'
@@ -116,7 +121,7 @@ alias -g af='>'
 puts() {
   print "$@"
 }
-putf() {s
+putf() {
   local str="$1"
   shift
   printf "$str" "$@"  
