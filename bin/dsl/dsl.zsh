@@ -108,14 +108,6 @@ alias -g af='>'
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
 # alias -g with='foreach'
-with() {
-  local var="$1"
-  local iter="$2"
-  shift; shift;
-  for $var in $iter; do
-      eval $@
-    done
-}
 # alias -g run=';'
 # alias -g apply=';'
 # alias -g fin='; end'
