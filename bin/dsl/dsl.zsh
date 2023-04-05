@@ -91,26 +91,26 @@ alias -g gt='-gt'
 alias -g lt='-lt'
 alias -g ge='-ge'
 alias -g le='-le'
-# [[ "a" bef "b" ]] => true
+# [[ "a" be "b" ]] => true
 alias -g be='<'
-# [[ "a" aft "b" ]] => false
+# [[ "a" af "b" ]] => false
 alias -g af='>'
 ################################################
 # perhaps the aliases below should be functions
 ################################################
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
-alias -g try='test'
+# alias -g try='test'
 # alias -g ??='&&'
 # alias -g ::='||'
-alias -g not='!'
+# alias -g not='!'
 ################################################
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
-alias -g with='foreach'
-alias -g run=';'
-alias -g apply=';'
-alias -g fin='; end'
+# alias -g with='foreach'
+# alias -g run=';'
+# alias -g apply=';'
+# alias -g fin='; end'
 ################################################
 # i/o
 puts() {
