@@ -112,11 +112,9 @@ with() {
   local var="$1"
   local iter="$2"
   shift; shift;
-  eval "
-    for $var in $iter; do
-      $@
+  for $var in $iter; do
+      eval $@
     done
-  "
 }
 # alias -g run=';'
 # alias -g apply=';'
