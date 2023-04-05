@@ -1,8 +1,10 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
+  "folders": [
+    {
+      "path": "."
+    }
   ],
-  "settings": {}
+  "settings": {
+    "workbench.colorTheme": "Ra Livid Dark Theme"
+  }
 }

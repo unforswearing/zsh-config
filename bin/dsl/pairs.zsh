@@ -31,3 +31,7 @@ pair.toarr() {
   local cdr=$(pair.cdr "$2")
   arr "$name" ($cons $cdr)
 }
+# arrays will split into their indexes when used as arg
+arr.topair() {
+  pair $1 $2
+}

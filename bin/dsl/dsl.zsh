@@ -200,10 +200,6 @@ arr() {
   local arrarg="$2"
   eval "declare -rga $name=${arrarg[@]}"
 }
-# arrays will split into their indexes when used as arg
-arr.topair() {
-  pair $1 $2
-}
 arr.tostr() {
   print "$@"
 }
