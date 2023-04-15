@@ -77,8 +77,20 @@ precmd() {
   })
 }
 periodic() {
-  ({ python3 "${ZSH_USR_DIR}/hosts.py"; } &) >|/dev/null 2>&1
-  ({ port selfupdate; } &) >|/dev/null 2>&1
+  (
+    {
+      python3 "${ZSH_USR_DIR}/hosts.py";
+      db put hosts_file_updated "$(gdate --iso)";
+    } &
+  ) >|/dev/null 2>&1
+
+  (
+    { 
+      port selfupdate; 
+      db put macports_updated "$(gdate --iso)";
+    } &
+  ) >|/dev/null 2>&1
+  
   # ({ tldr --update; } &) >|/dev/null 2>&1
   ({ fd -H '^\.DS_Store$' -tf -X rm; } &) >|/dev/null 2>&1
 }
