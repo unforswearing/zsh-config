@@ -186,7 +186,7 @@ append() {
 ################################################
 # use ns to load vars and functions into an environment
 # ns == "name space", basically the same as source
-# except they must be called using ::name
+# except they must be called using `::name`
 ns() {
   local name="$1"
   shift
