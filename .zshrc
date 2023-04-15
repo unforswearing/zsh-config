@@ -80,14 +80,14 @@ periodic() {
   (
     {
       python3 "${ZSH_USR_DIR}/hosts.py";
-      db put hosts_file_updated "$(gdate --iso)";
+      db put hosts_file_updated "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
 
   (
     { 
       port selfupdate; 
-      db put macports_updated "$(gdate --iso)";
+      db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
   
