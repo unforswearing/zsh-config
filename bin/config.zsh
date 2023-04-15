@@ -86,12 +86,7 @@
 	unsetopt ksh_glob
 	unsetopt monitor
 }
-
-# use hardlinks to keep stuff in the zsh-config dir instead of home dir
-ln -sF ~/zsh-config/.zshenv ~/.zshenv
-ln -sF ~/zsh-config/.zshrc ~/.zshrc 
-ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
-
+##########################################################################
 function zc() {
   function getfiles() fd . -t f --max-depth 2 "$1";
   local currentdir=$(pwd)
@@ -119,3 +114,12 @@ function zc() {
     exec zsh
   }
 }
+##########################################################################
+source "${ZSH_USR_DIR}/lnks.bash"
+source "${ZSH_USR_DIR}/marks.bash"
+##########################################################################
+# use hardlinks to keep stuff in the zsh-config dir instead of home dir
+ln -sF ~/zsh-config/.zshenv ~/.zshenv
+ln -sF ~/zsh-config/.zshrc ~/.zshrc 
+ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
+
