@@ -193,6 +193,13 @@ ns() {
   local nsbody="$@"
   eval "function ::$name() { $nsbody; }"
 }
+# fn for keyword shorthand
+fn() {
+  local name="$1"
+  shift
+  local fnbody="$@"
+  eval "function $name() { $fnbody; }"
+}
 const() {
   local name="$1"
   shift
