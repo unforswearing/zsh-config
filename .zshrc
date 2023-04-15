@@ -4,7 +4,9 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
+##########################################################################
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.p10k.zsh
 #########################################################################
 # edit PATH in zshenv
 #########################################################################
@@ -39,9 +41,6 @@ fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
     red "failed: $shortname"
   }
 done
-##########################################################################
-source ~/powerlevel10k/powerlevel10k.zsh-theme
-source ~/.p10k.zsh
 ##########################################################################
 source "${ZSH_USR_DIR}/lnks.bash"
 source "${ZSH_USR_DIR}/marks.bash"
