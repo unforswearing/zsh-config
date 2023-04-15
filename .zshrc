@@ -92,7 +92,12 @@ periodic() {
   ) >|/dev/null 2>&1
   
   # ({ tldr --update; } &) >|/dev/null 2>&1
-  ({ fd -H '^\.DS_Store$' -tf -X rm; } &) >|/dev/null 2>&1
+  (
+    { 
+      fd -H '^\.DS_Store$' -tf -X rm; 
+      db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')"
+    } &
+  ) >|/dev/null 2>&1
 }
 ##########################################################################
 # update path in db
