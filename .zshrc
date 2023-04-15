@@ -1,9 +1,9 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 #########################################################################
 # edit PATH in zshenv
@@ -21,8 +21,6 @@ trap "exec zsh" USR1
 # return if the shell is not interactive (the commands would have no use)
 [[ $- != *i* ]] && [ ! -t 0 ] && return
 #########################################################################
-fpath+=("/usr/share/zsh")
-#########################################################################
 # .zshrc and .zshenv are hardlinked to ~zsh-config 
 # in the bin/config.zsh file
 ## ---------------------------------------------
@@ -32,7 +30,6 @@ export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 export ZSH_ETC_DIR="$ZSH_CONFIG_DIR/etc"
 export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
-source "${ZSH_PLUGIN_DIR}/romkatv/zsh-defer/zsh-defer.plugin.zsh"
 source "${ZSH_PLUGIN_DIR}/Tarrasch/zsh-colors/colors.plugin.zsh"
 fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
