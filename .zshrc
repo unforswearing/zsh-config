@@ -47,16 +47,10 @@ source "${ZSH_USR_DIR}/lnks.bash"
 source "${ZSH_USR_DIR}/marks.bash"
 ##########################################################################
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh"
-##########################################################################
-# if type brew &>/dev/null; then
-# FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-#
-#  autoload -Uz compinit
-#  compinit
-# fi
-##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
-####### hooks / builtin event handlers
+##########################################################################
+# -- hooks / builtin event handlers -- #
+# --------------------------------------
 # command_not_found_handler() {;}
 # preexec() {;}
 precmd() {
@@ -107,8 +101,7 @@ periodic() {
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 test $DEBUG == true || eval $CLEAR
 
-# -------------------------- #
-# - LOAD COMPLETIONS LAST -  #
-# -------------------------- #
-
+# --------------------------------------
+# LOAD COMPLETIONS LAST
 autoload -U compinit && compinit
+# --------------------------------------
