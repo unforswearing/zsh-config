@@ -162,7 +162,7 @@ alias -g fin='; end'
 puts() {
   print "$@"
 }
-putf() {s
+putf() {
   local str="$1"
   shift
   printf "$str" "$@"  
