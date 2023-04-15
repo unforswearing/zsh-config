@@ -51,12 +51,12 @@ source "${ZSH_USR_DIR}/marks.bash"
 ##########################################################################
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh"
 ##########################################################################
-if type brew &>/dev/null; then
- FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-
- autoload -Uz compinit
- compinit
-fi
+# if type brew &>/dev/null; then
+# FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+#
+#  autoload -Uz compinit
+#  compinit
+# fi
 ##########################################################################
 # BOTTOM -------------------------------------------------------------- ::
 ####### hooks / builtin event handlers

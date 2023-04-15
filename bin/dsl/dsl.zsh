@@ -125,7 +125,7 @@ is() {
   setopt warn_create_global
 }
 # declare -rg is="is"
-functions["is"]="is"  
+functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
 ################################################
 # use discard instead of nil
@@ -214,7 +214,7 @@ atom() {
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare 
   declare -rg $nameval="$nameval"
-  functions["$nameval"]="$nameval"
+  functions["$nameval"]="$nameval" >|/dev/null 2>&1;
 }
 # formatted ranges
 # do not quote - range can be alpha or num
@@ -261,5 +261,5 @@ calc() { print "$@" | bc; }
 #  disable -r time until select coproc nocorrect
 # }
 
-use::filepath
+discard "use::filepath"
 green "dsl loaded"
