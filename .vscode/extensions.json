@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "dotiful.dotfiles-syntax-highlighting",
+    "vsls-contrib.gitdoc",
+    "github.vscode-pull-request-github",
+    "tkrkt.linenote"
+  ]
+}
