@@ -20,7 +20,7 @@ alias -g @b='ssh 192.168.0.151'
 alias -g @m='ssh 192.168.0.150'
 ## ---------------------------------------------
 # reload all terminals. use with `trap "exec zsh" USR1` in .zshrc
-alias reload.all='pkill -usr1 zsh'
+alias reloadall='pkill -usr1 zsh'
 alias reload='exec zsh'
 alias purj='sudo purge && sudo purge && sudo purge'
 alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
