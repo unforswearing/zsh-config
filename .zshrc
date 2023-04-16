@@ -75,22 +75,19 @@ periodic() {
       db put hosts_file_updated "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
-  # try to update macports (not sure if working)
-  (
-    { 
-      port selfupdate; 
-      db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')";
-    } &
-  ) >|/dev/null 2>&1
-  # update tldr (not really useful)
-  # ({ tldr --update; } &) >|/dev/null 2>&1
-  # remove all .DS_Store files (not sure if working)
-  (
-    { 
+  ({ 
       fd -H '^\.DS_Store$' -tf -X rm; 
       db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')"
     } &
   ) >|/dev/null 2>&1
+  # try to update macports (not sure if working)
+  # ({ 
+  #    port selfupdate; 
+  #    db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  # } &) >|/dev/null 2>&1
+  # update tldr (not really useful)
+  # ({ tldr --update; } &) >|/dev/null 2>&1
+  # remove all .DS_Store files (not sure if working)
 }
 ##########################################################################
 # update path in db
