@@ -35,6 +35,7 @@ use ::dsl
 precmd() {
   # save the current dir to auto-cd if iterm crashes
   pwd >|"$HOME/.zsh_reload.txt" &
+  db put "previous_dir" "$(db get reload_dir)"
   db put "reload_dir" "$(pwd)" &
   # add history to (new) db for history file zsh_history.db
   ({
@@ -67,7 +68,8 @@ periodic() {
 ## ---------------------------------------------
 # update path in db
 # db put "path" "${PATH}"
-cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
+# cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
+cd "$(db get reload_dir)" || cd $HOME
 
 ## ---------------------------------------------
 # uses the `debug` function, see utils.zsh
