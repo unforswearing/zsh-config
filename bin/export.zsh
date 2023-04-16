@@ -27,5 +27,9 @@ export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
 export GOPATH="$HOME/go"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_AUTO_UPDATE=0
+
 export ZSH_HIGHLIGHT_HIGHLIGHTERS=(main cursor root line)
+
+typeset -A ZSH_HIGHLIGHT_PATTERNS
+ZSH_HIGHLIGHT_PATTERNS+=('rm -rf *' 'fg=white,bold,bg=red')
 
