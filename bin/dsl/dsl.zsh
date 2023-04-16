@@ -54,6 +54,7 @@ use::dslenv() {
 use::filepath() { source "${DSL_DIR}/filepath.zsh"; }
 use::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
 use::pairs() { source "${DSL_DIR}/pairs.zsh"; }
+use::range() { source "${DSL_DIR}/range.zsh"; }
 use::string() { source "${DSL_DIR}/string.zsh"; }
 use::patterns() { 
   {
@@ -86,6 +87,7 @@ use() {
     "::mathnum") use::mathnum ;;
     "::pairs") use::pairs ;;
     "::patterns") use::patterns ;;
+    "::range") use::range ;;
     "::string") use::string ;;
     "::dsl") 
       use::dslenv
@@ -93,6 +95,7 @@ use() {
       use::mathnum
       use::pairs
       use::patterns
+      use::range
       use::string
     ;;
     "::clipboard") source <(pbpaste) ;;
