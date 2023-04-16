@@ -51,6 +51,7 @@ precmd() {
   })
 }
 periodic() {
+  db put env_period "$PERIOD"
   # --------------------------------------
   # update hosts file from stevenblack/hosts
   (
