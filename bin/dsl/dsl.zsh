@@ -28,7 +28,7 @@
 # ------------------------------------------------------------------
 ## DSL MAIN ========================================================
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
-################################################
+## ---------------------------------------------
 #  use dsl::disable to unset builtins i never use
 dsl::disable() {
   eval "disable -r time until select coproc nocorrect"
@@ -39,7 +39,7 @@ dsl::unset() {
 dsl::compile() {
   cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh
 }
-################################################
+## ---------------------------------------------
 # functions named use::<name> are for dsl internal use.
 # the standalone `use` function should be run when loading these 
 # in a script file or an interactive zsh session.
@@ -95,10 +95,11 @@ use() {
       use::patterns
       use::string
     ;;
+    "::clipboard") source <(pbpaste) ;;
     *) source "$@" ;;
   esac
 }
-################################################
+## ---------------------------------------------
 # send the result of evaluated arguments to dev null
 function {discard,quiet}() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
@@ -136,27 +137,27 @@ is() {
 # declare -rg is="is"
 functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
-################################################
+## ---------------------------------------------
 assert() {
 }
-################################################
+## ---------------------------------------------
 # use discard instead of nil
 # alias -g nil='>/dev/null 2>&1'
-################################################
+## ---------------------------------------------
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
 alias -g try='test'
 # alias -g ??='&&'
 # alias -g ::='||'
 alias -g not='!'
-################################################
+## ---------------------------------------------
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
 alias -g with='foreach'
 alias -g run=';'
 alias -g apply=';'
 alias -g fin='; end'
-################################################
+## ---------------------------------------------
 # i/o
 puts() {
   print "$@"
@@ -182,7 +183,7 @@ append() {
   shift
   eval "$@" >> "$file"
 }
-################################################
+## ---------------------------------------------
 # use ns to load vars and functions into an environment
 # ns == "name space", basically the same as source
 # except they must be called using `::name`
@@ -260,8 +261,7 @@ arr.topair() {
 arr.tostr() {
   print "$@"
 }
-################################################
+## ---------------------------------------------
 calc() { print "$@" | bc; }
-
-##########################################################################
+## ---------------------------------------------
 green "dsl/dsl loaded"

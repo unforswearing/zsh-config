@@ -51,7 +51,5 @@ alias julia='/Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia'
 ##########################################################################
 ################
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
-######################
-alias source.clipboard='source <(pbpaste)'
 #################
 alias poyml='python "/Users/unforswearing/Library/Mobile Documents/com~apple~CloudDocs/Documents/__Github/poyml/poyml.py"'

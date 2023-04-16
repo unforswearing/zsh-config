@@ -1,5 +1,5 @@
 use::string >|/dev/null 2>&1
-#############
+## ---------------------------------------------
 # DSL FS
 # file.backup filename.txt => filename.txt.bak
 # file.restore filename.txt => overwrites filename.txt
@@ -20,13 +20,11 @@ function {dempty,fs.dir.isempty}() {
   local count=$(ls -la "${1}" | wc -l | trim.left) 
   [[ $count -eq 0 ]];  
 }
-
 # fs prefix works for files and dirs
 # filepath.abs "../../file.txt"
 fs.path() { print "$(pwd)/${1}"; }
 fs.abs() { print "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
 fs.newer() { [[ "${1}" -nt "${2}" ]]; }
 fs.older() { [[ "${1}" -ot "${2}" ]]; }
-
-##########################################################################
+## ---------------------------------------------
 green "dsl/filepath loaded"
