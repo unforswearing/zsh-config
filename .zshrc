@@ -21,9 +21,8 @@ fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   source "$_config_file_" || print "failed: $shortname"
 done
 ## ---------------------------------------------
-source "${ZSH_BIN_DIR}/dsl/dsl.zsh" 
-use ::dsl
-# BOTTOM -------    hooks / builtin event handlers     --------- #
+source "${ZSH_BIN_DIR}/dsl/dsl.zsh" && use ::dsl
+# BOTTOM: hooks / builtin event handlers ---------------------------
 ## the folling are not used:
 # - command_not_found_handler() {;}
 # - preexec() {;}
