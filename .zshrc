@@ -1,5 +1,6 @@
 ## ---------------------------------------------
-# <!note> this is stuff
+<!note> this is stuff
+
 # `.zshrc` and `.zshenv` are hardlinked to $HOME from 
 # ~zconf/bin/config.zsh. edit $PATH in ~zconf/.zshenv
 ## ---------------------------------------------
