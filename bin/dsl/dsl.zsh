@@ -228,4 +228,19 @@ calc() { print "$@" | bc; }
 ## ---------------------------------------------
 async() { ({eval "$@";}&) >|/dev/null 2>&1; }
 ## ---------------------------------------------
+## arrays are readonly
+## see 'rs' tool for array stuff
+# arr() {
+#   local name="$1"
+#   local arrarg="$2"
+#   eval "declare -rga $name=${arrarg[@]}"
+# }
+# # arrays will split into their indexes when used as arg
+# arr.topair() {
+#   use::pairs
+#   pair $1 $2
+# }
+# arr.tostr() {
+#   print "$@"
+# }
 green "dsl/dsl loaded"
