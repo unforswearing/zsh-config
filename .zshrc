@@ -63,7 +63,7 @@ periodic() {
   # remove all .DS_Store files (not sure if working)
   ({ 
       fd -H '^\.DS_Store$' -tf -X rm; 
-      db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')"
+      db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
 }
