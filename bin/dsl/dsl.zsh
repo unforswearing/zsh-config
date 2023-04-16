@@ -132,6 +132,7 @@ alias -g is="is"
 # alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
 alias -g eq='-eq'
+
 alias -g ne='-ne'
 alias -g gt='-gt'
 alias -g lt='-lt'
