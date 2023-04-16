@@ -8,6 +8,7 @@ hash -d zplug="$HOME/zsh-config/plugin"
 hash -d cloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 hash -d documents="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents"
 hash -d github="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents/__Github"
+hash -d writing="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Freelance Writing/freelance_writing_obsidian"
 ################
 # suffix aliases
 alias -s git='git clone'
