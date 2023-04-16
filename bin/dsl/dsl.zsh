@@ -128,18 +128,7 @@ is() {
 functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
 ################################################
-assert() {
-  case "${2}" in
-    "eq") printf "${left} == ${right}" | bc ;;
-    "ne") printf "${left} != ${right}" | bc ;;
-    "gt") printf "${left} > ${right}" | bc ;;
-    "lt") printf "${left} < ${right}" | bc ;;
-    "ge") printf "${left} >= ${right}" | bc ;;
-    "le") printf "${left} <= ${right}" | bc ;;
-    "mod") printf "scale = 0; (${left} % ${right}) == 0)" | bc ;;
-    *) printf "${2} is not a valid comparator" ;;
-  esac
-}
+
 ################################################
 # use discard instead of nil
 # alias -g nil='>/dev/null 2>&1'
