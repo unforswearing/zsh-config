@@ -80,7 +80,7 @@ local DEBUG="$(db get debug)"
 test $DEBUG == true || eval $CLEAR
 ## ---------------------------------------------
 # LOAD COMPLETIONS LAST
-autoload compinit
-autoload bashcompinit
+# autoload compinit
+# autoload bashcompinit
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ## ---------------------------------------------
