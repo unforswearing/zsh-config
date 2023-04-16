@@ -89,7 +89,7 @@
 
   # function terminate-current-job() { kill -s TERM %+ ; }
   # zle -N terminate-current-job terminate-current-job
-  bindkey "\e\e" terminate-current-job
+  bindkey "\e\e" kill-buffer
 
   
 }
