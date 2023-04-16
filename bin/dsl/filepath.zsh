@@ -4,9 +4,9 @@ use::string >|/dev/null 2>&1
 file.new() { touch "$@"; }
 file.read() { print "$(<"$1")"; }
 # file.backup filename.txt => filename.txt.bak
-file.backup() { cp "${1}"{,.bak}; }
+function {bkp,file.backup}() { cp "${1}"{,.bak}; }
 # file.restore filename.txt => overwrites filename.txt
-file.restore() { cp "${1}"{.bak,} && rm "${1}.bak"; }
+function{rst,file.restore}() { cp "${1}"{.bak,} && rm "${1}.bak"; }
 
 file.exists() { [[ -s "${1}" ]]; }
 file.isempty() { [[ -a "${1}" ]] && [[ ! -s "${1}" ]]; }
