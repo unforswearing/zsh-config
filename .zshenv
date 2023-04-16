@@ -11,6 +11,7 @@ path=(
 	"/usr/local/bin"
   "/usr/local/opt"
 	"/usr/local/opt/fzf/bin"
+  "/usr/local/share/zsh-completions"
   "/usr/share"
   "/usr/share/zsh"
   "/usr/local/lib/node_modules"

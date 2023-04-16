@@ -98,5 +98,5 @@ test $DEBUG == true || eval $CLEAR
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # --------------------------------------
 # LOAD COMPLETIONS LAST
-autoload -U compinit && compinit
+autoload -Uz compinit && compinit
 # --------------------------------------
