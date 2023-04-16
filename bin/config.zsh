@@ -89,9 +89,7 @@
 
   # function terminate-current-job() { kill -s TERM %+ ; }
   # zle -N terminate-current-job terminate-current-job
-  bindkey "\e\e" kill-buffer
-
-  
+  # bindkey "\e\e" kill-buffer
 }
 {
   source "${ZSH_USR_DIR}/lnks.bash"
