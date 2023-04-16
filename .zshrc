@@ -67,6 +67,8 @@ periodic() {
       db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
+
+  functions[periodic]=
 }
 ## ---------------------------------------------
 # update path in db
