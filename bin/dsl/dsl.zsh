@@ -74,7 +74,8 @@ use::patterns() {
     declare -rg POSIX_PUNCT="[:punct:]"
     declare -rg POSIX_SPACE="[:space:]"
     declare -rg POSIX_WORD="[:word:]"
-  } && green "dsl/patterns loaded"
+  } 
+  green "dsl/patterns loaded"
 }
 use() {
   local opt="$1"
@@ -261,9 +262,6 @@ arr.tostr() {
 }
 ################################################
 calc() { print "$@" | bc; }
-################################################
-# { 
-#  disable -r time until select coproc nocorrect
-# }
 
-green "dsl loaded"
+##########################################################################
+green "dsl/dsl loaded"

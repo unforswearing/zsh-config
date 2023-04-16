@@ -31,3 +31,6 @@ pair.toarr() {
   local cdr=$(pair.cdr "$2")
   arr "$name" ($cons $cdr)
 }
+
+##########################################################################
+green "dsl/pairs loaded"

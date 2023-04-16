@@ -1,18 +1,18 @@
 # edit PATH in zshenv
-##########################################################################
+## ---------------------------------------------
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.p10k.zsh
-#########################################################################
+## ---------------------------------------------
 local DEBUG=false
 local CLEAR='clear' # or '' to stop clearing screen
-########################################################################
+## ---------------------------------------------
 # stop vi mode from loading automatically
 bindkey -e
-#########################################################################
+## ---------------------------------------------
 trap "exec zsh" USR1
 # return if the shell is not interactive (the commands would have no use)
 [[ $- != *i* ]] && [ ! -t 0 ] && return
-#########################################################################
+## ---------------------------------------------
 # .zshrc and .zshenv are hardlinked to ~zsh-config 
 # in the bin/config.zsh file
 ## ---------------------------------------------
@@ -24,13 +24,9 @@ export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
 fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
-  source "$_config_file_" && {
-    print "using: $shortname"
-  } || {
-    print "failed: $shortname"
-  }
+  source "$_config_file_" || print "failed: $shortname"
 done
-##########################################################################
+## ---------------------------------------------
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh" 
 use ::dsl
 
@@ -71,7 +67,7 @@ periodic() {
     } &
   ) >|/dev/null 2>&1
 }
-##########################################################################
+## ---------------------------------------------
 # update path in db
 # db put "path" "${PATH}"
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
