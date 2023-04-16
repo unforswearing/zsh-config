@@ -258,6 +258,4 @@ calc() { print "$@" | bc; }
 #  disable -r time until select coproc nocorrect
 # }
 
-discard "use::filepath"
-discard "use::mathnum"
 green "dsl loaded"
