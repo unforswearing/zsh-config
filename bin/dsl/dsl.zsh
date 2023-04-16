@@ -144,8 +144,7 @@ alias -g is="is"
 assert() {
 }
 ## ---------------------------------------------
-alias -g ??="'{"
-alias -g :.="}'"
+
 # use discard instead of nil
 # alias -g nil='>/dev/null 2>&1'
 ## ---------------------------------------------
