@@ -28,16 +28,16 @@
 	source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
 }
 {
-	# ZLE --------------------------------------------------- ::
-	autoload history-substring-search-up
-	autoload history-substring-search-down
-	zle -N history-substring-search-up
-	zle -N history-substring-search-down
-	# BINDKEY ----------------------------------------------- ::
-	bindkey "^[[H" .backward-word # fn-left
-	bindkey "^[[F" .forward-word  # fn-right
-	bindkey "^[[A" history-substring-search-up
-	bindkey "^[[B" history-substring-search-down
+	# # ZLE --------------------------------------------------- ::
+	# autoload history-substring-search-up
+	# autoload history-substring-search-down
+	# zle -N history-substring-search-up
+	# zle -N history-substring-search-down
+	# # BINDKEY ----------------------------------------------- ::
+	# bindkey "^[[H" .backward-word # fn-left
+	# bindkey "^[[F" .forward-word  # fn-right
+	# bindkey "^[[A" history-substring-search-up
+	# bindkey "^[[B" history-substring-search-down
 }
 {
 	# zmodload zsh/regex

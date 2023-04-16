@@ -98,5 +98,15 @@ test $DEBUG == true || eval $CLEAR
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # --------------------------------------
 # LOAD COMPLETIONS LAST
+	# ZLE --------------------------------------------------- ::
 autoload -Uz compinit && compinit
+autoload history-substring-search-up
+autoload history-substring-search-down
+zle -N history-substring-search-up
+zle -N history-substring-search-down
+# BINDKEY ----------------------------------------------- ::
+bindkey "^[[H" .backward-word # fn-left
+bindkey "^[[F" .forward-word  # fn-right
+bindkey "^[[A" history-substring-search-up
+bindkey "^[[B" history-substring-search-down
 # --------------------------------------
