@@ -23,7 +23,7 @@ fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
 done
 ## ---------------------------------------------
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh" && use ::dsl
-# ----------------------------------------------
+## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers 
 ## the folling are not used:
 # - command_not_found_handler() {;}
@@ -31,10 +31,10 @@ source "${ZSH_BIN_DIR}/dsl/dsl.zsh" && use ::dsl
 precmd() {
   # save the current dir to auto-cd if iterm crashes
   pwd >|"$HOME/.zsh_reload.txt" &
-  ## ---------------------------------------------
+  # --------------------------------------
   db put "previous_dir" "$(db get reload_dir)"
   db put "reload_dir" "$(pwd)" &
-  ## ---------------------------------------------
+  # --------------------------------------
   ({
     local prev="$(
       history | \
@@ -48,7 +48,7 @@ precmd() {
   })
 }
 periodic() {
-  ## ---------------------------------------------
+  # --------------------------------------
   # update hosts file from stevenblack/hosts
   (
     {
@@ -56,7 +56,7 @@ periodic() {
       db put hosts_file_updated "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
-  ## ---------------------------------------------
+  # --------------------------------------
   # remove all .DS_Store files (not sure if working)
   ({ 
       fd -H '^\.DS_Store$' -tf -X rm; 
@@ -75,9 +75,9 @@ local CLEAR="$(db get clear)"
 local DEBUG="$(db get debug)"
 # do not clear output if debug is true, otherwise clear=clear
 test $DEBUG == true || eval $CLEAR
-# --------------------------------------
+## ---------------------------------------------
 # LOAD COMPLETIONS LAST
 autoload compinit
 autoload bashcompinit
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# --------------------------------------
+## ---------------------------------------------
