@@ -31,8 +31,10 @@ precmd() {
   # save the current dir to auto-cd if iterm crashes
   pwd >|"$HOME/.zsh_reload.txt" &
   # --------------------------------------
-  db put "previous_dir" "$(db get reload_dir)"
-  db put "reload_dir" "$(pwd)" &
+  if [[ $(db get reload_dir) -ne $(pwd) ]]; then 
+    db put "previous_dir" "$(db get reload_dir)"
+    db put "reload_dir" "$(pwd)" &  
+  fi
   # --------------------------------------
   ({
     local prev="$(
