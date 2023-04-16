@@ -1,4 +1,7 @@
 #!/bin/zsh
+_db_init() {
+  # 
+}
 db() {
   # a simple k/v db using sqlite ------------------------------------------
   local opt="$1"
