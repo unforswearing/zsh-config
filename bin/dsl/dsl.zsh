@@ -86,6 +86,14 @@ use() {
     "::pairs") use::pairs ;;
     "::patterns") use::patterns ;;
     "::string") use::string ;;
+    "::dsl") 
+      use::dslenv
+      use::filepath
+      use::mathnum
+      use::pairs
+      use::patterns
+      use::string
+    ;;
     *) source "$@" ;;
   esac
 }
