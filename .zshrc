@@ -94,6 +94,7 @@ test $DEBUG == true || eval $CLEAR
 # LOAD COMPLETIONS LAST
 	# ZLE --------------------------------------------------- ::
 autoload -Uz compinit
+autoload -Uz bashcompinit
 
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
