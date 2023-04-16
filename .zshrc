@@ -92,28 +92,6 @@ test $DEBUG == true || eval $CLEAR
 
 # --------------------------------------
 # LOAD COMPLETIONS LAST
-	# ZLE --------------------------------------------------- ::
-autoload -Uz compinit
-autoload -Uz bashcompinit
-
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
-source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
-source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
-source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
-
-autoload history-substring-search-up
-autoload history-substring-search-down
-zle -N history-substring-search-up
-zle -N history-substring-search-down
-# BINDKEY ----------------------------------------------- ::
-bindkey "^[[H" .backward-word # fn-left
-bindkey "^[[F" .forward-word  # fn-right
-bindkey "^[[A" history-substring-search-up
-bindkey "^[[B" history-substring-search-down
-bindkey "^[[Z" fzf-tab-complete
-bindkey "^[[I" expand-or-complete
-
+# autoload compinit
+# autoload bashcompinit
 # --------------------------------------

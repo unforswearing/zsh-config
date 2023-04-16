@@ -18,37 +18,35 @@
 	zstyle ':completion:*:options' description 'yes'
 	zstyle ':completion:*' verbose true
 
-  # disable sort when completing `git checkout`
-  zstyle ':completion:*:git-checkout:*' sort false
-  # set descriptions format to enable group support
-  zstyle ':completion:*:descriptions' format '[%d]'
-  # set list-colors to enable filename colorizing
-  zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-  # preview directory's content with exa when completing cd
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
-  # switch group using `,` and `.`
-  zstyle ':fzf-tab:*' switch-group ',' '.'
+  # # disable sort when completing `git checkout`
+  # zstyle ':completion:*:git-checkout:*' sort false
+  # # set descriptions format to enable group support
+  # zstyle ':completion:*:descriptions' format '[%d]'
+  # # set list-colors to enable filename colorizing
+  # zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+  # # preview directory's content with exa when completing cd
+  # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+  # # switch group using `,` and `.`
+  # zstyle ':fzf-tab:*' switch-group ',' '.'
 }
 {
-	source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
-	source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
-	source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
-	# this is zsh-syntax-highlighting is from homebrew. see .zshrc EOF
-  # source "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-	source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-	source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+	# source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
+	# source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
+	# source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
+	# source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	# source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
 }
 {
-	# # ZLE --------------------------------------------------- ::
-	# autoload history-substring-search-up
-	# autoload history-substring-search-down
-	# zle -N history-substring-search-up
-	# zle -N history-substring-search-down
-	# # BINDKEY ----------------------------------------------- ::
-	# bindkey "^[[H" .backward-word # fn-left
-	# bindkey "^[[F" .forward-word  # fn-right
-	# bindkey "^[[A" history-substring-search-up
-	# bindkey "^[[B" history-substring-search-down
+	# ZLE --------------------------------------------------- ::
+	autoload history-substring-search-up
+	autoload history-substring-search-down
+	zle -N history-substring-search-up
+	zle -N history-substring-search-down
+	# BINDKEY ----------------------------------------------- ::
+	bindkey "^[[H" .backward-word # fn-left
+	bindkey "^[[F" .forward-word  # fn-right
+	bindkey "^[[A" history-substring-search-up
+	bindkey "^[[B" history-substring-search-down
 }
 {
 	# zmodload zsh/regex
