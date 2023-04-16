@@ -129,24 +129,10 @@ functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
 ################################################
 assert() {
-  # use aliases instead of usual comparisons
-  alias -g eq='-eq'
-  alias -g ne='-ne'
-  alias -g gt='-gt'
-  alias -g lt='-lt'
-  alias -g ge='-ge'
-  alias -g le='-le'
-  # [[ "a" bef "b" ]] => true
-  alias -g be='<'
-  # [[ "a" aft "b" ]] => false
-  alias -g af='>'
-
 }
 ################################################
 # use discard instead of nil
 # alias -g nil='>/dev/null 2>&1'
-################################################
-# perhaps the aliases below should be functions
 ################################################
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
