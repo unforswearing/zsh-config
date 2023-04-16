@@ -119,4 +119,5 @@ bindkey "^[[A" history-substring-search-up
 bindkey "^[[B" history-substring-search-down
 bindkey "^[[Z" fzf-tab-complete
 bindkey "^I" expand-or-complete
+
 # --------------------------------------
