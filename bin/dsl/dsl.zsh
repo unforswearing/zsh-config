@@ -259,4 +259,5 @@ calc() { print "$@" | bc; }
 # }
 
 discard "use::filepath"
+discard "use::mathnum"
 green "dsl loaded"
