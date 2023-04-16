@@ -128,6 +128,30 @@ is() {
 functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
 ################################################
+assert() {
+  local opt="${1}"
+  case "${opt}" in
+  "empty_or_null") [[ -z "${2}" || "${2}" == "null" ]] && return 0 || return 1 ;;
+  "bool") [[ "${2}" == true || "${2}" == false ]] && return 0 || return 1 ;;
+  "true") [[ "${2}" == true || "${2}" -eq 0 ]] && return 0 || return 1 ;;
+  "false") [[ "${2}" == false || "${2}" -eq 0 ]] && return 0 || return 1 ;;
+  *)
+    local left="${1}"
+    local right="${3}"
+    case "${2}" in
+    "eq") print "${left} == ${right}" | bc ;;
+    "ne") print "${left} != ${right}" | bc ;;
+    "gt") print "${left} > ${right}" | bc ;;
+    "lt") print "${left} < ${right}" | bc ;;
+    "ge") print "${left} >= ${right}" | bc ;;
+    "le") print "${left} <= ${right}" | bc ;;
+    "mod") print "scale = 0; (${left} % ${right}) == 0)" | bc ;;
+    *) print "${2} is not a valid comparator" ;;
+    esac
+    ;;
+  esac
+}
+################################################
 # use discard instead of nil
 # alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
