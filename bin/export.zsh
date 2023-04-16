@@ -1,4 +1,5 @@
 ################
+export KEYTIMEOUT=25
 export CLICOLOR=1
 export EDITOR="hx" #"nvim" #"micro"
 export GPG_TTY=$TTY
