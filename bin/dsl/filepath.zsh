@@ -18,6 +18,7 @@ function {newdir,fs.dir.new}() { mkdir "${1}"; }
 function {readdir,fs.dir.read}() { ls "${1}"; }
 function {dbkp,fs.dir.backup}() { cp -r "${1}" "${1}.bak"; }
 function {drst,fs.dir.restore}() { cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak"; }
+function {pdir,fs.dir.parent}() { dirname "$(pwd)" &&}
 function {dexists,fs.dir.exists}() { [[ -d "${1}" ]]; } 
 function {dempty,fs.dir.isempty}() { 
   local count=$(ls -la "${1}" | wc -l | trim.left) 
