@@ -95,7 +95,7 @@ periodic() {
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 test $DEBUG == true || eval $CLEAR
 
-source ${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # --------------------------------------
 # LOAD COMPLETIONS LAST
 autoload -U compinit && compinit
