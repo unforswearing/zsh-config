@@ -109,4 +109,6 @@ bindkey "^[[H" .backward-word # fn-left
 bindkey "^[[F" .forward-word  # fn-right
 bindkey "^[[A" history-substring-search-up
 bindkey "^[[B" history-substring-search-down
+bindkey "^[[Z" fzf-tab-complete
+bindkey "^I" expand-or-complete
 # --------------------------------------
