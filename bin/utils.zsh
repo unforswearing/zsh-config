@@ -40,12 +40,12 @@ log.err() { red "$@"; }
 alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
 sys() {
   case $1 in
-  host) lang nu "sys|get host" ;;
-  cpu) lang nu "sys|get cpu" ;;
-  disks) lang nu "sys|get disks" ;;
-  mem | memory) lang nu "sys|get mem" ;;
-  temp | temperature) lang nu "sys|get temp" ;;
-  net | io) lang nu "sys|get net" ;;
+  host) nu -c "sys|get host" ;;
+  cpu) nu -c "sys|get cpu" ;;
+  disks) nu -c "sys|get disks" ;;
+  mem | memory) nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}" ;;
+  temp | temperature) nu -c "sys|get temp" ;;
+  net | io) nu -c "sys|get net" ;;
   esac
 }
 zc() {
