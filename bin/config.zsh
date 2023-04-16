@@ -17,14 +17,19 @@
 	zstyle ':completion:*:matches' group 'yes'
 	zstyle ':completion:*:options' description 'yes'
 	zstyle ':completion:*' verbose true
+
+	zstyle ':fzf-tab:*' fzf-command fzf
+	zstyle ':fzf-tab:*' accept-line enter
+	zstyle ':fzf-tab:*' continuous-trigger '/'
+	
 }
 {
-	source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
-	source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
-	source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
 	source "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-	source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
 	source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+	source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
+	source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
 }
 {
 	# ZLE --------------------------------------------------- ::
