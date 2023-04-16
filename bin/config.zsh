@@ -86,7 +86,11 @@
 	bindkey "^[[B" history-substring-search-down
 
   bindkey '\e' vi-kill-line 
-  bindkey '\e\e' kill INT $0
+
+  function terminate-current-job() { kill -s INT %+ ; }
+  zle -N terminate-current-job terminate-current-job
+  bindkey "\e\e" terminate-current-job
+
   
 }
 {
