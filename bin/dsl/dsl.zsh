@@ -246,4 +246,5 @@ async() { ({eval "$@";}&) >|/dev/null 2>&1; }
 # arr.tostr() {
 #   print "$@"
 # }
-green "dsl/dsl loaded"
+## ---------------------------------------------
+# green "dsl/dsl loaded"
