@@ -23,7 +23,6 @@ alias -g @m='ssh 192.168.0.150'
 alias reloadall='pkill -usr1 zsh'
 alias reload='exec zsh'
 alias purj='sudo purge && sudo purge && sudo purge'
-alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
 alias pip='pip3'
 # editor stuff ===========
 alias edit='micro' #'nvim'

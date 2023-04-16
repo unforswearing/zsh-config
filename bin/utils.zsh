@@ -37,7 +37,6 @@ log.warn() { yellow "$@"; }
 log.err() { red "$@"; }
 ##
 # nushell system info
-alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
 sys() {
   case $1 in
   host) nu -c "sys|get host" ;;
@@ -54,6 +53,7 @@ sys() {
   net | io) nu -c "sys|get net" ;;
   esac
 }
+memory() { sys memory; }
 zc() {
   function getfiles() fd . -t f --max-depth 2 "$1";
   local currentdir=$(pwd)
