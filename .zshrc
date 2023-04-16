@@ -3,9 +3,6 @@
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.p10k.zsh
 ## ---------------------------------------------
-local DEBUG=false
-local CLEAR='clear' # or '' to stop clearing screen
-## ---------------------------------------------
 # stop vi mode from loading automatically
 bindkey -e
 ## ---------------------------------------------
@@ -71,6 +68,12 @@ periodic() {
 # update path in db
 # db put "path" "${PATH}"
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
+
+
+## ---------------------------------------------
+local DEBUG=$(db get debug)
+local CLEAR='clear' # or '' to stop clearing screen
+
 test $DEBUG == true || eval $CLEAR
 
 # --------------------------------------
