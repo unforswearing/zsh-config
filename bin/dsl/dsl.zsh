@@ -9,6 +9,7 @@
 ### examples:
 # - short versions of commands
 #   - these can be changed using various options via 'setopt'
+#   - https://unix.stackexchange.com/a/468597
 # - anonymous functions
 #   () {
 #     local thisvar="inside function" 
