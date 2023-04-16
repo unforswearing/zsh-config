@@ -115,6 +115,26 @@ gist.new() {
   # $1 = description; $2 = file name
   gh gist create -d "$1" -f "$2"
 }
+update.macports() {
+  # try to update macports (not sure if working)
+  ({ 
+     port selfupdate; 
+     db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  } &) >|/dev/null 2>&1
+}
+update.tldr() {
+  # update tldr (not really useful)
+  ({ tldr --update; 
+     db put tldr_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  } &) >|/dev/null 2>&1
+}
+update.brew() {
+  # update homebrew
+  ({ 
+    brew update && brew upgrade; 
+    db put homebrew_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  } &) >|/dev/null 2>&1
+}
 # app:exec() {
 #   prepend_dir() { sd '^' "${1}"; }
 #   exec_fzf() { fzf --query="${1}"; }
