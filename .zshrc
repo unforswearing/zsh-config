@@ -32,8 +32,7 @@ fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
 done
 ##########################################################################
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh" 
-use ::filepath
-use ::mathnum
+use ::dsl
 
 # BOTTOM -------------------------------------------------------------- ::
 # -- hooks / builtin event handlers -- #

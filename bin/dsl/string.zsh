@@ -20,7 +20,7 @@ len() {
   print "${#item}"
 }
 ## string "objects"
-@str() {
+function @str() {
   unsetopt warn_create_global
   local name="${1}" && shift
   local value="\"${@}\""
