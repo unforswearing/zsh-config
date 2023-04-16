@@ -1,6 +1,9 @@
 use::string >|/dev/null 2>&1
 ## ---------------------------------------------
 # DSL FS
+alias ll='exa $EXA_DEFAULT_OPTIONS'
+alias ll.bw='exa $EXA_DEFAULT_OPTIONS --color=never'
+alias ll.r='exa $EXA_DEFAULT_OPTIONS -R'
 # file.backup filename.txt => filename.txt.bak
 # file.restore filename.txt => overwrites filename.txt
 function {newfile,fs.file.new}() { touch "$@"; }
