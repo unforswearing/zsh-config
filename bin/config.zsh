@@ -84,6 +84,9 @@
 	bindkey "^[[F" .forward-word  # fn-right
 	bindkey "^[[A" history-substring-search-up
 	bindkey "^[[B" history-substring-search-down
+
+  bindkey '\e' vi-kill-line 
+  
 }
 {
   source "${ZSH_USR_DIR}/lnks.bash"
