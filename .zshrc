@@ -100,6 +100,5 @@ test $DEBUG == true || eval $CLEAR
 
 # --------------------------------------
 # LOAD COMPLETIONS LAST
-autoload -U +X compinit && compinit
-autoload -U +X bashcompinit && bashcompinit
+autoload -U compinit && compinit
 # --------------------------------------
