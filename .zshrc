@@ -69,11 +69,11 @@ periodic() {
 # db put "path" "${PATH}"
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 
-
 ## ---------------------------------------------
 # uses the `debug` function, see utils.zsh
 local CLEAR="$(db get clear)"
 local DEBUG="$(db get debug)"
+# do not clear output if debug is true, otherwise clear=clear
 test $DEBUG == true || eval $CLEAR
 
 # --------------------------------------
