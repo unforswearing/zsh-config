@@ -141,8 +141,7 @@ is() {
 functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
 ## ---------------------------------------------
-alias -g :?='"{'
-alias -g ::='}"'
+
 ## ---------------------------------------------
 # use discard instead of nil
 # alias -g nil='>/dev/null 2>&1'
