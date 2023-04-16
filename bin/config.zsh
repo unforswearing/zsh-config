@@ -37,7 +37,7 @@
 	# unsetopt bad_pattern
 	unsetopt ksh_glob
 	unsetopt monitor
-}
+} 
 {
 	zstyle ':completion:*' use-cache yes
 	zstyle ':completion:*' cache-path $ZSH_CACHE_DIR
@@ -66,6 +66,14 @@
 	source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
 }
 {
+  # zmodload zsh/regex
+  autoload fzf-tab
+	autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+	add-zsh-hook chpwd chpwd_recent_dirs
+	# run-help / help
+	(($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
+	autoload -Uz run-help
+
 	# ZLE --------------------------------------------------- ::
 	autoload history-substring-search-up
 	autoload history-substring-search-down
@@ -78,21 +86,12 @@
 	bindkey "^[[B" history-substring-search-down
 }
 {
-	# zmodload zsh/regex
-	autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-	add-zsh-hook chpwd chpwd_recent_dirs
-	# run-help / help
-	(($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
-
-	autoload -Uz run-help
+  source "${ZSH_USR_DIR}/lnks.bash"
+  source "${ZSH_USR_DIR}/marks.bash"
 }
-
-##########################################################################
-source "${ZSH_USR_DIR}/lnks.bash"
-source "${ZSH_USR_DIR}/marks.bash"
-##########################################################################
-# use hardlinks to keep stuff in the zsh-config dir instead of home dir
-ln -sF ~/zsh-config/.zshenv ~/.zshenv
-ln -sF ~/zsh-config/.zshrc ~/.zshrc 
-ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
-
+{
+  # use hardlinks to keep stuff in the zsh-config dir instead of home dir
+  ln -sF ~/zsh-config/.zshenv ~/.zshenv
+  ln -sF ~/zsh-config/.zshrc ~/.zshrc 
+  ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
+}
