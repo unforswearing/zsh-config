@@ -1,17 +1,14 @@
-# edit PATH in zshenv
 ## ---------------------------------------------
-source ~/powerlevel10k/powerlevel10k.zsh-theme
-source ~/.p10k.zsh
+# `.zshrc` and `.zshenv` are hardlinked to $HOME from 
+# ~zconf/bin/config.zsh. edit $PATH in ~zconf/.zshenv
+## ---------------------------------------------
+source ~/powerlevel10k/powerlevel10k.zsh-theme && source ~/.p10k.zsh
+## ---------------------------------------------
+# return if the shell is not interactive (the commands would have no use)
+trap "exec zsh" USR1 && [[ $- != *i* ]] && [ ! -t 0 ] && return
 ## ---------------------------------------------
 # stop vi mode from loading automatically
 bindkey -e
-## ---------------------------------------------
-trap "exec zsh" USR1
-# return if the shell is not interactive (the commands would have no use)
-[[ $- != *i* ]] && [ ! -t 0 ] && return
-## ---------------------------------------------
-# .zshrc and .zshenv are hardlinked to ~zsh-config 
-# in the bin/config.zsh file
 ## ---------------------------------------------
 export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
@@ -26,12 +23,10 @@ done
 ## ---------------------------------------------
 source "${ZSH_BIN_DIR}/dsl/dsl.zsh" 
 use ::dsl
-
-# BOTTOM -------------------------------------------------------------- ::
-# -- hooks / builtin event handlers -- #
-# --------------------------------------
-# command_not_found_handler() {;}
-# preexec() {;}
+# BOTTOM -------    hooks / builtin event handlers     --------- #
+## the folling are not used:
+# - command_not_found_handler() {;}
+# - preexec() {;}
 precmd() {
   # save the current dir to auto-cd if iterm crashes
   pwd >|"$HOME/.zsh_reload.txt" &
