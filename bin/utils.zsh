@@ -37,6 +37,7 @@ log.warn() { yellow "$@"; }
 log.err() { red "$@"; }
 ##
 # nushell system info
+alias memory='nu -c "{free: (sys|get mem|get free), total: (sys|get mem|get total)}"'
 sys() {
   case $1 in
   host) lang nu "sys|get host" ;;
