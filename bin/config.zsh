@@ -86,6 +86,7 @@
 	bindkey "^[[B" history-substring-search-down
 
   bindkey '\e' vi-kill-line 
+  bindkey '\e\e' kill INT $0
   
 }
 {
