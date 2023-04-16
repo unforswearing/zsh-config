@@ -32,7 +32,7 @@ precmd() {
   pwd >|"$HOME/.zsh_reload.txt" &
   # --------------------------------------
   # if [[ $(db get reload_dir) -ne $(pwd) ]]; then 
-  test "$(db get reload_dir)" == "$(pwd)" && {
+  test "$(db get reload_dir)" != "$(pwd)" && {
     db put "previous_dir" "$(db get reload_dir)"
     db put "reload_dir" "$(pwd)" &  
   }
