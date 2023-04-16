@@ -98,15 +98,13 @@ test $DEBUG == true || eval $CLEAR
 # --------------------------------------
 # LOAD COMPLETIONS LAST
 	# ZLE --------------------------------------------------- ::
-autoload -Uz compinit && compinit
+autoload -Uz compinit
 
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
 source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
 source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
-# this is zsh-syntax-highlighting is from homebrew. see .zshrc EOF
-# source "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
 
