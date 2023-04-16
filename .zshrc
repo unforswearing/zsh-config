@@ -1,12 +1,7 @@
-
+# edit PATH in zshenv
 ##########################################################################
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.p10k.zsh
-#########################################################################
-# edit PATH in zshenv
-#########################################################################
-# autoload -U +X bashcompinit && bashcompinit
-# autoload -U +X compinit && compinit
 #########################################################################
 local DEBUG=false
 local CLEAR='clear' # or '' to stop clearing screen
@@ -82,7 +77,7 @@ test $DEBUG == true || eval $CLEAR
 
 # --------------------------------------
 # LOAD COMPLETIONS LAST
-# autoload compinit
-# autoload bashcompinit
+autoload compinit
+autoload bashcompinit
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # --------------------------------------
