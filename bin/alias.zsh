@@ -29,7 +29,8 @@ alias pip='pip3'
 alias edit='micro' #'nvim'
 alias subl="/Applications/Sublime\ Text.app/Contents/MacOS/sublime_text"
 # navigation ===============
-alias prev="cd $(db get previous_dir)"
+alias prev="cd -"
+# alias prev="cd $(db get previous_dir)"
 # clipboard ===============
 alias c="pbcopy"
 alias p="pbpaste"
