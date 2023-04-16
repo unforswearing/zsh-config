@@ -31,9 +31,10 @@ source "${ZSH_BIN_DIR}/dsl/dsl.zsh" && use ::dsl
 precmd() {
   # save the current dir to auto-cd if iterm crashes
   pwd >|"$HOME/.zsh_reload.txt" &
+  ## ---------------------------------------------
   db put "previous_dir" "$(db get reload_dir)"
   db put "reload_dir" "$(pwd)" &
-  # add history to (new) db for history file zsh_history.db
+  ## ---------------------------------------------
   ({
     local prev="$(
       history | \
@@ -47,6 +48,7 @@ precmd() {
   })
 }
 periodic() {
+  ## ---------------------------------------------
   # update hosts file from stevenblack/hosts
   (
     {
@@ -54,6 +56,7 @@ periodic() {
       db put hosts_file_updated "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
+  ## ---------------------------------------------
   # remove all .DS_Store files (not sure if working)
   ({ 
       fd -H '^\.DS_Store$' -tf -X rm; 
