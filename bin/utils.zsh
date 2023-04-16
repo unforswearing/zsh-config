@@ -15,14 +15,16 @@ alias -g @='__@'
 debug() {
   case "${1}" in
   "t" | "true")
-    sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
-    sed -i "s/local CLEAR='clear'/local CLEAR=/" ~/.zshrc
+    # sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
+    db put debug true
+    db put clear ""
     ;;
   "f" | "false")
-    sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
-    sed -i "s/local CLEAR=/local CLEAR='clear'/" ~/.zshrc
+    # sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
+    db put debug false
+    db put clear "clear"
     ;;
-  *) echo $DEBUG ;;
+  *) db get debug ;;
   esac
 }
 declare -rg debug="debug"

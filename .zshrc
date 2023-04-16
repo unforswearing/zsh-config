@@ -71,9 +71,9 @@ cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 
 
 ## ---------------------------------------------
-local DEBUG=$(db get debug)
-local CLEAR='clear' # or '' to stop clearing screen
-
+# uses the `debug` function, see utils.zsh
+local CLEAR="$(db get clear)"
+local DEBUG="$(db get debug)"
 test $DEBUG == true || eval $CLEAR
 
 # --------------------------------------
