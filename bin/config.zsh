@@ -87,34 +87,6 @@
 	unsetopt monitor
 }
 ##########################################################################
-function zc() {
-  function getfiles() fd . -t f --max-depth 2 "$1";
-  local currentdir=$(pwd)
-
-  local dirselection=$(
-    { 
-      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR; 
-      print "$ZSH_CONFIG_DIR/.zshrc"; 
-      print "$ZSH_CONFIG_DIR/.zshenv"; 
-    } | fzf
-  ) 
-  
-  [[ -z $dirselection ]] && {
-    print "no directory selected."
-    return 1
-  }
-
-  cd "$currentdir"
-  local selectedfile=$(getfiles "$dirselection" | fzf)
-
-  [[ -z $selectedfile ]] && { 
-    print "no file selected."
-  } || {
-    micro $selectedfile && cd "$currentdir"
-    exec zsh
-  }
-}
-##########################################################################
 source "${ZSH_USR_DIR}/lnks.bash"
 source "${ZSH_USR_DIR}/marks.bash"
 ##########################################################################

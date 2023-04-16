@@ -59,7 +59,6 @@ declare -rg hs="hs"
 functions["hs"]="hs"  
 alias -g hs="hs"
 ##
-
 # nushell system info
 sys() {
   case $1 in
@@ -70,6 +69,33 @@ sys() {
   temp | temperature) lang nu "sys|get temp" ;;
   net | io) lang nu "sys|get net" ;;
   esac
+}
+zc() {
+  function getfiles() fd . -t f --max-depth 2 "$1";
+  local currentdir=$(pwd)
+
+  local dirselection=$(
+    { 
+      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR; 
+      print "$ZSH_CONFIG_DIR/.zshrc"; 
+      print "$ZSH_CONFIG_DIR/.zshenv"; 
+    } | fzf
+  ) 
+  
+  [[ -z $dirselection ]] && {
+    print "no directory selected."
+    return 1
+  }
+
+  cd "$currentdir"
+  local selectedfile=$(getfiles "$dirselection" | fzf)
+
+  [[ -z $selectedfile ]] && { 
+    print "no file selected."
+  } || {
+    micro $selectedfile && cd "$currentdir"
+    exec zsh
+  }
 }
 cpl() {
   unsetopt warn_create_global
