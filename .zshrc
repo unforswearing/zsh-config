@@ -68,7 +68,7 @@ periodic() {
     } &
   ) >|/dev/null 2>&1
   db put periodic_function "$(which periodic | base64)"
-  functions[periodic]=
+  ({ sleep 10 && functions[periodic]= ;} &) >|/dev/null 2>&1
 }
 ## ---------------------------------------------
 # update path in db
