@@ -1,5 +1,44 @@
 ### everything for zsh that is not a command goes here
 {
+	# setopt 
+	# setopt equals
+	setopt allexport
+	setopt alwaystoend
+	setopt append_history
+	setopt auto_cd
+	setopt auto_pushd
+	setopt automenu
+	setopt bsd_echo
+	setopt c_precedences
+	setopt cdable_vars
+	setopt cshjunkie_history
+	setopt cshjunkie_loops
+	setopt function_argzero
+	setopt hashall
+	setopt hist_expire_dups_first
+	setopt hist_lex_words
+	setopt hist_reduce_blanks
+	setopt inc_append_history
+	setopt interactive_comments
+	setopt ksh_option_print
+	setopt ksh_zero_subscript
+	setopt local_loops
+	setopt menucomplete
+	setopt no_append_create
+	setopt no_bare_glob_qual
+	setopt no_clobber
+	setopt no_nomatch
+	setopt numeric_glob_sort
+	setopt pushd_to_home
+	setopt sh_word_split
+	setopt share_history
+	setopt warn_create_global
+	# UNSETOPT ----------------------------------------------- ::
+	# unsetopt bad_pattern
+	unsetopt ksh_glob
+	unsetopt monitor
+}
+{
 	zstyle ':completion:*' use-cache yes
 	zstyle ':completion:*' cache-path $ZSH_CACHE_DIR
 	zstyle ':completion:*' fzf-search-display true
@@ -47,45 +86,7 @@
 
 	autoload -Uz run-help
 }
-{
-	# setopt 
-	# setopt equals
-	setopt allexport
-	setopt alwaystoend
-	setopt append_history
-	setopt auto_cd
-	setopt auto_pushd
-	setopt automenu
-	setopt bsd_echo
-	setopt c_precedences
-	setopt cdable_vars
-	setopt cshjunkie_history
-	setopt cshjunkie_loops
-	setopt function_argzero
-	setopt hashall
-	setopt hist_expire_dups_first
-	setopt hist_lex_words
-	setopt hist_reduce_blanks
-	setopt inc_append_history
-	setopt interactive_comments
-	setopt ksh_option_print
-	setopt ksh_zero_subscript
-	setopt local_loops
-	setopt menucomplete
-	setopt no_append_create
-	setopt no_bare_glob_qual
-	setopt no_clobber
-	setopt no_nomatch
-	setopt numeric_glob_sort
-	setopt pushd_to_home
-	setopt sh_word_split
-	setopt share_history
-	setopt warn_create_global
-	# UNSETOPT ----------------------------------------------- ::
-	# unsetopt bad_pattern
-	unsetopt ksh_glob
-	unsetopt monitor
-}
+
 ##########################################################################
 source "${ZSH_USR_DIR}/lnks.bash"
 source "${ZSH_USR_DIR}/marks.bash"
