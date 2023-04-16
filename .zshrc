@@ -95,11 +95,21 @@ periodic() {
 cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 test $DEBUG == true || eval $CLEAR
 
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # --------------------------------------
 # LOAD COMPLETIONS LAST
 	# ZLE --------------------------------------------------- ::
 autoload -Uz compinit && compinit
+
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
+source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
+source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
+# this is zsh-syntax-highlighting is from homebrew. see .zshrc EOF
+# source "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+
 autoload history-substring-search-up
 autoload history-substring-search-down
 zle -N history-substring-search-up
