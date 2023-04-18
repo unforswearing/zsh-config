@@ -243,20 +243,6 @@ async() { ({eval "$@";}&) >|/dev/null 2>&1; }
 ## ---------------------------------------------
 ## arrays are readonly
 ## see 'rs' tool for array stuff
-<<<<<<< HEAD
-arr() {
-  local name="$1"
-  local arrarg="$2"
-  eval "declare -rga $name=${arrarg[@]}"
-}
-arr.tostr() {
-  print "$@"
-}
-################################################
-calc() { print "$@" | bc; }
-################################################
-green "dsl loaded"
-=======
 # arr() {
 #   local name="$1"
 #   local arrarg="$2"
@@ -272,4 +258,3 @@ green "dsl loaded"
 # }
 ## ---------------------------------------------
 # green "dsl/dsl loaded"
->>>>>>> 1c0844edf3ab388200b9e7f59718b810b183f66a
