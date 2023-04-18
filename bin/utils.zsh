@@ -15,14 +15,16 @@ alias -g @='__@'
 debug() {
   case "${1}" in
   "t" | "true")
-    sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
-    sed -i "s/local CLEAR='clear'/local CLEAR=/" ~/.zshrc
+    # sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
+    db put debug true
+    db put clear ""
     ;;
   "f" | "false")
-    sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
-    sed -i "s/local CLEAR=/local CLEAR='clear'/" ~/.zshrc
+    # sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
+    db put debug false
+    db put clear "clear"
     ;;
-  *) echo $DEBUG ;;
+  *) db get debug ;;
   esac
 }
 declare -rg debug="debug"
@@ -34,42 +36,50 @@ log.ok() { green "$@"; }
 log.warn() { yellow "$@"; }
 log.err() { red "$@"; }
 ##
-# hot reload recently updated files w/o reloading the entire env
-hs() {
-  hash -r 
-  # save the current dir
-  pwd >|"$HOME/.zsh_reload.txt"
-  db put "reload_dir" "$(pwd)"
-
-  unsetopt warn_create_global
-  source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
-  source "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-  # attemt to hot reload config files
-  fd --type file \
-    --base-directory ~/zsh-config/bin \
-    --absolute-path \
-    --max-depth=1 \
-    --threads=2 \
-    --change-newer-than 1min |
-    # source all recently updated files
-    while read item; do source "${item}"; done
-  setopt warn_create_global
-}
-declare -rg hs="hs"
-functions["hs"]="hs"  
-alias -g hs="hs"
-##
-
 # nushell system info
 sys() {
   case $1 in
-  host) lang nu "sys|get host" ;;
-  cpu) lang nu "sys|get cpu" ;;
-  disks) lang nu "sys|get disks" ;;
-  mem | memory) lang nu "sys|get mem" ;;
-  temp | temperature) lang nu "sys|get temp" ;;
-  net | io) lang nu "sys|get net" ;;
+  host) nu -c "sys|get host" ;;
+  cpu) nu -c "sys|get cpu" ;;
+  disks) nu -c "sys|get disks" ;;
+  mem | memory) 
+    nu -c "{
+      free: (sys|get mem|get free), 
+      used: (sys|get mem|get used),
+      total: (sys|get mem|get total)
+    }" 
+  ;;
+  temp | temperature) nu -c "sys|get temp" ;;
+  net | io) nu -c "sys|get net" ;;
   esac
+}
+memory() { sys memory; }
+zc() {
+  function getfiles() fd . -t f --max-depth 2 "$1";
+  local currentdir=$(pwd)
+
+  local dirselection=$(
+    { 
+      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR; 
+      print "$ZSH_CONFIG_DIR/.zshrc"; 
+      print "$ZSH_CONFIG_DIR/.zshenv"; 
+    } | fzf
+  ) 
+  
+  [[ -z $dirselection ]] && {
+    print "no directory selected."
+    return 1
+  }
+
+  cd "$currentdir"
+  local selectedfile=$(getfiles "$dirselection" | fzf)
+
+  [[ -z $selectedfile ]] && { 
+    print "no file selected."
+  } || {
+    micro $selectedfile && cd "$currentdir"
+    exec zsh
+  }
 }
 cpl() {
   unsetopt warn_create_global
@@ -114,6 +124,29 @@ rm.ds_store() {
 gist.new() {
   # $1 = description; $2 = file name
   gh gist create -d "$1" -f "$2"
+}
+update.macports() {
+  # try to update macports (not sure if working)
+  green "updating macports in the background"
+  ({ 
+     port selfupdate; 
+     db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  } &) >|/dev/null 2>&1
+}
+update.tldr() {
+  # update tldr (not really useful)
+  green "updating tldr in the background"
+  ({ tldr --update; 
+     db put tldr_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  } &) >|/dev/null 2>&1
+}
+update.brew() {
+  # update homebrew
+  green "updating homebrew in the background"
+  ({ 
+    brew update && brew upgrade; 
+    db put homebrew_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  } &) >|/dev/null 2>&1
 }
 # app:exec() {
 #   prepend_dir() { sd '^' "${1}"; }

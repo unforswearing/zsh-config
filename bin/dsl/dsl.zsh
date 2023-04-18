@@ -1,9 +1,21 @@
 # @todo split dsl into loadable modules, create loader function
-# DSL.ZSH
+#
 # this file contains code that attempts to make zsh more like a 
 # traditional programming language via new keywords, env variables, and "objects"
 # NB. use this DSL in scripts, not interactively!
-
+# 
+## Uncommon Zsh Syntax to use 
+# - in some cases it is easier to just use the uncommon versions of zsh syntax
+### examples:
+# - short versions of commands
+#   - these can be changed using various options via 'setopt'
+#   - https://unix.stackexchange.com/a/468597
+# - anonymous functions
+#   () {
+#     local thisvar="inside function" 
+#     print "this will show $thisvar immediately"
+#   }
+# Notes from Zsh documentation --------------------------------------
 # 6.5 Reserved Words
 # The following words are recognized as reserved words when 
 # used as the first word of a
@@ -14,45 +26,92 @@
 # Additionally, ‘}’ is recognized in any position if neither 
 # the IGNORE_BRACES option nor the
 # IGNORE_CLOSE_BRACES option is set.
-###
-## DSL MAIN (this file. Loader function TBD)
+# ------------------------------------------------------------------
+## DSL MAIN ========================================================
 DSL_DIR="/Users/unforswearing/zsh-config/bin/dsl"
-################################################
+## ---------------------------------------------
+#  use dsl::disable to unset builtins i never use
 dsl::disable() {
-  # eval "disable -r repeat let if elif else fi for case esac"
   eval "disable -r time until select coproc nocorrect"
+}
+dsl::unset() {
+  # eval "disable -r repeat let if elif else fi for case esac"
 }
 dsl::compile() {
   cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh
 }
+## ---------------------------------------------
+# functions named use::<name> are for dsl internal use.
+# the standalone `use` function should be run when loading these 
+# in a script file or an interactive zsh session.
+# this is done to take advantage of the double colon `::` namespace syntax
+# see the `ns` function below
+use::dslenv() {
+  # these options are already enabled in my interactive zsh sessions
+  # add `use::dslenv` to the top of scripts that use dsl
+  setopt bsdecho noclobber cprecedences cshjunkieloops 
+  setopt kshzerosubscript localloops shwordsplit warncreateglobal
+}
 use::filepath() { source "${DSL_DIR}/filepath.zsh"; }
 use::mathnum() { source "${DSL_DIR}/mathnum.zsh"; }
 use::pairs() { source "${DSL_DIR}/pairs.zsh"; }
+use::range() { source "${DSL_DIR}/range.zsh"; }
 use::string() { source "${DSL_DIR}/string.zsh"; }
-################################################
-alias -g {use,load}='source'
-################################################
-declare -rg RE_ALPHA="[aA-zZ]"
-declare -rg RE_STRING="([aA-zZ]|[0-9])+"
-declare -rg RE_WORD="\w"
-declare -rg RE_NUMBER="^[0-9]+$"
-declare -rg RE_NUMERIC="^[0-9]+$"
-declare -rg RE_NEWLINE="\n"
-declare -rg RE_SPACE=" "
-declare -rg RE_TAB="\t"
-declare -rg RE_WHITESPACE="\s"
-declare -rg POSIX_UPPER="[:upper:]"
-declare -rg POSIX_LOWER="[:lower:]"
-declare -rg POSIX_ALPHA="[:alpha:]"
-declare -rg POSIX_DIGIT="[:digit:]"
-declare -rg POSIX_ALNUM="[:alnum:]"
-declare -rg POSIX_PUNCT="[:punct:]"
-declare -rg POSIX_SPACE="[:space:]"
-declare -rg POSIX_WORD="[:word:]"
-################################################
+use::patterns() { 
+  {
+    declare -rg RE_ALPHA="[aA-zZ]"
+    declare -rg RE_STRING="([aA-zZ]|[0-9])+"
+    declare -rg RE_WORD="\w"
+    declare -rg RE_NUMBER="^[0-9]+$"
+    declare -rg RE_NUMERIC="^[0-9]+$"
+    declare -rg RE_NEWLINE="\n"
+    declare -rg RE_SPACE=" "
+    declare -rg RE_TAB="\t"
+    declare -rg RE_WHITESPACE="\s"
+    declare -rg POSIX_UPPER="[:upper:]"
+    declare -rg POSIX_LOWER="[:lower:]"
+    declare -rg POSIX_ALPHA="[:alpha:]"
+    declare -rg POSIX_DIGIT="[:digit:]"
+    declare -rg POSIX_ALNUM="[:alnum:]"
+    declare -rg POSIX_PUNCT="[:punct:]"
+    declare -rg POSIX_SPACE="[:space:]"
+    declare -rg POSIX_WORD="[:word:]"
+  } 
+  green "dsl/patterns loaded"
+}
+use() {
+  local opt="$1"
+  shift
+  case "$opt" in
+    "::dslenv") use::dslenv ;;
+    "::filepath") use::filepath ;;
+    "::mathnum") use::mathnum ;;
+    "::pairs") use::pairs ;;
+    "::patterns") use::patterns ;;
+    "::range") use::range ;;
+    "::string") use::string ;;
+    "::dsl") 
+      # use::dslenv
+      use::filepath
+      use::mathnum
+      use::pairs
+      use::patterns
+      use::range
+      use::string
+    ;;
+    "::clipboard") source <(pbpaste) ;;
+    *) source "$@" ;;
+  esac
+}
+## ---------------------------------------------
+# send the result of evaluated arguments to dev null
+function {discard,quiet}() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
+# @todo some of these don't work. use a language that has strict typing (TBD)
+#   - it would be nice to just use typescript types, ts may be too heavy for just this
 is() {
-  use::string >|/dev/null 2>&1
+  discard use::string
+  discard use::patterns
   unsetopt warn_create_global
   local opt="${1}"
   case "${opt}" in
@@ -80,8 +139,9 @@ is() {
   setopt warn_create_global
 }
 # declare -rg is="is"
-functions["is"]="is"  
+functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
+<<<<<<< HEAD
 ################################################
 alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
@@ -98,11 +158,20 @@ alias -g af='>'
 ################################################
 # perhaps the aliases below should be functions
 ################################################
+=======
+## ---------------------------------------------
+
+## ---------------------------------------------
+# use discard instead of nil
+# alias -g nil='>/dev/null 2>&1'
+## ---------------------------------------------
+>>>>>>> 1c0844edf3ab388200b9e7f59718b810b183f66a
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
 # alias -g try='test'
 # alias -g ??='&&'
 # alias -g ::='||'
+<<<<<<< HEAD
 # alias -g not='!'
 ################################################
 # with file in $(ls) run print $file fin
@@ -112,6 +181,17 @@ alias -g af='>'
 # alias -g apply=';'
 # alias -g fin='; end'
 ################################################
+=======
+alias -g not='!'
+## ---------------------------------------------
+# with file in $(ls) run print $file fin
+# with file in $(ls) apply print $file fin
+alias -g with='foreach'
+alias -g run=';'
+alias -g apply=';'
+alias -g fin='; end'
+## ---------------------------------------------
+>>>>>>> 1c0844edf3ab388200b9e7f59718b810b183f66a
 # i/o
 puts() {
   print "$@"
@@ -137,17 +217,23 @@ append() {
   shift
   eval "$@" >> "$file"
 }
-################################################
-# use block to load vars and functions into an environment
-# eg:
-# block example {
-#   let value=12;
-# }
-alias block='function'
-# use fn to create single line funcs without braces
-# fn printsix run puts 6
-alias fn='function'
-# anonymous functions = () { puts 6; }
+## ---------------------------------------------
+# use ns to load vars and functions into an environment
+# ns == "name space", basically the same as source
+# except they must be called using `::name`
+ns() {
+  local name="$1"
+  shift
+  local nsbody="$@"
+  eval "function ::$name() { $nsbody; }"
+}
+# fn for keyword shorthand
+fn() {
+  local name="$1"
+  shift
+  local fnbody="$@"
+  eval "function $name() { $fnbody; }"
+}
 const() {
   local name="$1"
   shift
@@ -160,7 +246,8 @@ def() {
   print "$@" | read "$name"
 }
 # atom, single item of data. a number or word
-# atoms are taken from elixir - a constant whose value is its name
+# the concept of atoms are taken from elixir 
+#   - a constant whose value is its name
 # eg atom hello => hello=hello
 # useage: atom value
 atom() {
@@ -168,33 +255,16 @@ atom() {
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare 
   declare -rg $nameval="$nameval"
-  functions["$nameval"]="$nameval"
+  functions["$nameval"]="$nameval" >|/dev/null 2>&1;
 }
-# formatted ranges
-# do not quote - range can be alpha or num
-#  - maybe: range int $1 $2 / range str "$1" "$2"
-# todo: incorporate seq and / or jot to do more stuff
-# also: https://linuxize.com/post/bash-sequence-expression/
-range() { 
-  local incrementor="..${3:-1}"
-  print {$1..$2$incrementor}
-}
-# a range of integers
-range.int() {;}
-# a range of letters
-range.str() {;}
-# range.wrap "a" 4 5 "zz" => a4zz a5zz
-range.wrap() {;}
-range.nl() { 
-  local incrementor="..${3:-1}"
-  print {$1..$2$incrementor} | tr ' ' '\n'
-}
-range.rev() { 
-  local incrementor="..${3:-1}"
-  print {$1..$2$incrementor} | tr ' ' '\n' | sort -r
-}
+## ---------------------------------------------
+calc() { print "$@" | bc; }
+## ---------------------------------------------
+async() { ({eval "$@";}&) >|/dev/null 2>&1; }
+## ---------------------------------------------
 ## arrays are readonly
 ## see 'rs' tool for array stuff
+<<<<<<< HEAD
 arr() {
   local name="$1"
   local arrarg="$2"
@@ -207,3 +277,20 @@ arr.tostr() {
 calc() { print "$@" | bc; }
 ################################################
 green "dsl loaded"
+=======
+# arr() {
+#   local name="$1"
+#   local arrarg="$2"
+#   eval "declare -rga $name=${arrarg[@]}"
+# }
+# # arrays will split into their indexes when used as arg
+# arr.topair() {
+#   use::pairs
+#   pair $1 $2
+# }
+# arr.tostr() {
+#   print "$@"
+# }
+## ---------------------------------------------
+# green "dsl/dsl loaded"
+>>>>>>> 1c0844edf3ab388200b9e7f59718b810b183f66a

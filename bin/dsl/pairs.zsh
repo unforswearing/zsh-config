@@ -31,7 +31,12 @@ pair.toarr() {
   local cdr=$(pair.cdr "$2")
   arr "$name" ($cons $cdr)
 }
+<<<<<<< HEAD
 # arrays will split into their indexes when used as arg
 arr.topair() {
   pair $1 $2
 }
+=======
+## ---------------------------------------------
+green "dsl/pairs loaded"
+>>>>>>> 1c0844edf3ab388200b9e7f59718b810b183f66a

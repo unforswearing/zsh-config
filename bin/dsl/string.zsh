@@ -1,8 +1,8 @@
 # DSL STRING
-
+## ---------------------------------------------
 lower() { tr '[:upper:]' '[:lower:]'; }
 upper() { tr '[:lower:]' '[:upper:]'; }
-
+## ---------------------------------------------
 trim() { trim.left | trim.right; }
 trim.left() {
   local char=${1:-[:space:]}
@@ -20,7 +20,7 @@ len() {
   print "${#item}"
 }
 ## string "objects"
-@str() {
+function @str() {
   unsetopt warn_create_global
   local name="${1}" && shift
   local value="\"${@}\""
@@ -39,10 +39,9 @@ function $name.len() { print ${value} | len ; }
 }
 functions["@str"]="@str"  
 alias -g @str="@str"
-
+## ---------------------------------------------
 count.lines() { wc -l | trim; }
 count.words() { wc -w | trim; }
 count.chars() { wc -m | trim; }
-
-##########################################################################
+## ---------------------------------------------
 green "dsl/string loaded"

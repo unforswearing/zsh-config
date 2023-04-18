@@ -5,6 +5,10 @@
     }
   ],
   "settings": {
+<<<<<<< HEAD
     "workbench.colorTheme": "Ra Livid Dark Theme"
+=======
+    "workbench.colorTheme": "Nord Aurora"
+>>>>>>> 1c0844edf3ab388200b9e7f59718b810b183f66a
   }
 }

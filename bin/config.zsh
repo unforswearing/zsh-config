@@ -1,53 +1,5 @@
 ### everything for zsh that is not a command goes here
 {
-	zstyle ':completion:*' use-cache yes
-	zstyle ':completion:*' cache-path $ZSH_CACHE_DIR
-	zstyle ':completion:*' fzf-search-display true
-	zstyle ':chpwd:*' recent-dirs-default
-	zstyle ':chpwd:*' recent-dirs-file
-	zstyle recent-dirs-file ':chpwd:*' ${ZDOTDIR:-$HOME}/.chpwd-recent-dirs-${TTY##*/} +
-	zstyle ':chpwd:*' recent-dirs-insert 'both'
-	# complete 'cd -<tab>' with menu
-	zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
-	# insert all expansions for expand completer
-	zstyle ':completion:*:expand:*' tag-order all-expansions
-	zstyle ':completion:*:history-words' list false
-	# activate menu
-	zstyle ':completion:*:history-words' menu yes
-	zstyle ':completion:*:matches' group 'yes'
-	zstyle ':completion:*:options' description 'yes'
-	zstyle ':completion:*' verbose true
-}
-{
-	source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
-	source "$ZSH_PLUGIN_DIR/fzf-tab/fzf-tab.plugin.zsh"
-	source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
-	source "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >|/dev/null 2>&1
-	source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-	source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
-}
-{
-	# ZLE --------------------------------------------------- ::
-	autoload history-substring-search-up
-	autoload history-substring-search-down
-	zle -N history-substring-search-up
-	zle -N history-substring-search-down
-	# BINDKEY ----------------------------------------------- ::
-	bindkey "^[[H" .backward-word # fn-left
-	bindkey "^[[F" .forward-word  # fn-right
-	bindkey "^[[A" history-substring-search-up
-	bindkey "^[[B" history-substring-search-down
-}
-{
-	# zmodload zsh/regex
-	autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-	add-zsh-hook chpwd chpwd_recent_dirs
-	# run-help / help
-	(($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
-
-	autoload -Uz run-help
-}
-{
 	# setopt 
 	# setopt equals
 	setopt allexport
@@ -85,37 +37,61 @@
 	# unsetopt bad_pattern
 	unsetopt ksh_glob
 	unsetopt monitor
+} 
+{
+	zstyle ':completion:*' use-cache yes
+	zstyle ':completion:*' cache-path $ZSH_CACHE_DIR
+	zstyle ':completion:*' fzf-search-display true
+	zstyle ':chpwd:*' recent-dirs-default
+	zstyle ':chpwd:*' recent-dirs-file
+	zstyle recent-dirs-file ':chpwd:*' ${ZDOTDIR:-$HOME}/.chpwd-recent-dirs-${TTY##*/} +
+	zstyle ':chpwd:*' recent-dirs-insert 'both'
+	# complete 'cd -<tab>' with menu
+	zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+	# insert all expansions for expand completer
+	zstyle ':completion:*:expand:*' tag-order all-expansions
+	zstyle ':completion:*:history-words' list false
+	# activate menu
+	zstyle ':completion:*:history-words' menu yes
+	zstyle ':completion:*:matches' group 'yes'
+	zstyle ':completion:*:options' description 'yes'
+	zstyle ':completion:*' verbose true
 }
+{
+  source "$ZSH_PLUGIN_DIR/Tarrasch/zsh-colors/colors.plugin.zsh"
+  source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
+	source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
+	source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+	source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
+}
+{
+  # zmodload zsh/regex
+  autoload fzf-tab
+	autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+	add-zsh-hook chpwd chpwd_recent_dirs
+	# run-help / help
+	(($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
+	autoload -Uz run-help
 
-# use hardlinks to keep stuff in the zsh-config dir instead of home dir
-ln -sF ~/zsh-config/.zshenv ~/.zshenv
-ln -sF ~/zsh-config/.zshrc ~/.zshrc 
-ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
-
-function zc() {
-  function getfiles() fd . -t f --max-depth 2 "$1";
-  local currentdir=$(pwd)
-
-  local dirselection=$(
-    { 
-      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR; 
-      print "$ZSH_CONFIG_DIR/.zshrc"; 
-      print "$ZSH_CONFIG_DIR/.zshenv"; 
-    } | fzf
-  ) 
-  
-  [[ -z $dirselection ]] && {
-    print "no directory selected."
-    return 1
-  }
-
-  cd "$currentdir"
-  local selectedfile=$(getfiles "$dirselection" | fzf)
-
-  [[ -z $selectedfile ]] && { 
-    print "no file selected."
-  } || {
-    micro $selectedfile && cd "$currentdir"
-    exec zsh
-  }
+	# ZLE --------------------------------------------------- ::
+	autoload history-substring-search-up
+	autoload history-substring-search-down
+	zle -N history-substring-search-up
+	zle -N history-substring-search-down
+	# BINDKEY ----------------------------------------------- ::
+	bindkey "^[[H" .backward-word # fn-left
+	bindkey "^[[F" .forward-word  # fn-right
+	bindkey "^[[A" history-substring-search-up
+	bindkey "^[[B" history-substring-search-down
+}
+{
+  source "${ZSH_USR_DIR}/lnks.bash"
+  source "${ZSH_USR_DIR}/marks.bash"
+}
+{
+  # use hardlinks to keep stuff in the zsh-config dir instead of home dir
+  ln -sF ~/zsh-config/.zshenv ~/.zshenv
+  ln -sF ~/zsh-config/.zshrc ~/.zshrc 
+  ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
 }
