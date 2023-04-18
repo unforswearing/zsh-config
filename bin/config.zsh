@@ -94,6 +94,7 @@
 {
   source "${ZSH_USR_DIR}/lnks.bash"
   source "${ZSH_USR_DIR}/marks.bash"
+  source "${ZSH_USR_DIR}/searchlink.bash"
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
