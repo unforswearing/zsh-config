@@ -80,14 +80,21 @@
 	zle -N history-substring-search-up
 	zle -N history-substring-search-down
 	# BINDKEY ----------------------------------------------- ::
-	bindkey "^[[H" .backward-word # fn-left
-	bindkey "^[[F" .forward-word  # fn-right
+	bindkey "^[[H" backward-word # fn-left
+	bindkey "^[[F" forward-word  # fn-right
 	bindkey "^[[A" history-substring-search-up
 	bindkey "^[[B" history-substring-search-down
+
+  bindkey '\e' vi-kill-line 
+
+  # function terminate-current-job() { kill -s TERM %+ ; }
+  # zle -N terminate-current-job terminate-current-job
+  # bindkey "\e\e" kill-buffer
 }
 {
   source "${ZSH_USR_DIR}/lnks.bash"
   source "${ZSH_USR_DIR}/marks.bash"
+  source "${ZSH_USR_DIR}/searchlink.bash"
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir

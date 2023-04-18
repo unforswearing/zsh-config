@@ -1,4 +1,5 @@
 ################
+export KEYTIMEOUT=25
 export CLICOLOR=1
 export EDITOR="hx" #"nvim" #"micro"
 export GPG_TTY=$TTY
@@ -27,4 +28,10 @@ export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
 export GOPATH="$HOME/go"
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_AUTO_UPDATE=0
+
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
+export ZSH_HIGHLIGHT_HIGHLIGHTERS=(main cursor root line)
+
+typeset -A ZSH_HIGHLIGHT_PATTERNS
+ZSH_HIGHLIGHT_PATTERNS+=('rm -rf' 'fg=white,bold,bg=red')
 

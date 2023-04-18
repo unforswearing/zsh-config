@@ -1,4 +1,11 @@
 #!/bin/zsh
+_db_init() {
+  # create the main db: $HOME/zsh-config_db.sql
+  # sqlite3 "$HOME/zsh_db.db" "create table kv (key TEXT PRIMARY KEY, value VARCHAR);"
+  # sqlite3 "$HOME/zsh_history.db "create table history (idx INTEGER PRIMARY KEY AUTOINCREMENT, val TEXT);"
+  # exec zsh
+  # db put db_init true
+}
 db() {
   # a simple k/v db using sqlite ------------------------------------------
   local opt="$1"

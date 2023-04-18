@@ -1,6 +1,4 @@
 ## ---------------------------------------------
-# @todo this is stuff
-
 # `.zshrc` and `.zshenv` are hardlinked to $HOME from 
 # ~zconf/bin/config.zsh. edit $PATH in ~zconf/.zshenv
 ## ---------------------------------------------
@@ -33,8 +31,12 @@ precmd() {
   # save the current dir to auto-cd if iterm crashes
   pwd >|"$HOME/.zsh_reload.txt" &
   # --------------------------------------
-  db put "previous_dir" "$(db get reload_dir)"
-  db put "reload_dir" "$(pwd)" &
+  # if [[ $(db get reload_dir) -ne $(pwd) ]]; then 
+  test "$(db get reload_dir)" != "$(pwd)" && {
+    db put "previous_dir" "$(db get reload_dir)"
+    db put "reload_dir" "$(pwd)" &  
+  }
+  # fi
   # --------------------------------------
   ({
     local prev="$(
@@ -49,6 +51,7 @@ precmd() {
   })
 }
 periodic() {
+  db put env_period "$PERIOD"
   # --------------------------------------
   # update hosts file from stevenblack/hosts
   (
@@ -61,9 +64,11 @@ periodic() {
   # remove all .DS_Store files (not sure if working)
   ({ 
       fd -H '^\.DS_Store$' -tf -X rm; 
-      db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')"
+      db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')";
     } &
   ) >|/dev/null 2>&1
+  db put periodic_function "$(which periodic | base64)"
+  # functions[periodic]=
 }
 ## ---------------------------------------------
 # update path in db
