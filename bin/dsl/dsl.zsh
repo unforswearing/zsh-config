@@ -141,26 +141,36 @@ is() {
 # declare -rg is="is"
 functions["is"]="is" >|/dev/null 2>&1;
 alias -g is="is"
-## ---------------------------------------------
-
-## ---------------------------------------------
-# use discard instead of nil
-# alias -g nil='>/dev/null 2>&1'
-## ---------------------------------------------
+################################################
+alias -g nil='>/dev/null 2>&1'
+# use aliases instead of usual comparisons
+alias -g eq='-eq'
+alias -g ne='-ne'
+alias -g gt='-gt'
+alias -g lt='-lt'
+alias -g ge='-ge'
+alias -g le='-le'
+# [[ "a" be "b" ]] => true
+alias -g be='<'
+# [[ "a" af "b" ]] => false
+alias -g af='>'
+################################################
+# perhaps the aliases below should be functions
+################################################
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
-alias -g try='test'
+# alias -g try='test'
 # alias -g ??='&&'
 # alias -g ::='||'
-alias -g not='!'
-## ---------------------------------------------
+# alias -g not='!'
+################################################
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
-alias -g with='foreach'
-alias -g run=';'
-alias -g apply=';'
-alias -g fin='; end'
-## ---------------------------------------------
+# alias -g with='foreach'
+# alias -g run=';'
+# alias -g apply=';'
+# alias -g fin='; end'
+################################################
 # i/o
 puts() {
   print "$@"
