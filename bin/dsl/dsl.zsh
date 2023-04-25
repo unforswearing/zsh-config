@@ -231,6 +231,12 @@ def() {
   shift
   print "$@" | read "$name"
 }
+# meta name mtype="string"
+# meta name mtype="list"
+# meta name mtype="integer"
+meta() {
+  # todo
+}
 # atom, single item of data. a number or word
 # the concept of atoms are taken from elixir 
 #   - a constant whose value is its name
@@ -243,21 +249,28 @@ atom() {
   declare -rg $nameval="$nameval"
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
 }
+isfn() {
+  type -w "$1" | awk -F: '{print $2}' | trim.left
+}
 getvar() {
-  declare -p ${(Mk)parameters:#$1}
+  # hide output if there is no match, replacing the head -n 1 command
+  declare -p ${(Mk)parameters:#$1} | head -n 1
 }
 getfn() {
-  declare -f ${(Mk)functions:#$1}
+  # hide output if there is no match, replacing the head -n 1 command
+  declare -f ${(Mk)functions:#$1} | head -n 1
 }
 checkopt() {
   print $options[$1]
 }
-opt() {
+# topt: toggle the option - if on, turn off. if off, turn on
+topt() {
   if [[ $options[$1] == "on" ]]; then
     unsetopt "$1"
   else 
     setopt "$1"
   fi
+  if [[ "$2" != "quiet" ]] && checkopt $1
 }
 ## ---------------------------------------------
 calc() { print "$@" | bc; }
