@@ -1,14 +1,14 @@
 ##
 __@() {
-	{
-	 	# if file, cat
-		test -f "$1" && cat "$1" 2>/dev/null ||
-		# if dir, ls
-		test -d "$1" && ls "$1" 2>/dev/null
-	} || {
-		# if var, get vlaue
-		<<<"$1" 2>/dev/null
-	}
+  {
+    # if file, cat
+    test -f "$1" && cat "$1" 2>/dev/null ||
+      # if dir, ls
+      test -d "$1" && ls "$1" 2>/dev/null
+  } || {
+    # if var, get vlaue
+    <<<"$1" 2>/dev/null
+  }
 }
 alias -g @='__@'
 ##
@@ -28,9 +28,9 @@ debug() {
   esac
 }
 declare -rg debug="debug"
-functions["debug"]="debug"  
+functions["debug"]="debug"
 alias -g debug="debug"
-## 
+##
 log() { blue "$@"; }
 log.ok() { green "$@"; }
 log.warn() { yellow "$@"; }
@@ -42,30 +42,30 @@ sys() {
   host) nu -c "sys|get host" ;;
   cpu) nu -c "sys|get cpu" ;;
   disks) nu -c "sys|get disks" ;;
-  mem | memory) 
+  mem | memory)
     nu -c "{
       free: (sys|get mem|get free), 
       used: (sys|get mem|get used),
       total: (sys|get mem|get total)
-    }" 
-  ;;
+    }"
+    ;;
   temp | temperature) nu -c "sys|get temp" ;;
   net | io) nu -c "sys|get net" ;;
   esac
 }
 memory() { sys memory; }
 zc() {
-  function getfiles() fd . -t f --max-depth 2 "$1";
+  function getfiles() fd . -t f --max-depth 2 "$1"
   local currentdir=$(pwd)
 
   local dirselection=$(
-    { 
-      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR; 
-      print "$ZSH_CONFIG_DIR/.zshrc"; 
-      print "$ZSH_CONFIG_DIR/.zshenv"; 
+    {
+      fd . -t d --max-depth 1 $ZSH_CONFIG_DIR
+      print "$ZSH_CONFIG_DIR/.zshrc"
+      print "$ZSH_CONFIG_DIR/.zshenv"
     } | fzf
-  ) 
-  
+  )
+
   [[ -z $dirselection ]] && {
     print "no directory selected."
     return 1
@@ -74,7 +74,7 @@ zc() {
   cd "$currentdir"
   local selectedfile=$(getfiles "$dirselection" | fzf)
 
-  [[ -z $selectedfile ]] && { 
+  [[ -z $selectedfile ]] && {
     print "no file selected."
   } || {
     micro $selectedfile && cd "$currentdir"
@@ -128,24 +128,25 @@ gist.new() {
 update.macports() {
   # try to update macports (not sure if working)
   green "updating macports in the background"
-  ({ 
-     port selfupdate; 
-     db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  ({
+    port selfupdate
+    db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')"
   } &) >|/dev/null 2>&1
 }
 update.tldr() {
   # update tldr (not really useful)
   green "updating tldr in the background"
-  ({ tldr --update; 
-     db put tldr_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  ({
+    tldr --update
+    db put tldr_updated "$(gdate '+%Y-%m-%dT%H:%M')"
   } &) >|/dev/null 2>&1
 }
 update.brew() {
   # update homebrew
   green "updating homebrew in the background"
-  ({ 
-    brew update && brew upgrade; 
-    db put homebrew_updated "$(gdate '+%Y-%m-%dT%H:%M')";
+  ({
+    brew update && brew upgrade
+    db put homebrew_updated "$(gdate '+%Y-%m-%dT%H:%M')"
   } &) >|/dev/null 2>&1
 }
 # app:exec() {

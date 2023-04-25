@@ -38,7 +38,7 @@ dsl::unset() {
   # eval "disable -r repeat let if elif else fi for case esac"
 }
 dsl::compile() {
-  cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh
+  cat $DSL_DIR/*.zsh >>| dsl.pkg.zsh;
 }
 ## ---------------------------------------------
 # functions named use::<name> are for dsl internal use.
@@ -109,38 +109,38 @@ function {discard,quiet}() { eval "$@" >|/dev/null 2>&1; }
 # assertions with "is"
 # @todo some of these don't work. use a language that has strict typing (TBD)
 #   - it would be nice to just use typescript types, ts may be too heavy for just this
-is() {
-  discard use::string
-  discard use::patterns
-  unsetopt warn_create_global
-  local opt="${1}"
-  case "${opt}" in
-  "fn")
-    local is_function
-    is_function=$(type -w "$2" | awk -F: '{print $2}' | trim.left)
-    [[ ${is_function} == "function" ]];
-    ;;
-  "num" | "int")
-    [[ "${2}" =~ $RE_NUMBER ]];
-    ;;
-  "str")
-    [[ "${2}" =~ $RE_ALPHA ]];
-    ;;
-  "set")
-    [[ -v "${2}" ]];
-    ;;
-  "unset" | "null")
-    [[ ! -v "${2}" ]] || [[ -z "${2}" ]];
-    ;;
-  *)
-    print "is [fn | num | str | set | unset | null ] <arg>"  
-    ;;
-  esac
-  setopt warn_create_global
-}
+# is() {
+#   discard use::string
+#   discard use::patterns
+#   unsetopt warn_create_global
+#   local opt="${1}"
+#   case "${opt}" in
+#   "fn")
+#     local is_function
+#     is_function=$(type -w "$2" | awk -F: '{print $2}' | trim.left)
+#     [[ ${is_function} == "function" ]];
+#     ;;
+#   "num" | "int")
+#     [[ "${2}" =~ $RE_NUMBER ]];
+#     ;;
+#   "str")
+#     [[ "${2}" =~ $RE_ALPHA ]];
+#     ;;
+#   "set")
+#     [[ -v "${2}" ]];
+#     ;;
+#   "unset" | "null")
+#     [[ ! -v "${2}" ]] || [[ -z "${2}" ]];
+#     ;;
+#   *)
+#     print "is [fn | num | str | set | unset | null ] <arg>"  
+#     ;;
+#   esac
+#   setopt warn_create_global
+# }
 # declare -rg is="is"
-functions["is"]="is" >|/dev/null 2>&1;
-alias -g is="is"
+# functions["is"]="is" >|/dev/null 2>&1;
+# alias -g is="is"
 ################################################
 alias -g nil='>/dev/null 2>&1'
 # use aliases instead of usual comparisons
@@ -159,17 +159,17 @@ alias -g af='>'
 ################################################
 # try 1 eq 2 && puts "yes" ||  puts "no"
 # try (is fn puts) && puts "yes" || puts "no"
-# alias -g try='test'
+alias -g try='test'
 # alias -g ??='&&'
 # alias -g ::='||'
 # alias -g not='!'
 ################################################
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
-# alias -g with='foreach'
-# alias -g run=';'
-# alias -g apply=';'
-# alias -g fin='; end'
+alias -g with='foreach'
+alias -g run=';'
+alias -g apply=';'
+alias -g nop='; end'
 ################################################
 # i/o
 puts() {
@@ -218,8 +218,15 @@ const() {
   shift
   declare -rg "$name=$@"
 }
+global() {
+  local name="$1"
+  shift
+  local value="$@"
+
+}
 # a regular variable that can be whatever
 def() {
+  unsetopt warncreateglobal
   local name="$1"
   shift
   print "$@" | read "$name"
@@ -235,6 +242,22 @@ atom() {
   # if $1 is a number, don't use declare 
   declare -rg $nameval="$nameval"
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
+}
+getvar() {
+  declare -p ${(Mk)parameters:#$1}
+}
+getfn() {
+  declare -f ${(Mk)functions:#$1}
+}
+checkopt() {
+  print $options[$1]
+}
+opt() {
+  if [[ $options[$1] == "on" ]]; then
+    unsetopt "$1"
+  else 
+    setopt "$1"
+  fi
 }
 ## ---------------------------------------------
 calc() { print "$@" | bc; }

@@ -1,12 +1,12 @@
 ## a very simple data structure --------------------------
-pair() { 
+pair() {
   print "${1};${2}"
 }
-pair.cons() { 
+pair.cons() {
   print "${1:-$(cat -)}" | awk -F";" '{print $1}'
 }
-pair.cdr() { 
-  print "${1:-$(cat -)}" | awk -F";" '{print $2}' 
+pair.cdr() {
+  print "${1:-$(cat -)}" | awk -F";" '{print $2}'
 }
 pair.setcons() {
   print "$1" | sed 's/^.*;/'"$2"';/'
@@ -16,20 +16,15 @@ pair.setcdr() {
 }
 # change ; to \n so pair can be used with loops
 pair.iter() {
-  print "$(pair.cons "$1")
-$(pair.cdr "$1")"
 }
 pair.torange() {
   range $(pair.cons "$1") $(pair.cdr "$1")
 }
-pair.toatom() {
-  atom $(pair.cons "$1") $(pair.cdr "$1")
+pair.torange.reverse() {
+  range $(pair.cdr "$1") $(pair.cons "$1")
 }
-pair.toarr() {
-  local name="$1"
-  local cons=$(pair.cons "$2") 
-  local cdr=$(pair.cdr "$2")
-  arr "$name" ($cons $cdr)
+pair.tovar() {
+  atom $(pair.cons "$1") $(pair.cdr "$1")
 }
 ## ---------------------------------------------
 green "dsl/pairs loaded"
