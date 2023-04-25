@@ -254,11 +254,11 @@ isfn() {
 }
 getvar() {
   # hide output if there is no match, replacing the head -n 1 command
-  declare -p ${(Mk)parameters:#$1} | head -n 1
+  declare -p ${(Mk)parameters:#$1}
 }
 getfn() {
   # hide output if there is no match, replacing the head -n 1 command
-  declare -f ${(Mk)functions:#$1} | head -n 1
+  declare -f ${(Mk)functions:#$1} 
 }
 checkopt() {
   print $options[$1]
