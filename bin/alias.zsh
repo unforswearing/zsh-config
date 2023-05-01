@@ -19,6 +19,8 @@ alias -g @u='ssh 192.168.0.187'
 alias -g @b='ssh 192.168.0.151'
 alias -g @m='ssh 192.168.0.150'
 ## ---------------------------------------------
+alias finder='open .'
+## ---------------------------------------------
 # reload all terminals. use with `trap "exec zsh" USR1` in .zshrc
 alias reloadall='pkill -usr1 zsh'
 alias reload='exec zsh'
@@ -43,7 +45,6 @@ alias shuf='gshuf'
 alias namesingle='vidir'
 ## ---------------------------------------------
 alias sed='/usr/local/bin/gsed'
-alias julia='/Applications/Julia-1.8.app/Contents/Resources/julia/bin/julia'
 ## ---------------------------------------------
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
 ## ---------------------------------------------
