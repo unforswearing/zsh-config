@@ -1,10 +1,15 @@
-# @todo split dsl into loadable modules, create loader function
+# @TODO 5/6/2023:
+# the 'sl.language.txt' file is a new language that makes a lot of this obsolete
+# the language will be designed to use the shell as the stdlib so some dsl commands
+# will still be needed.
+# see /Users/unforswearing/Library/Mobile Documents/com~apple~CloudDocs/sl.language.txt
+
 #
-# this file contains code that attempts to make zsh more like a 
+# this file contains code that attempts to make zsh more like a
 # traditional programming language via new keywords, env variables, and "objects"
 # NB. use this DSL in scripts, not interactively!
-# 
-## Uncommon Zsh Syntax to use 
+#
+## Uncommon Zsh Syntax to use
 # - in some cases it is easier to just use the uncommon versions of zsh syntax
 ### examples:
 # - short versions of commands
@@ -12,18 +17,18 @@
 #   - https://unix.stackexchange.com/a/468597
 # - anonymous functions
 #   () {
-#     local thisvar="inside function" 
+#     local thisvar="inside function"
 #     print "this will show $thisvar immediately"
 #   }
 # Notes from Zsh documentation --------------------------------------
 # 6.5 Reserved Words
-# The following words are recognized as reserved words when 
+# The following words are recognized as reserved words when
 # used as the first word of a
 # command unless quoted or disabled using disable -r:
 #   do done esac then elif else fi for case if while function repeat time until
 #   select coproc nocorrect foreach end ! [[ { } declare export float integer
 #   local readonly typeset
-# Additionally, ‘}’ is recognized in any position if neither 
+# Additionally, ‘}’ is recognized in any position if neither
 # the IGNORE_BRACES option nor the
 # IGNORE_CLOSE_BRACES option is set.
 # ------------------------------------------------------------------
@@ -80,7 +85,7 @@ puts() {
 putf() {
   local str="$1"
   shift
-  printf "$str" "$@"  
+  printf "$str" "$@"
 }
 getinput() {
   # get user input, with options
@@ -140,14 +145,14 @@ meta() {
   # todo
 }
 # atom, single item of data. a number or word
-# the concept of atoms are taken from elixir 
+# the concept of atoms are taken from elixir
 #   - a constant whose value is its name
 # eg atom hello => hello=hello
 # useage: atom value
 atom() {
   local nameval="$1"
   eval "function $nameval() print $nameval;"
-  # if $1 is a number, don't use declare 
+  # if $1 is a number, don't use declare
   declare -rg $nameval="$nameval"
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
 }
@@ -162,7 +167,7 @@ getvar() {
 # https://unix.stackexchange.com/a/290373
 getfn() {
   # todo: hide output if there is no match, replacing the head -n 1 command
-  declare -f ${(Mk)functions:#$1} 
+  declare -f ${(Mk)functions:#$1}
 }
 # https://unix.stackexchange.com/a/121892
 checkopt() {
@@ -172,7 +177,7 @@ checkopt() {
 topt() {
   if [[ $options[$1] == "on" ]]; then
     unsetopt "$1"
-  else 
+  else
     setopt "$1"
   fi
   if [[ "$2" != "quiet" ]] && checkopt $1
@@ -182,7 +187,7 @@ calc() { print "$@" | bc; }
 ## ---------------------------------------------
 async() { ({eval "$@";}&) >|/dev/null 2>&1; }
 ## ---------------------------------------------
-use::filepath() { 
+use::filepath() {
   use::string >|/dev/null 2>&1
   ## ---------------------------------------------
   # DSL FS
@@ -201,10 +206,10 @@ use::filepath() {
   function {dbkp,fs.dir.backup}() { cp -r "${1}" "${1}.bak"; }
   function {drst,fs.dir.restore}() { cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak"; }
   function {pdir,fs.dir.parent}() { dirname "${1:-(pwd)}"; }
-  function {dexists,fs.dir.exists}() { [[ -d "${1}" ]]; } 
-  function {dempty,fs.dir.isempty}() { 
-    local count=$(ls -la "${1}" | wc -l | trim.left) 
-    [[ $count -eq 0 ]];  
+  function {dexists,fs.dir.exists}() { [[ -d "${1}" ]]; }
+  function {dempty,fs.dir.isempty}() {
+    local count=$(ls -la "${1}" | wc -l | trim.left)
+    [[ $count -eq 0 ]];
   }
   # fs prefix works for files and dirs
   # filepath.abs "../../file.txt"
@@ -214,74 +219,74 @@ use::filepath() {
   fs.older() { [[ "${1}" -ot "${2}" ]]; }
 }
 ## ---------------------------------------------
-use::mathnum() { 
+use::mathnum() {
   # DSL MATHNUM
   # math -------------------------------------------
-  function {add,math.add}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}"; 
-    print "$((left + right))"; 
+  function {add,math.add}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    print "$((left + right))";
   }
-  function {sub,math.sub}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}"; 
-    print "$((left - right))"; 
+  function {sub,math.sub}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    print "$((left - right))";
   }
-  function {mul,math.mul}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}"; 
-    print "$((left * right))"; 
+  function {mul,math.mul}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    print "$((left * right))";
   }
-  function {div,math.div}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}"; 
-    print "$((left / right))"; 
+  function {div,math.div}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    print "$((left / right))";
   }
-  function {pow,math.pow}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}"; 
-    print "$((left ** right))"; 
+  function {pow,math.pow}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    print "$((left ** right))";
   }
-  function {mod,math.mod}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}"; 
-    print "$((left % right))"; 
+  function {mod,math.mod}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    print "$((left % right))";
   }
-  function {eq,math.eq}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}";  
-    return "$((left == right))"; 
+  function {eq,math.eq}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    return "$((left == right))";
   }
-  function {ne,math.ne}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}";  
-    return "$((left != right))"; 
+  function {ne,math.ne}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    return "$((left != right))";
   }
-  function {gt,math.gt}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}";  
-    return "$((left > right))"; 
+  function {gt,math.gt}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    return "$((left > right))";
   }
-  function {lt,math.lt}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}";  
-    return "$((left < right))"; 
+  function {lt,math.lt}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    return "$((left < right))";
   }
-  function {ge,math.ge}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}";  
-    return "$((left >= right))"; 
+  function {ge,math.ge}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    return "$((left >= right))";
   }
-  function {le,math.le}() { 
-    local left="${1}"; 
-    local right="${2:-$(cat -)}";  
-    return "$((left <= right))"; 
+  function {le,math.le}() {
+    local left="${1}";
+    local right="${2:-$(cat -)}";
+    return "$((left <= right))";
   }
   function {incr,++}() { local opt="${1:-$(cat -)}"; print $((++opt)); }
   function {decr,--}() { local opt="${1:-$(cat -)}"; print $((--opt)); }
-  sum() { 
-    print "${@:-$(cat -)}" | 
-        awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}' 
+  sum() {
+    print "${@:-$(cat -)}" |
+        awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
   }
   ## a number "object"
   @num() {
@@ -289,7 +294,7 @@ use::mathnum() {
     local name="${1}"
     local value=${2}
     declare -rg $name=$value
-    functions[$name]="print ${value}"  
+    functions[$name]="print ${value}"
     eval "
   function $name { print ${value}; }
   alias -g $name="$name"
@@ -314,11 +319,11 @@ use::mathnum() {
     }
     _n "$value"
   }
-  functions["@num"]="@num"  
+  functions["@num"]="@num"
   alias -g @num="@num"
 }
 ## ---------------------------------------------
-use::pairs() { 
+use::pairs() {
   ## a very simple data structure --------------------------
   pair() {
     print "${1};${2}"
@@ -349,13 +354,13 @@ use::pairs() {
   }
 }
 ## ---------------------------------------------
-use::range() { 
+use::range() {
   # formatted ranges
   # do not quote - range can be alpha or num
   #  - maybe: range int $1 $2 / range str "$1" "$2"
   # todo: incorporate seq and / or jot to do more stuff
   # also: https://linuxize.com/post/bash-sequence-expression/
-  range() { 
+  range() {
     local incrementor="..${3:-1}"
     print {$1..$2$incrementor}
   }
@@ -365,17 +370,17 @@ use::range() {
   range.str() {;}
   # range.wrap "a" 4 5 "zz" => a4zz a5zz
   range.wrap() {;}
-  range.nl() { 
+  range.nl() {
     local incrementor="..${3:-1}"
     print {$1..$2$incrementor} | tr ' ' '\n'
   }
-  range.rev() { 
+  range.rev() {
     local incrementor="..${3:-1}"
     print {$1..$2$incrementor} | tr ' ' '\n' | sort -r
   }
 }
 ## ---------------------------------------------
-use::string() { 
+use::string() {
   # DSL STRING
   ## ---------------------------------------------
   lower() { tr '[:upper:]' '[:lower:]'; }
@@ -403,7 +408,7 @@ use::string() {
     local name="${1}" && shift
     local value="\"${@}\""
     declare -rg $name=$value
-    functions[$name]="print ${value}"  
+    functions[$name]="print ${value}"
     eval "
   function "$name" { print "${value}"; }
   alias -g $name="$name"
@@ -415,7 +420,7 @@ use::string() {
   function $name.len() { print ${value} | len ; }
   "
   }
-  functions["@str"]="@str"  
+  functions["@str"]="@str"
   alias -g @str="@str"
   ## ---------------------------------------------
   count.lines() { wc -l | trim; }
@@ -426,10 +431,10 @@ use::string() {
 use::dslenv() {
   # these options are already enabled in my interactive zsh sessions
   # add `use::dslenv` to the top of scripts that use dsl
-  setopt bsdecho noclobber cprecedences cshjunkieloops 
+  setopt bsdecho noclobber cprecedences cshjunkieloops
   setopt kshzerosubscript localloops shwordsplit warncreateglobal
 }
-use::patterns() { 
+use::patterns() {
   {
     declare -rg RE_ALPHA="[aA-zZ]"
     declare -rg RE_STRING="([aA-zZ]|[0-9])+"
@@ -448,7 +453,7 @@ use::patterns() {
     declare -rg POSIX_PUNCT="[:punct:]"
     declare -rg POSIX_SPACE="[:space:]"
     declare -rg POSIX_WORD="[:word:]"
-  } 
+  }
 }
 use() {
   local opt="$1"
@@ -461,7 +466,7 @@ use() {
     "::patterns") use::patterns ;;
     "::range") use::range ;;
     "::string") use::string ;;
-    "::dsl") 
+    "::dsl")
       # use::dslenv
       use::filepath
       use::mathnum
