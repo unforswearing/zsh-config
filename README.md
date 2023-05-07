@@ -2,15 +2,19 @@
 
 My overly complicated z-shell configuration files. 
 
+> NOTE: Much of the zsh.dsl functionality will be replaced with lua / [teal scripts](https://pdesaulniers.github.io/tl/tutorial) and the [luash module](https://github.com/zserge/luash). The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
+
+> NOTE: The docs below need to be updated
+
 This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. 
 
-Finally, I used the customization options in `zsh` to create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions.
+Finally, I used the customization options in `zsh` to create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions
 
 Below is a list of files and folders along with a brief description of their contents and purpose. 
 
 ## `.zshenv`
 
-Settin the $PATH environment variable 
+Setting the $PATH environment variable 
 
 ## `.zshrc`
 
