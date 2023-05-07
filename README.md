@@ -22,11 +22,18 @@ Anything that is not interactive can be rewritten in teal. Focus on rewriting th
   - update()...
 - zdb.zsh (maybe)
 
-Helpers and code for the lua/teal setup will live in the `/src` directory.
+Helpers and code for the lua/teal setup will live in the `/src` directory. Each converted function will exist as its own `.tl` file and will have an associated zsh alias added to `bin/alias.zsh`.
+
+Lua/Teal tooling to be written
+
+- create_alias.tl
+- more TBD
 
 Resources
 
 - <https://learnxinyminutes.com/docs/lua/>
+- <https://www.lua.org/pil/>
+- <http://lua-users.org/wiki/>
   - <http://lua-users.org/wiki/StringLibraryTutorial>
   - <http://lua-users.org/wiki/TableLibraryTutorial>
   - <http://lua-users.org/wiki/IoLibraryTutorial>
@@ -39,9 +46,7 @@ Resources
 
 **NOTE: The docs below need to be updated**
 
-This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. 
-
-Finally, I used the customization options in `zsh` to create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions
+This config was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. The customization options in `zsh` create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions.
 
 Below is a list of files and folders along with a brief description of their contents and purpose. 
 
