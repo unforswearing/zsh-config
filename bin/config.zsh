@@ -101,6 +101,6 @@
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
   ln -sF ~/zsh-config/.zshenv ~/.zshenv
   ln -sF ~/zsh-config/.zshrc ~/.zshrc
-  cp ~/zsh-config/.direnvrc ~/.direnvrc
+  /bin/cp ~/zsh-config/.direnvrc ~/.direnvrc
   ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
 }
