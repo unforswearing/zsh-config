@@ -4,7 +4,7 @@ My overly complicated z-shell configuration files.
 
 ## Changes, 5/7/2023
 
-**Much of the zsh.dsl functionality will be replaced with lua / [teal scripts](https://pdesaulniers.github.io/tl/tutorial) and the [luash module](https://github.com/zserge/luash).** 
+**Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial) and the [luash module](https://github.com/zserge/luash).** 
 
 The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
 
@@ -23,6 +23,17 @@ Anything that is not interactive can be rewritten in teal. Focus on rewriting th
 - zdb.zsh (maybe)
 
 Helpers and code for the lua/teal setup will live in the `/src` directory.
+
+Resources
+
+- <https://learnxinyminutes.com/docs/lua/>
+  - <http://lua-users.org/wiki/StringLibraryTutorial>
+  - <http://lua-users.org/wiki/TableLibraryTutorial>
+  - <http://lua-users.org/wiki/IoLibraryTutorial>
+  - <http://lua-users.org/wiki/OsLibraryTutorial>
+- <https://github.com/zserge/luash>
+- <https://github.com/teal-language/tl>
+- <https://pdesaulniers.github.io/tl/tutorial.html>
 
 ---
 
