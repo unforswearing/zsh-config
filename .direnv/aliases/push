@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+push () 
+{ 
+    echo "need to ssh a pull on unf-b after push"
+}
+push
