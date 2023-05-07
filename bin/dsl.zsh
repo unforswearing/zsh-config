@@ -1,9 +1,5 @@
-# @TODO 5/6/2023:
-# the 'sl.language.txt' file is a new language that makes a lot of this obsolete
-# the language will be designed to use the shell as the stdlib so some dsl commands
-# will still be needed.
-# see /Users/unforswearing/Library/Mobile Documents/com~apple~CloudDocs/sl.language.txt
-
+# @NOTE / @TODO 5/6/2023:
+# Much of this code will be replaced with teal / lua and luash. 
 #
 # this file contains code that attempts to make zsh more like a
 # traditional programming language via new keywords, env variables, and "objects"

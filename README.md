@@ -2,9 +2,31 @@
 
 My overly complicated z-shell configuration files. 
 
-> NOTE: Much of the zsh.dsl functionality will be replaced with lua / [teal scripts](https://pdesaulniers.github.io/tl/tutorial) and the [luash module](https://github.com/zserge/luash). The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
+## Changes, 5/7/2023
 
-> NOTE: The docs below need to be updated
+**Much of the zsh.dsl functionality will be replaced with lua / [teal scripts](https://pdesaulniers.github.io/tl/tutorial) and the [luash module](https://github.com/zserge/luash).** 
+
+The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
+
+Anything that is not interactive can be rewritten in teal. Focus on rewriting the following source files from `/bin`
+
+- conv.zsh
+- dsl.zsh
+- fs.zsh 
+  - files()
+  - dir()
+- utils.zsh
+  - sys()
+  - zc()
+  - external()
+  - update()...
+- zdb.zsh (maybe)
+
+Helpers and code for the lua/teal setup will live in the `/src` directory.
+
+---
+
+**NOTE: The docs below need to be updated**
 
 This project was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. 
 
