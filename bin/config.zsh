@@ -153,12 +153,7 @@
   bindkey "^[[F" forward-word  # fn-right
   bindkey "^[[A" history-substring-search-up
   bindkey "^[[B" history-substring-search-down
-
   bindkey '\e' vi-kill-line
-
-  # function terminate-current-job() { kill -s TERM %+ ; }
-  # zle -N terminate-current-job terminate-current-job
-  # bindkey "\e\e" kill-buffer
 }
 {
   source "${ZSH_USR_DIR}/lnks.bash"
