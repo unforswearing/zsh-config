@@ -161,7 +161,7 @@
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
-  cat "/Users/unforswearing/zsh-config/static/.zshenv" >|"/Users/unforswearing/.zshenv"
+  catcat "/Users/unforswearing/zsh-config/static/.zshenv" >|"/Users/unforswearing/.zshenv"
   cat "/Users/unforswearing/zsh-config/static/.zshrc" >|"/Users/unforswearing/.zshrc"
   cat "/Users/unforswearing/zsh-config/static/.direnvrc" >|"/Users/unforswearing/.direnvrc"
   cat "${ZSH_USR_DIR}/hosts.py" >|"/Users/unforswearing/hosts.py"
