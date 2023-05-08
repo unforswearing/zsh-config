@@ -30,3 +30,4 @@ path=(
 	"/Users/unforswearing/.fzf/bin"
 )
 
+eval $(luarocks path)

@@ -70,7 +70,7 @@ alias -g try='test'
 # with file in $(ls) run print $file fin
 # with file in $(ls) apply print $file fin
 alias -g with='foreach'
-alias -g run=';'
+# alias -g run=';'
 alias -g apply=';'
 alias -g nop='; end'
 ################################################

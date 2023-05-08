@@ -4,7 +4,14 @@ My overly complicated z-shell configuration files.
 
 ## Changes, 5/7/2023
 
-**Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial) and the [luash module](https://github.com/zserge/luash).** 
+Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial), [luash](https://github.com/zserge/luash), and [ansicolors](https://github.com/kikito/ansicolors.lua).
+
+All `teal` scripts should include the following header:
+
+```lua
+colors = require("ansicolors")
+require("sh")
+```
 
 The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
 
@@ -27,7 +34,7 @@ Helpers and code for the lua/teal setup will live in the `/src` directory. Each 
 Lua/Teal tooling to be written
 
 - create_alias.tl
-- more TBD
+- colors.tl
 
 Resources
 
