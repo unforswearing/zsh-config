@@ -158,6 +158,8 @@
 }
 {
   source "${ZSH_USR_DIR}/lnks.bash"
+  source "${ZSH_USR_DIR}/conversion.zsh"
+  source "${ZSH_USR_DIR}/help.zsh"
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 }
 {
