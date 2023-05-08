@@ -160,14 +160,15 @@
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 }
 {
-  # use hardlinks to keep stuff in the zsh-config dir instead of home dir
-  mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log"
-  mv "${HOME}/.zshrc" "${ZSH_CONFIG_DIR}/log"
-  mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log"
-  mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log"
+  # move stuff from $HOME to zconf/log
+  /bin/mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log"
+  /bin/mv "${HOME}/.zshrc" "${ZSH_CONFIG_DIR}/log"
+  /bin/mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log"
+  /bin/mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log"
 
-  "${HOME}/zsh-config/.zshenv"
-  "${HOME}/zsh-config/.zshrc"
-  "${HOME}/zsh-config/.direnvrc"
-  "${HOME}/zsh-config/usr/hosts.py"
+  # copy stuff from zconf to $HOME
+  /bin/cp "${HOME}/zsh-config/.zshenv" "${HOME}/.zshenv"
+  /bin/cp "${HOME}/zsh-config/.zshrc" "${HOME}/.zshrc"
+  /bin/cp "${HOME}/zsh-config/.direnvrc" "${HOME}/.direnvrc"
+  /bin/cp "${HOME}/zsh-config/usr/hosts.py" "${HOME}/hosts.py"
 }
