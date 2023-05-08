@@ -1,4 +1,5 @@
 local colors = require("ansicolors")
+-- https://github.com/kikito/ansicolors.lua
 -- colors = require("colors")
 -- colors.red("hi")
 

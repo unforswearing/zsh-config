@@ -4,12 +4,13 @@ My overly complicated z-shell configuration files.
 
 ## Changes, 5/7/2023
 
-Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial), [luash](https://github.com/zserge/luash), and [ansicolors](https://github.com/kikito/ansicolors.lua).
+Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial), [luash](https://github.com/zserge/luash), [ansicolors](https://github.com/kikito/ansicolors.lua), and [luafilesystem](https://github.com/lunarmodules/luafilesystem).
 
 All `teal` scripts should include the following header:
 
 ```lua
 colors = require("ansicolors")
+require("luafilesystem")
 require("sh")
 ```
 
@@ -29,13 +30,6 @@ Anything that is not interactive can be rewritten in teal. Focus on rewriting th
   - update()...
 - zdb.zsh (maybe)
 
-Helpers and code for the lua/teal setup will live in the `/src` directory. Each converted function will exist as its own `.tl` file and will have an associated zsh alias added to `bin/alias.zsh`.
-
-Lua/Teal tooling to be written
-
-- create_alias.tl
-- colors.tl
-
 Resources
 
 - <https://learnxinyminutes.com/docs/lua/>
@@ -45,13 +39,14 @@ Resources
   - <http://lua-users.org/wiki/TableLibraryTutorial>
   - <http://lua-users.org/wiki/IoLibraryTutorial>
   - <http://lua-users.org/wiki/OsLibraryTutorial>
-- <https://github.com/zserge/luash>
 - <https://github.com/teal-language/tl>
 - <https://pdesaulniers.github.io/tl/tutorial.html>
+- <https://github.com/zserge/luash>
+- <https://github.com/lunarmodules/luafilesystem>
 
 ---
 
-**NOTE: The docs below need to be updated**
+> NOTE: The docs below need to be updated
 
 This config was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. The customization options in `zsh` create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions.
 
