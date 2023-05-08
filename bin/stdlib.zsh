@@ -299,6 +299,7 @@ function file() {
   local opt="$1"
   shift
   case "$opt" in 
+    list) files "$@" ;;
     backup) file.bkp "$@" ;;
     exists) file.exists "$@" ;;
     copy) file.copy  "$@" ;;
