@@ -1,4 +1,5 @@
-### everything for zsh that is not a command goes here
+# everything for zsh that is not a command goes here
+# exports, hash, aliases, options, bindkey, moving source files
 {
   export KEYTIMEOUT=25
   export CLICOLOR=1
