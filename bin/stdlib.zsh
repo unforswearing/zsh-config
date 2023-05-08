@@ -90,29 +90,44 @@ function isfn() {
 }
 function get() {
   function getnum() {
-    print $nums["$1"]
+    local val=$nums["$1"]
+    if [[ -z $val ]]; then 
+      false
+    else 
+      print "$val"
+    fi;
   }
   function getconst() {
-    print $consts["$1"]
+    local val=$consts["$1"]
+    if [[ -z $val ]]; then 
+      false
+    else 
+      print "$val"
+    fi;
   }
   function getatom() {
-    print $atoms["$1"]
+    local val=$atoms["$1"]
+    if [[ -z $val ]]; then 
+      false
+    else 
+      print "$val"
+    fi;
   }
   # https://unix.stackexchange.com/a/290373
   function getvar() {
     # dont use $ with var
     # getvar PATH
     # todo: hide output if there is no match
-    declare -p ${(Mk)parameters:#$1}
+    declare -p ${(Mk)parameters:#$1} || false
   }
   # https://unix.stackexchange.com/a/290373
   function getfn() {
     # todo: hide output if there is no match
-    declare -f ${(Mk)functions:#$1}
+    declare -f ${(Mk)functions:#$1} || false
   }
   # https://unix.stackexchange.com/a/121892
   function checkopt() {
-    print $options[$1]
+    print $options[$1] || false
   }
   function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
   function abspath() { 
