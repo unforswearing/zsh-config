@@ -3,6 +3,23 @@
 #
 # send the result of evaluated arguments to dev null
 function discard() { eval "$@" >|/dev/null 2>&1; }
+function sysinfo() {
+  case $1 in
+  host) nu -c "sys|get host" ;;
+  cpu) nu -c "sys|get cpu" ;;
+  disks) nu -c "sys|get disks" ;;
+  mem | memory)
+    nu -c "{
+      free: (sys|get mem|get free), 
+      used: (sys|get mem|get used),
+      total: (sys|get mem|get total)
+    }"
+    ;;
+  temp | temperature) nu -c "sys|get temp" ;;
+  net | io) nu -c "sys|get net" ;;
+  esac
+}
+function memory() { sysinfo memory; }
 ################################################
 function nil() { >/dev/null 2>&1; }
 function puts() {
@@ -13,9 +30,10 @@ function putf() {
   shift
   printf "$str" "$@"
 }
+# const utencil = "spoon"
 function const() {
   local name="$1"
-  shift
+  shift; shift;
   declare -rg "$name=$@"
 }
 # atom, single item of data. a number or word
@@ -27,7 +45,7 @@ function atom() {
   local nameval="$1"
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare
-  declare -rg $nameval="$nameval"
+  declare -rg $nameval="$nameval" >|/dev/null 2>&1;
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
 }
 function isfn() {
@@ -35,12 +53,14 @@ function isfn() {
 }
 # https://unix.stackexchange.com/a/290373
 function getvar() {
+  # dont use $ with var
+  # getvar PATH
   # todo: hide output if there is no match
   declare -p ${(Mk)parameters:#$1}
 }
 # https://unix.stackexchange.com/a/290373
 function getfn() {
-  # todo: hide output if there is no match, replacing the head -n 1 command
+  # todo: hide output if there is no match
   declare -f ${(Mk)functions:#$1}
 }
 # https://unix.stackexchange.com/a/121892
@@ -85,36 +105,102 @@ function len() {
   local item="${1:-$(cat -)}"
   print "${#item}"
 }
-function count.lines() { local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim; }
-function count.words() { local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim; }
-function count.chars() { local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim; }
-# file.backup filename.txt => filename.txt.bak
-# file.restore filename.txt => overwrites filename.txt
-function newfile() { touch "$@"; }
-function readfile() { print "$(<"${1:-$(cat -)}")"; }
-function copy() { <"${1:-$(cat -)}" | pbcopy; }
-function bkp() { cp "${1:-$(cat -)}"{,.bak}; }
-function restore() { cp "${1:-$(cat -)}"{.bak,} && rm "${1:-$(cat -)}.bak"; }
-function fileexists() { [[ -s "${1:-$(cat -)}" ]]; }
-function fileempty() { [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; }
+function count() {
+  function count.lines() { local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim; }
+  function count.words() { local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim; }
+  function count.chars() { local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim; }
+  local opt="$1"
+  shift
+  case "$opt" in 
+    lines) count.lines  "$@" ;;
+    words) count.words "$@" ;;
+    chars) count.chas "$@" ;;
+    *) print "count <lines | words | chars>"
+  esac
+}
+function file() {
+  # bkp filename.txt => filename.txt.bak
+  # restore filename.txt => overwrites filename.txt
+  function files() { fd --type file --maxdepth="${1:-1}"; }
+  function file.bkp() { cp "${1:-$(cat -)}"{,.bak}; }
+  function file.exists() { [[ -s "${1:-$(cat -)}" ]]; }
+  function file.copy() { <"${1:-$(cat -)}" | pbcopy; }
+  function file.new() { touch "$@"; }
+  function file.read() { print "$(<"${1:-$(cat -)}")"; }
+  function file.rest() { cp "${1:-$(cat -)}"{.bak,} && rm "${1:-$(cat -)}.bak"; }
+  function file.rmempty() { find . -type f -empty -print -delete; }
+  function files.listnew() {
+    # recency=2
+    # ls.new $recency
+    fd --type file \
+      --base-directory $(pwd) \
+      --absolute-path \
+      --max-depth=1 \
+      --threads=2 \
+      --change-newer-than "${1:-5}"min
+  }
+  function file.empty() { [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; }
+  local opt="$1"
+  shift
+  case "$opt" in 
+    backup|bkp) file.bkp "$@" ;;
+    exists) file.exists "$@" ;;
+    copy) file.copy  "$@" ;;
+    new) file.new  "$@" ;;
+    read) file.read "$@" ;;
+    rest) file.rest "$@" ;;
+    rmempty) file.rmempty "$@" ;;
+    listnew) files.listnew "$@" ;;
+    *) files ;;
+  esac
+}
 # directory actions
-function newdir() { mkdir "${1:-$(cat -)}"; }
-function readdir() { ls "${1:-$(cat -)}"; }
-function dirbkp() { cp -r "${1:-$(cat -)}" "${1:-$(cat -)}.bak"; }
-function dirrst() { 
-  cp -r "${1:-$(cat -)}.bak" "${1:-$(cat -)}" && \
-    rm -rf "${1:-$(cat -)}.bak"; 
+function dir() {
+  function dir.get() { fd --type directory --maxdepth="${1:-1}"; }
+  function dir.rmempty() { find . -type d -empty -print -delete; }
+  function dir.new() { 
+    ccd() { mkdir -p "$1" && cd "$1"; }
+    # mkdir "$@";
+    case "$1" in
+    "cd")
+      shift
+      ccd "$1"
+      ;;
+    *) mkdir "$@" ;;
+    esac
+  }
+  function dir.read() { ls "${1:-$(cat -)}"; }
+  function dir.bkp() { cp -r "${1:-$(cat -)}" "${1:-$(cat -)}.bak"; }
+  function dir.rst() { 
+    cp -r "${1:-$(cat -)}.bak" "${1:-$(cat -)}" && \
+      rm -rf "${1:-$(cat -)}.bak"; 
+  }
+  function dir.parent() { dirname "${1:-(pwd)}"; }
+  function dir.exists() { [[ -d "${1:-$(cat -)}" ]]; }
+  function dir.isempty() {
+    local count=$(ls -la "${1:-$(cat -)}" | wc -l | trim.left)
+    [[ $count -eq 0 ]];
+  }
+  local opt="$1"
+  shift
+  case "$opt" in 
+    get) dir.get "$@" ;;
+    rmempty) dir.rmempty "$@" ;;
+    new) dir.new "$@" ;;
+    read) dir.read "$@" ;;
+    backup) dir.bkp "$@" ;;
+    restore) dir.rst "$@" ;;
+    parent) dir.parent "$@" ;;
+    exists) dir.exists "$@" ;;
+    isempty) dir.isempty "$@" ;;
+    *) dir.get "$@" ;;
+  esac
 }
-function parentdir() { dirname "${1:-(pwd)}"; }
-function direxists() { [[ -d "${1:-$(cat -)}" ]]; }
-function dirempty() {
-  local count=$(ls -la "${1:-$(cat -)}" | wc -l | trim.left)
-  [[ $count -eq 0 ]];
-}
+function rmempty() { file rmempty && dir rmempty; }
 # fs prefix works for files and dirs
 # filepath.abs "../../file.txt"
 function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
-function getabs() { 
+function abspath() { 
   print "$(cd "$(dirname ${1:-$(cat -)})" && pwd)/$(basename "${1:-$(cat -)}")"; 
 }
 function isnewer() { [[ "${1:-$(cat -)}" -nt "${2}" ]]; }
@@ -180,8 +266,8 @@ function le() {
   local right="${2:-$(cat -)}";
   return "$((left <= right))";
 }
-function ++() { local opt="${1:-$(cat -)}"; print $((++opt)); }
-function --() { local opt="${1:-$(cat -)}"; print $((--opt)); }
+function incr() { local opt="${1:-$(cat -)}"; print $((++opt)); }
+function decr() { local opt="${1:-$(cat -)}"; print $((--opt)); }
 function sum() {
   print "${@:-$(cat -)}" |
       awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
