@@ -6,6 +6,8 @@ My overly complicated z-shell configuration files.
 
 Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial), [luash](https://github.com/zserge/luash), [ansicolors](https://github.com/kikito/ansicolors.lua), and [luafilesystem](https://github.com/lunarmodules/luafilesystem).
 
+The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
+
 All `teal` scripts should include the following header:
 
 ```lua
@@ -13,8 +15,6 @@ colors = require("ansicolors")
 require("luafilesystem")
 require("sh")
 ```
-
-The idea is to bring different 'plumbing' and types to zsh with a new language, however writing a new language isn't necessary. See ~cloud/Notes/language.sl for the original specification.
 
 Anything that is not interactive can be rewritten in teal. Focus on rewriting the following source files from `/bin`
 
