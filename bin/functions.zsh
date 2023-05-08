@@ -1,34 +1,10 @@
 # combining utils.zsh, conv.zsh, and fs.zsh
-__@() {
-  {
-    # if file, cat
-    test -f "$1" && cat "$1" 2>/dev/null ||
-      # if dir, ls
-      test -d "$1" && ls "$1" 2>/dev/null
-  } || {
-    # if var, get vlaue
-    <<<"$1" 2>/dev/null
-  }
-}
-alias -g @='__@'
+
 # nushell system info
 
-cpl() {
-  unsetopt warn_create_global
-  OIFS="$IFS"
-  IFS=$'\n\t'
-  local comm=$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')
-  echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
-  IFS="$OIFS"
-  setopt warn_create_global
-}
+
 # # file / path stuff -------------------------
-up() {
-  case "${1}" in
-  "") cd .. || return ;;
-  *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
-  esac
-}
+
 # var.exists() { test true -v "${1}" && echo true || echo false; }   # -v
 # ---------------------------------------
 # #######################################

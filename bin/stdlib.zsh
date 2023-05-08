@@ -2,7 +2,9 @@
 # Much of this code will be replaced with teal / lua and luash. 
 #
 # send the result of evaluated arguments to dev null
-function discard() { eval "$@" >|/dev/null 2>&1; }
+function error() { 
+  : 
+}
 function sysinfo() {
   case $1 in
   host) nu -c "sys|get host" ;;
@@ -19,9 +21,19 @@ function sysinfo() {
   net | io) nu -c "sys|get net" ;;
   esac
 }
+# topt: toggle the option - if on, turn off. if off, turn on
+function topt() {
+  if [[ $options[$1] == "on" ]]; then
+    unsetopt "$1"
+  else
+    setopt "$1"
+  fi
+  if [[ "$2" != "quiet" ]] && checkopt $1;
+}
 function memory() { sysinfo memory; }
-################################################
+function async() { ({ eval "$@"; } &) >/dev/null 2>&1; }
 function nil() { >/dev/null 2>&1; }
+################################################
 function puts() {
   print "$@"
 }
@@ -30,53 +42,119 @@ function putf() {
   shift
   printf "$str" "$@"
 }
-# const utencil = "spoon"
+declare -A nums
+function num() {
+  local name="$1"
+  local value="$2"
+  nums["$name"]="$value"
+  eval "function $name() print $value;"
+}
+# const utencil "spoon"
+declare -A consts
 function const() {
   local name="$1"
-  shift; shift;
+  shift;
+  local value="$@"
   declare -rg "$name=$@"
+  consts["$name"]="$@"
+  eval "function $name() print $value"
 }
 # atom, single item of data. a number or word
 # the concept of atoms are taken from elixir
 #   - a constant whose value is its name
 # eg atom hello => hello=hello
 # useage: atom value
+declare -A atoms
 function atom() {
   local nameval="$1"
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare
   declare -rg $nameval="$nameval" >|/dev/null 2>&1;
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
+  atoms["$nameval"]="$nameval" >|/dev/null 2>&1;
+}
+function isnum() {
+  local testval="$(get num $1)"
+  if [[ -z "$testval" ]]; then false; else true; fi
+}
+function isconst() {
+  local testval="$(get const $1)"
+  if [[ -z "$testval" ]]; then false; else true; fi
+}
+function isatom() {
+  local testval="$(get atom $1)"
+  if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isfn() {
   type -w "$1" | awk -F: '{print $2}' | trim.left
 }
-# https://unix.stackexchange.com/a/290373
-function getvar() {
-  # dont use $ with var
-  # getvar PATH
-  # todo: hide output if there is no match
-  declare -p ${(Mk)parameters:#$1}
+function get() {
+  function getnum() {
+    print $nums["$1"]
+  }
+  function getconst() {
+    print $consts["$1"]
+  }
+  function getatom() {
+    print $atoms["$1"]
+  }
+  # https://unix.stackexchange.com/a/290373
+  function getvar() {
+    # dont use $ with var
+    # getvar PATH
+    # todo: hide output if there is no match
+    declare -p ${(Mk)parameters:#$1}
+  }
+  # https://unix.stackexchange.com/a/290373
+  function getfn() {
+    # todo: hide output if there is no match
+    declare -f ${(Mk)functions:#$1}
+  }
+  # https://unix.stackexchange.com/a/121892
+  function checkopt() {
+    print $options[$1]
+  }
+  function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
+  function abspath() { 
+    print "$(cd "$(dirname ${1:-$(cat -)})" && pwd)/$(basename "${1:-$(cat -)}")"; 
+  }
+  local opt="$1"
+  shift
+  case "$opt" in 
+    num) getnum "$@" ;;
+    const) getconst "$@" ;;
+    atom) getatom "$@" ;;
+    var) getvar "$@" ;;
+    fn) getfn "$@" ;;
+    opt) checkopt "$@" ;;
+    file) file read "$@" ;;
+    dir) dir read "$@" ;;
+    path) getpath "$@" ;;
+    asbpath) abspath "$@" ;;
+    *) catchall "$@" ;; 
+  esac
 }
-# https://unix.stackexchange.com/a/290373
-function getfn() {
-  # todo: hide output if there is no match
-  declare -f ${(Mk)functions:#$1}
+## ---------------------------------------------
+function cmd() {
+  function cpl() {
+    unsetopt warn_create_global
+    OIFS="$IFS"
+    IFS=$'\n\t'
+    local comm=$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')
+    echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
+    IFS="$OIFS"
+    setopt warn_create_global
+  }
+  function discard() { eval "$@" >|/dev/null 2>&1; }
+  local opt="$1"
+  shift
+  case "$opt" in 
+    last) cpl ;;
+    discard) discard "$@" ;;
+    *) command "$@" ;;
+  esac
 }
-# https://unix.stackexchange.com/a/121892
-function checkopt() {
-  print $options[$1]
-}
-# topt: toggle the option - if on, turn off. if off, turn on
-function topt() {
-  if [[ $options[$1] == "on" ]]; then
-    unsetopt "$1"
-  else
-    setopt "$1"
-  fi
-  if [[ "$2" != "quiet" ]] && checkopt $1
-}
- ## ---------------------------------------------
+## ---------------------------------------------
 function lower() { 
   local opt="${1:-$(cat -)}" && \
     print "$opt" | tr '[:upper:]' '[:lower:]'; 
@@ -86,17 +164,26 @@ function upper() {
     print "$opt" | tr '[:lower:]' '[:upper:]'; 
 }
 ## ---------------------------------------------
-function trim() { 
+function trim() {
+  function trim() { 
   local opt="${1:-$(cat -)}" && \
     print "$opt" | trim.left | trim.right; 
-}
-function trim.left() {
-  local char=${1:-[:space:]}
-  sed "s%^[${char//%/\\%}]*%%"
-}
-function trim.right() {
-  local char=${1:-[:space:]}
-  sed "s%[${char//%/\\%}]*$%%"
+  }
+  function trim.left() {
+    local char=${1:-[:space:]}
+    sed "s%^[${char//%/\\%}]*%%"
+  }
+  function trim.right() {
+    local char=${1:-[:space:]}
+    sed "s%[${char//%/\\%}]*$%%"
+  }
+  local opt="$1"
+  shift
+  case "$opt" in 
+    left) trim.left "$@" ;;
+    right) trim.right "$@" ;;
+    *) trim "$@" ;;
+  esac
 }
 # a simple replace command
 function replace() { sd "$1" "${2:-$(cat -)}"; }
@@ -106,15 +193,21 @@ function len() {
   print "${#item}"
 }
 function count() {
-  function count.lines() { local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim; }
-  function count.words() { local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim; }
-  function count.chars() { local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim; }
+  function count.lines() { 
+    local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim; 
+  }
+  function count.words() { 
+    local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim; 
+  }
+  function count.chars() { 
+    local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim; 
+  }
   local opt="$1"
   shift
   case "$opt" in 
     lines) count.lines  "$@" ;;
     words) count.words "$@" ;;
-    chars) count.chas "$@" ;;
+    chars) count.chars "$@" ;;
     *) print "count <lines | words | chars>"
   esac
 }
@@ -140,10 +233,12 @@ function file() {
       --change-newer-than "${1:-5}"min
   }
   function file.empty() { [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; }
+  function file.isnewer() { [[ "${1:-$(cat -)}" -nt "${2}" ]]; }
+  function file.isolder() { [[ "${1:-$(cat -)}" -ot "${2}" ]]; }
   local opt="$1"
   shift
   case "$opt" in 
-    backup|bkp) file.bkp "$@" ;;
+    backup) file.bkp "$@" ;;
     exists) file.exists "$@" ;;
     copy) file.copy  "$@" ;;
     new) file.new  "$@" ;;
@@ -151,7 +246,9 @@ function file() {
     rest) file.rest "$@" ;;
     rmempty) file.rmempty "$@" ;;
     listnew) files.listnew "$@" ;;
-    *) files ;;
+    isolder) file.isolder "$@" ;;
+    isnewer) file.isnewer "$@" ;;
+    *) files "$@" ;;
   esac
 }
 # directory actions
@@ -181,6 +278,14 @@ function dir() {
     local count=$(ls -la "${1:-$(cat -)}" | wc -l | trim.left)
     [[ $count -eq 0 ]];
   }
+  function dir.up() {
+    case "${1}" in
+      "") cd .. || return ;;
+      *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
+    esac
+  }
+  function dir.isnewer() { [[ "${1:-$(cat -)}" -nt "${2}" ]]; }
+  function dir.isolder() { [[ "${1:-$(cat -)}" -ot "${2}" ]]; }  
   local opt="$1"
   shift
   case "$opt" in 
@@ -193,78 +298,135 @@ function dir() {
     parent) dir.parent "$@" ;;
     exists) dir.exists "$@" ;;
     isempty) dir.isempty "$@" ;;
+    up) dir.up "$@" ;;
+    isolder) dir.isolder "$@" ;;
+    isnewer) dir.isnewer "$@" ;;
     *) dir.get "$@" ;;
   esac
 }
 function rmempty() { file rmempty && dir rmempty; }
 # fs prefix works for files and dirs
 # filepath.abs "../../file.txt"
-function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
-function abspath() { 
-  print "$(cd "$(dirname ${1:-$(cat -)})" && pwd)/$(basename "${1:-$(cat -)}")"; 
-}
-function isnewer() { [[ "${1:-$(cat -)}" -nt "${2}" ]]; }
-function isolder() { [[ "${1:-$(cat -)}" -ot "${2}" ]]; }
 # math -------------------------------------------
 function add() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
   print "$((left + right))";
 }
 function sub() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
   print "$((left - right))";
 }
 function mul() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
   print "$((left * right))";
 }
 function div() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
   print "$((left / right))";
 }
 function pow() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
   print "$((left ** right))";
 }
 function mod() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
   print "$((left % right))";
 }
 function eq() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
-  return "$((left == right))";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" -eq "$right" ]]; then true; else false; fi
 }
 function ne() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
-  return "$((left != right))";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" -ne "$right" ]]; then true; else false; fi
 }
 function gt() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
-  return "$((left > right))";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" -gt "$right" ]]; then true; else false; fi
 }
 function lt() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
-  return "$((left < right))";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" -lt "$right" ]]; then true; else false; fi
 }
 function ge() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
-  return "$((left >= right))";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" -ge "$right" ]]; then true; else false; fi
 }
 function le() {
-  local left="${1}";
-  local right="${2:-$(cat -)}";
-  return "$((left <= right))";
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" -le "$right" ]]; then true; else false; fi
 }
 function incr() { local opt="${1:-$(cat -)}"; print $((++opt)); }
 function decr() { local opt="${1:-$(cat -)}"; print $((--opt)); }
@@ -272,10 +434,7 @@ function sum() {
   print "${@:-$(cat -)}" |
       awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
 }
-## ---------------------------------------------
 function calc() { print "$@" | bc; }
-## ---------------------------------------------
-function async() { ({eval "$@";}&) >|/dev/null 2>&1; }
 ## ---------------------------------------------
 function use() {
   local opt="$1"
