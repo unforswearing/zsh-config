@@ -58,7 +58,7 @@
   zstyle ':completion:*' verbose true
 }
 {
-  source "$ZSH_PLUGIN_DIR/Tarrasch/zsh-colors/colors.plugin.zsh"
+  # source "$ZSH_PLUGIN_DIR/Tarrasch/zsh-colors/colors.plugin.zsh"
   source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
   source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
   source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"

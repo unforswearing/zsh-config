@@ -1,24 +1,48 @@
-# @NOTE / @TODO 5/6/2023:
-# Much of this code will be replaced with teal / lua and luash. 
-#
-# send the result of evaluated arguments to dev null
+# For interactive use. 
+# Use Lua / Teal to write shell scripts. See zconf/src.
+# ---------------------------------------
 function error() { 
   : 
 }
+function color() {
+  local red="\033[31m"
+  local green="\033[32m"
+  local yellow="\033[33m"
+  local blue="\033[34m"
+  local reset="\033[39m"
+  local black="\033[30m"
+  local white="\033[37m"
+  local magenta="\033[35m"
+  local cyan="\033[36m"
+  local opt="$1"
+  shift
+  case "$opt" in
+    red) print "${red}$@${reset}" ;;
+    green) print "${green}$@${reset}" ;;
+    yellow) print "${yellow}$@${reset}" ;;
+    blue) print "${blue}$@${reset}" ;;
+    black) print "${black}$@${reset}" ;;
+    white) print "${white}$@${reset}" ;;
+    magenta) print "${magenta}$@${reset}" ;;
+    cyan) print "${cyan}$@${reset}" ;;
+    help) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
+  esac
+}
 function sysinfo() {
   case $1 in
-  host) nu -c "sys|get host" ;;
-  cpu) nu -c "sys|get cpu" ;;
-  disks) nu -c "sys|get disks" ;;
-  mem | memory)
-    nu -c "{
-      free: (sys|get mem|get free), 
-      used: (sys|get mem|get used),
-      total: (sys|get mem|get total)
-    }"
-    ;;
-  temp | temperature) nu -c "sys|get temp" ;;
-  net | io) nu -c "sys|get net" ;;
+    host) nu -c "sys|get host" ;;
+    cpu) nu -c "sys|get cpu" ;;
+    disks) nu -c "sys|get disks" ;;
+    mem | memory)
+      nu -c "{
+        free: (sys|get mem|get free), 
+        used: (sys|get mem|get used),
+        total: (sys|get mem|get total)
+      }"
+      ;;
+    temp | temperature) nu -c "sys|get temp" ;;
+    net | io) nu -c "sys|get net" ;;
+    help) print "sysinfo <hist|cpu|disks|mem|temp|net>" ;;
   esac
 }
 # topt: toggle the option - if on, turn off. if off, turn on
@@ -32,15 +56,15 @@ function topt() {
 }
 function memory() { sysinfo memory; }
 function async() { ({ eval "$@"; } &) >/dev/null 2>&1; }
-function nil() { >/dev/null 2>&1; }
 ################################################
-function puts() {
-  print "$@"
-}
-function putf() {
-  local str="$1"
-  shift
-  printf "$str" "$@"
+# create pseudo types: nil, num, const, atom
+declare -A nils
+function nil() {
+  # a nil type
+  # for sending commands to nothingness, use `cmd discard`
+  local name="$1"
+  local value="$(cat /dev/null)"
+  nils["$name"]=true
 }
 declare -A nums
 function num() {
@@ -72,6 +96,12 @@ function atom() {
   declare -rg $nameval="$nameval" >|/dev/null 2>&1;
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
   atoms["$nameval"]="$nameval" >|/dev/null 2>&1;
+}
+# check the type of various vars
+function isnil() {
+  # nil has no value so there is no `get nil` command
+  local testval=$nils["$1"]
+  if [[ "$testval" != true ]]; then false; else true; fi
 }
 function isnum() {
   local testval="$(get num $1)"
@@ -118,16 +148,16 @@ function get() {
     # dont use $ with var
     # getvar PATH
     # todo: hide output if there is no match
-    declare -p ${(Mk)parameters:#$1} || false
+    declare -p ${(Mk)parameters:#$1}
   }
   # https://unix.stackexchange.com/a/290373
   function getfn() {
     # todo: hide output if there is no match
-    declare -f ${(Mk)functions:#$1} || false
+    declare -f ${(Mk)functions:#$1}
   }
   # https://unix.stackexchange.com/a/121892
   function checkopt() {
-    print $options[$1] || false
+    print $options[$1]
   }
   function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
   function abspath() { 
@@ -146,8 +176,16 @@ function get() {
     dir) dir read "$@" ;;
     path) getpath "$@" ;;
     asbpath) abspath "$@" ;;
-    *) catchall "$@" ;; 
+    help) print "get <num|const|atom|var|fn|opt|file|dir|path|abspath> name" ;; 
   esac
+}
+function puts() {
+  print "$@"
+}
+function putf() {
+  local str="$1"
+  shift
+  printf "$str" "$@"
 }
 ## ---------------------------------------------
 function cmd() {
@@ -161,11 +199,18 @@ function cmd() {
     setopt warn_create_global
   }
   function discard() { eval "$@" >|/dev/null 2>&1; }
+  function require() {
+    hash "$1" 2>/dev/null && true || {
+      echo >&2 "Error: '$1' is required, but was not found."
+   }
+  }
   local opt="$1"
   shift
   case "$opt" in 
     last) cpl ;;
+    require) require "$@" ;;
     discard) discard "$@" ;;
+    help) print "cmd [last|require|discard] name" ;;
     *) command "$@" ;;
   esac
 }
@@ -258,11 +303,15 @@ function file() {
     copy) file.copy  "$@" ;;
     new) file.new  "$@" ;;
     read) file.read "$@" ;;
-    rest) file.rest "$@" ;;
+    restore) file.rest "$@" ;;
     rmempty) file.rmempty "$@" ;;
     listnew) files.listnew "$@" ;;
     isolder) file.isolder "$@" ;;
     isnewer) file.isnewer "$@" ;;
+    help) 
+      print "file <backup|exists|copy|new|read|restore|"
+      print "      rmempty|listnew|isolder|isnewer> name"
+    ;;
     *) files "$@" ;;
   esac
 }
@@ -311,11 +360,16 @@ function dir() {
     backup) dir.bkp "$@" ;;
     restore) dir.rst "$@" ;;
     parent) dir.parent "$@" ;;
+    # previous) ;;
     exists) dir.exists "$@" ;;
     isempty) dir.isempty "$@" ;;
     up) dir.up "$@" ;;
     isolder) dir.isolder "$@" ;;
     isnewer) dir.isnewer "$@" ;;
+    help) 
+      print "dir <get|rmempty|new|read|backup|restore|parent|"
+      print "     previous|exists|isempty|up|isolder|isnewer> name"
+    ;;
     *) dir.get "$@" ;;
   esac
 }
@@ -323,6 +377,9 @@ function rmempty() { file rmempty && dir rmempty; }
 # fs prefix works for files and dirs
 # filepath.abs "../../file.txt"
 # math -------------------------------------------
+# all math commands can be used in two ways:
+# add 2 2 => 4
+# print 2 | add 2 => 4
 function add() {
   local left=
   local right="${2:-$1}"
@@ -451,10 +508,10 @@ function sum() {
 }
 function calc() { print "$@" | bc; }
 ## ---------------------------------------------
-function use() {
+function new() {
   local opt="$1"
   shift
-  function use::number() {
+  function new::number() {
     ## a number "object"
     @num() {
       unsetopt warn_create_global
@@ -490,65 +547,8 @@ function use() {
     alias -g @num="@num"
   }
   ## ---------------------------------------------
-  function use::pairs() {
-    ## a very simple data structure --------------------------
-    pair() {
-      print "${1};${2}"
-    }
-    pair.cons() {
-      print "${1:-$(cat -)}" | awk -F";" '{print $1}'
-    }
-    pair.cdr() {
-      print "${1:-$(cat -)}" | awk -F";" '{print $2}'
-    }
-    pair.setcons() {
-      print "$1" | sed 's/^.*;/'"$2"';/'
-    }
-    pair.setcdr() {
-      print "$1" | sed 's/;.*$/;'"$2"'/'
-    }
-    # change ; to \n so pair can be used with loops
-    pair.iter() {
-    }
-    pair.torange() {
-      range $(pair.cons "$1") $(pair.cdr "$1")
-    }
-    pair.torange.reverse() {
-      range $(pair.cdr "$1") $(pair.cons "$1")
-    }
-    pair.tovar() {
-      atom $(pair.cons "$1") $(pair.cdr "$1")
-    }
-  }
-  ## ---------------------------------------------
-  function use::range() {
-    # formatted ranges
-    # do not quote - range can be alpha or num
-    #  - maybe: range int $1 $2 / range str "$1" "$2"
-    # todo: incorporate seq and / or jot to do more stuff
-    # also: https://linuxize.com/post/bash-sequence-expression/
-    range() {
-      local incrementor="..${3:-1}"
-      print {$1..$2$incrementor}
-    }
-    # a range of integers
-    range.int() {;}
-    # a range of letters
-    range.str() {;}
-    # range.wrap "a" 4 5 "zz" => a4zz a5zz
-    range.wrap() {;}
-    range.nl() {
-      local incrementor="..${3:-1}"
-      print {$1..$2$incrementor} | tr ' ' '\n'
-    }
-    range.rev() {
-      local incrementor="..${3:-1}"
-      print {$1..$2$incrementor} | tr ' ' '\n' | sort -r
-    }
-  }
-  ## ---------------------------------------------
-  function use::string() {
-    # DSL STRING
+  function new::string() {
+    # a string object
     function @str() {
       unsetopt warn_create_global
       local name="${1}" && shift
@@ -570,17 +570,17 @@ function use() {
     alias -g @str="@str"
   }
   case "$opt" in
-    "number") use::number ;;
-    "pairs") use::pairs ;;
-    "range") use::range ;;
-    "string") use::string ;;
-    "dsl")
-      use::number
-      use::pairs
-      use::range
-      use::string
-    ;;
-    "clipboard") source <(pbpaste) ;;
-    *) source "$@" ;;
+    "number") new::number ;;
+    "string") new::string ;;
+  esac
+}
+# run a command in another language
+function use() {
+  local opt="$1"
+  shift
+  case "$opt" in
+    "py") python -c "$@" ;;
+    "lua") lua -e "$@" ;;
+    "js") node -e "$@" ;;
   esac
 }
