@@ -1,5 +1,74 @@
 ### everything for zsh that is not a command goes here
 {
+  export KEYTIMEOUT=25
+  export CLICOLOR=1
+  export EDITOR="hx" #"nvim" #"micro"
+  export GPG_TTY=$TTY
+  # https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh
+  export HISTFILE="$HOME/.history"
+  export HISTSIZE=50000000
+  export SAVEHIST=10000000
+  export HISTTIMEFORMAT='%F %T '
+  export HISTIGNORE="exit:bg:fg:history:clear:reload"
+  export LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+  export LSCOLORS=ExFxBxDxCxegedabagacad
+  export PAGER="more"
+  export PS2="  "
+  export PERIOD=90000
+  export SHELLFUNCS_DEFAULT_SHELL="/opt/local/bin/bash"
+  export VISUAL="$EDITOR"
+  export XDG_CACHE_HOME="${HOME}/.cache"
+  export XDG_CONFIG_HOME="${HOME}/.config"
+  export EXA_PERMISSIONS
+  export EXA_DEFAULT_OPTIONS="--color auto --all --group-directories-first "
+  EXA_DEFAULT_OPTIONS+="--long --header --modified --sort=name "
+  EXA_DEFAULT_OPTIONS+="--git --time-style=iso --classify --no-permissions --no-user"
+  export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
+  export GOPATH="$HOME/go"
+  export HOMEBREW_NO_ANALYTICS=1
+  export HOMEBREW_NO_AUTO_UPDATE=0
+  export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
+  export ZSH_HIGHLIGHT_HIGHLIGHTERS=(main cursor root line)
+  typeset -A ZSH_HIGHLIGHT_PATTERNS
+  ZSH_HIGHLIGHT_PATTERNS+=('rm -rf' 'fg=white,bold,bg=red')
+}
+{
+  # use short directory names
+  # eg ~zbin instead of cd "$HOME/zsh-config/bin"
+  hash -d zbin="$HOME/zsh-config/bin"
+  hash -d zconf="$HOME/zsh-config"
+  hash -d zetc="$HOME/zsh-config/etc"
+  hash -d zlib="$HOME/zsh-config/lib"
+  hash -d zplug="$HOME/zsh-config/plugin"
+  hash -d cloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+  hash -d documents="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents"
+  hash -d github="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents/__Github"
+  hash -d writing="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Freelance Writing/freelance_writing_obsidian"
+  ## ---------------------------------------------
+  # suffix aliases
+  alias -s git='git clone'
+  ## ---------------------------------------------
+  # -g == global alias. global as in expands anywhere on the current line
+  alias finder='open .'
+  alias ls='ls -a'
+  alias reload='exec zsh'
+  alias purj='sudo purge && sudo purge && sudo purge'
+  alias pip='pip3'
+  alias edit='micro' #'nvim'
+  alias prev="cd -"
+  alias c="pbcopy"
+  alias p="pbpaste"
+  alias cf='pbpaste|pbcopy'
+  alias rm='rm -i'
+  alias cp='cp -i'
+  alias rmf='sudo rm -rf'
+  alias plux='chmod +x'
+  alias namesingle='vidir'
+  alias sed='/usr/local/bin/gsed'
+  alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
+}
+{
   # setopt
   # setopt equals
   setopt allexport

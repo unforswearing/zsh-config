@@ -50,6 +50,12 @@ precmd() {
   })
 }
 periodic() {
+  { # list commands installed with homebrew or macports
+    port installed requested |
+      grep 'active' | sd '^ *' '' | sd " @.*$" ""
+    brew leaves
+  } | sort -d >>| "${ZSH_USR_DIR}/log";
+
   db put env_period "$PERIOD"
   # --------------------------------------
   # update hosts file from stevenblack/hosts
@@ -63,7 +69,7 @@ periodic() {
   # remove all .DS_Store files (not sure if working)
   (
     {
-      fd -H '^\.DS_Store$' -tf -X rm
+      find . -name '*.DS_Store' -type f -ls -delete
       db put rm_ds_store "$(gdate '+%Y-%m-%dT%H:%M')"
     } &
   ) >|/dev/null 2>&1
