@@ -47,7 +47,6 @@ up() {
 }
 files() { fd --type file --maxdepth="${1:-1}"; }
 copy() { file.copy "${@}"; }
-
 dir() { fd --type directory --maxdepth="${1:-1}"; }
 dir.new() {
   ccd() { mkdir -p "$1" && cd "$1"; }
