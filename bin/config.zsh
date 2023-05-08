@@ -162,14 +162,12 @@
 }
 {
   source "${ZSH_USR_DIR}/lnks.bash"
-  source "${ZSH_USR_DIR}/marks.bash"
-  source "${ZSH_USR_DIR}/searchlink.bash"
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
-  ln -sF ~/zsh-config/.zshenv ~/.zshenv
-  ln -sF ~/zsh-config/.zshrc ~/.zshrc
-  /bin/cp ~/zsh-config/.direnvrc ~/.direnvrc
-  ln -sF ~/zsh-config/usr/hosts.py ~/hosts.py
+  ln -sF ~/zsh-config/static/.zshenv ~/.zshenv
+  ln -sF ~/zsh-config/static/.zshrc ~/.zshrc
+  /bin/cp ~/zsh-config/static/.direnvrc ~/.direnvrc
+  ln -sF "${ZSH_USR_DIR}/hosts.py" ~/hosts.py
 }

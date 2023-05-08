@@ -10,7 +10,6 @@ find_pid() {
     exit 1
   fi
 }
-
 # Find a process by name and display its details
 find_process() {
   local pid=$(find_pid "$1")
@@ -24,21 +23,18 @@ suspend_process() {
   echo "Suspending process $1 (PID $pid)"
   kill -STOP "$pid"
 }
-
 # Resume a suspended process by name
 resume_process() {
   local pid=$(find_pid "$1")
   echo "Resuming process $1 (PID $pid)"
   kill -CONT "$pid"
 }
-
 # Terminate a process by name
 terminate_process() {
   local pid=$(find_pid "$1")
   echo "Terminating process $1 (PID $pid)"
   kill "$pid"
 }
-
 # Prompt the user to enter a process name and operation to perform
 read "process_name?Enter a process name: "
 read "operation?Enter an operation to perform (suspend, resume, terminate): "
