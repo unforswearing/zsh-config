@@ -50,12 +50,6 @@ precmd() {
   })
 }
 periodic() {
-  { # list commands installed with homebrew or macports
-    port installed requested |
-      grep 'active' | sd '^ *' '' | sd " @.*$" ""
-    brew leaves
-  } | sort -d >>| "${ZSH_USR_DIR}/log";
-
   db put env_period "$PERIOD"
   # --------------------------------------
   # update hosts file from stevenblack/hosts

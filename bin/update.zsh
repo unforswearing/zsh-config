@@ -1,6 +1,6 @@
 update.macports() {
   # try to update macports (not sure if working)
-  green "updating macports in the background"
+  color green "updating macports in the background"
   ({
     port selfupdate
     db put macports_updated "$(gdate '+%Y-%m-%dT%H:%M')"
@@ -8,7 +8,7 @@ update.macports() {
 }
 update.tldr() {
   # update tldr (not really useful)
-  green "updating tldr in the background"
+  color green "updating tldr in the background"
   ({
     tldr --update
     db put tldr_updated "$(gdate '+%Y-%m-%dT%H:%M')"
@@ -16,7 +16,7 @@ update.tldr() {
 }
 update.brew() {
   # update homebrew
-  green "updating homebrew in the background"
+  color green "updating homebrew in the background"
   ({
     brew update && brew upgrade
     db put homebrew_updated "$(gdate '+%Y-%m-%dT%H:%M')"
