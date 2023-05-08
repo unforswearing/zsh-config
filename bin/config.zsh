@@ -166,8 +166,8 @@
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
-  ln -sF /Users/unforswearing/zsh-config/static/.zshenv /Users/unforswearing/zshenv
-  ln -sF /Users/unforswearing/zsh-config/static/.zshrc /Users/unforswearing/.zshrc
+  /bin/cp /Users/unforswearing/zsh-config/static/.zshenv /Users/unforswearing/zshenv
+  /bin/cp /Users/unforswearing/zsh-config/static/.zshrc /Users/unforswearing/.zshrc
   /bin/cp /Users/unforswearing/zsh-config/static/.direnvrc /Users/unforswearing/.direnvrc
-  ln -sF "${ZSH_USR_DIR}/hosts.py" ~/hosts.py
+  /bin/cp "${ZSH_USR_DIR}/hosts.py" /Users/unforswearing/hosts.py
 }
