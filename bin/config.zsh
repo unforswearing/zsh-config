@@ -161,10 +161,10 @@
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
-  "${HOME}/.zshenv"
-  "${HOME}/.zshrc"
-  "${HOME}/.direnvrc"
-  "${HOME}/hosts.py"
+  mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log"
+  mv "${HOME}/.zshrc" "${ZSH_CONFIG_DIR}/log"
+  mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log"
+  mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log"
 
   "${HOME}/zsh-config/.zshenv"
   "${HOME}/zsh-config/.zshrc"
