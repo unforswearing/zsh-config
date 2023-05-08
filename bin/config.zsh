@@ -161,8 +161,8 @@
 }
 {
   # use hardlinks to keep stuff in the zsh-config dir instead of home dir
-  /bin/cp "/Users/unforswearing/zsh-config/.zshenv" "/Users/unforswearing/.zshenv"
-  /bin/cp "/Users/unforswearing/zsh-config/.zshrc" "/Users/unforswearing/.zshrc"
-  /bin/cp "/Users/unforswearing/zsh-config/.direnvrc" "/Users/unforswearing/.direnvrc"
-  /bin/cp "/Users/unforswearing/zsh-config/usr/hosts.py" "/Users/unforswearing/hosts.py"
+  /bin/cp "/Users/unforswearing/zsh-config/.zshenv" "/Users/unforswearing/.zshenv" >|/dev/null 2>&1
+  /bin/cp "/Users/unforswearing/zsh-config/.zshrc" "/Users/unforswearing/.zshrc" >|/dev/null 2>&1
+  /bin/cp "/Users/unforswearing/zsh-config/.direnvrc" "/Users/unforswearing/.direnvrc" >|/dev/null 2>&1
+  /bin/cp "/Users/unforswearing/zsh-config/usr/hosts.py" "/Users/unforswearing/hosts.py" >|/dev/null 2>&1
 }
