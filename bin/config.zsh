@@ -53,7 +53,6 @@
   # -g == global alias. global as in expands anywhere on the current line
   alias finder='open .'
   alias ls='ls -a'
-  alias reload='exec zsh'
   alias purj='sudo purge && sudo purge && sudo purge'
   alias pip='pip3'
   alias edit='micro' #'nvim'

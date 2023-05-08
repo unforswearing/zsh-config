@@ -1,6 +1,7 @@
 # For interactive use. 
 # Use Lua / Teal to write shell scripts. See zconf/src.
 # ---------------------------------------
+function reload() { exec zsh; }
 function error() { 
   : 
 }
