@@ -1,3 +1,4 @@
+# this .direnvrc is copied to $HOME/.direnvrc via bin/config.zsh
 # https://github.com/direnv/direnv/issues/73#issuecomment-152284914
 export_function() {
   local name=$1
@@ -6,9 +7,9 @@ export_function() {
   PATH_add "$alias_dir"
   local target="$alias_dir/$name"
   if declare -f "$name" >/dev/null; then
-    echo "#!/usr/bin/env bash" > "$target"
-    declare -f "$name" >> "$target" 2>/dev/null
-    echo "$name" >> "$target"
+    echo "#!/usr/bin/env bash" >"$target"
+    declare -f "$name" >>"$target" 2>/dev/null
+    echo "$name" >>"$target"
     chmod +x "$target"
   fi
 }
@@ -24,7 +25,7 @@ export_alias() {
   local target="$alias_dir/$name"
   mkdir -p "$alias_dir"
   PATH_add "$alias_dir"
-  echo "#!/usr/bin/bash" > "$target"
-  echo "$@ \"\$@\"" >> "$target"
+  echo "#!/usr/bin/bash" >"$target"
+  echo "$@ \"\$@\"" >>"$target"
   chmod +x "$target"
 }
