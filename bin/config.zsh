@@ -162,7 +162,7 @@
     "help") source "${ZSH_USR_DIR}/help.zsh" ;;
     "lnks") source "${ZSH_USR_DIR}/lnks.bash" ;;
     "update") source "${ZSH_USR_DIR}/update.zsh" ;;
-    "update") source "${ZSH_USR_DIR}/update.zsh" ;;
+    "repl") source "${ZSH_USR_DIR}/replify.sh" ;;
     "conv") source "${ZSH_USR_DIR}/conversion.zsh" ;;
     "net") source "${ZSH_USR_DIR}/net.zsh" ;;
     "iterm")
