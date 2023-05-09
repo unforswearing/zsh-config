@@ -156,6 +156,7 @@
   bindkey '\e' vi-kill-line
 }
 {
+  declare -A imports
   function import() {
     unsetopt warncreateglobal
     case "$1" in
@@ -170,7 +171,13 @@
         source "${HOME}/.iterm2_shell_integration.zsh"
       ;;
     esac
+    imports["$1"]=true
   }
+  # to "un-import" a function
+  # function drop() {
+    # unhash -f "$1";
+    # ${imports["$1"]::=}
+  # }
 }
 {
   # move stuff from $HOME to zconf/
