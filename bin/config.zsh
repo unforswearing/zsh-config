@@ -162,6 +162,7 @@
     "help") source "${ZSH_USR_DIR}/help.zsh" ;;
     "lnks") source "${ZSH_USR_DIR}/lnks.bash" ;;
     "update") source "${ZSH_USR_DIR}/update.zsh" ;;
+    "update") source "${ZSH_USR_DIR}/update.zsh" ;;
     "conv") source "${ZSH_USR_DIR}/conversion.zsh" ;;
     "net") source "${ZSH_USR_DIR}/net.zsh" ;;
     "iterm")
@@ -172,11 +173,11 @@
   }
 }
 {
-  # move stuff from $HOME to zconf/log
-  /bin/mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log"
-  /bin/mv "${HOME}/.zshrc" "${ZSH_CONFIG_DIR}/log"
-  /bin/mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log"
-  /bin/mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log"
+  # move stuff from $HOME to zconf/
+  /bin/mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log/"
+  /bin/mv "${HOME}/.zshrc" "${ZSH_CONFIG_DIR}/log/"
+  /bin/mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log/"
+  /bin/mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log/"
 
   # copy stuff from zconf to $HOME
   /bin/cp "${HOME}/zsh-config/.zshenv" "${HOME}/.zshenv"
