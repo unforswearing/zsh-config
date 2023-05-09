@@ -1,4 +1,5 @@
-# add stuff  from insect - add, subtract, and convert from and to
+# add stuff  from insect - https://github.com/sharkdp/insect#terminal-version
+# add, subtract, and convert from and to
 # seconds, minutes, hours, days; inches, feet, miles
 # grams, miligrams, kilograms; milimeters, centimenters, meters, kilometers
 # eg. 50 minutes in seconds, 10 miles in meters, 4 days + 33 hours
