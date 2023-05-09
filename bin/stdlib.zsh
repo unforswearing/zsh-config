@@ -1,10 +1,10 @@
-# For interactive use. 
+# For interactive use.
 # Use Lua / Teal to write shell scripts. See zconf/src.
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 # ---------------------------------------
 function reload() { exec zsh; }
-function error() { 
-  : 
+function error() {
+  :
 }
 function color() {
   local red="\033[31m"
@@ -37,7 +37,7 @@ function sysinfo() {
     disks) nu -c "sys|get disks" ;;
     mem | memory)
       nu -c "{
-        free: (sys|get mem|get free), 
+        free: (sys|get mem|get free),
         used: (sys|get mem|get used),
         total: (sys|get mem|get total)
       }"
@@ -67,6 +67,7 @@ function nil() {
   local name="$1"
   local value="$(cat /dev/null)"
   nils["$name"]=true
+  eval "function $name() print $value;"
 }
 declare -A nums
 function num() {
@@ -123,25 +124,25 @@ function isfn() {
 function get() {
   function getnum() {
     local val=$nums["$1"]
-    if [[ -z $val ]]; then 
+    if [[ -z $val ]]; then
       false
-    else 
+    else
       print "$val"
     fi;
   }
   function getconst() {
     local val=$consts["$1"]
-    if [[ -z $val ]]; then 
+    if [[ -z $val ]]; then
       false
-    else 
+    else
       print "$val"
     fi;
   }
   function getatom() {
     local val=$atoms["$1"]
-    if [[ -z $val ]]; then 
+    if [[ -z $val ]]; then
       false
-    else 
+    else
       print "$val"
     fi;
   }
@@ -162,12 +163,12 @@ function get() {
     print $options[$1]
   }
   function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
-  function abspath() { 
-    print "$(cd "$(dirname ${1:-$(cat -)})" && pwd)/$(basename "${1:-$(cat -)}")"; 
+  function abspath() {
+    print "$(cd "$(dirname ${1:-$(cat -)})" && pwd)/$(basename "${1:-$(cat -)}")";
   }
   local opt="$1"
   shift
-  case "$opt" in 
+  case "$opt" in
     num) getnum "$@" ;;
     const) getconst "$@" ;;
     atom) getatom "$@" ;;
@@ -178,7 +179,7 @@ function get() {
     dir) dir read "$@" ;;
     path) getpath "$@" ;;
     asbpath) abspath "$@" ;;
-    help) print "get <num|const|atom|var|fn|opt|file|dir|path|abspath> name" ;; 
+    help) print "get <num|const|atom|var|fn|opt|file|dir|path|abspath> name" ;;
   esac
 }
 function puts() {
@@ -208,7 +209,7 @@ function cmd() {
   }
   local opt="$1"
   shift
-  case "$opt" in 
+  case "$opt" in
     last) cpl ;;
     require) require "$@" ;;
     discard) discard "$@" ;;
@@ -217,19 +218,19 @@ function cmd() {
   esac
 }
 ## ---------------------------------------------
-function lower() { 
+function lower() {
   local opt="${1:-$(cat -)}" && \
-    print "$opt" | tr '[:upper:]' '[:lower:]'; 
+    print "$opt" | tr '[:upper:]' '[:lower:]';
 }
-function upper() { 
+function upper() {
   local opt="${1:-$(cat -)}" && \
-    print "$opt" | tr '[:lower:]' '[:upper:]'; 
+    print "$opt" | tr '[:lower:]' '[:upper:]';
 }
 ## ---------------------------------------------
 function trim() {
-  function trim() { 
+  function trim() {
   local opt="${1:-$(cat -)}" && \
-    print "$opt" | trim.left | trim.right; 
+    print "$opt" | trim.left | trim.right;
   }
   function trim.left() {
     local char=${1:-[:space:]}
@@ -241,7 +242,7 @@ function trim() {
   }
   local opt="$1"
   shift
-  case "$opt" in 
+  case "$opt" in
     left) trim.left "$@" ;;
     right) trim.right "$@" ;;
     *) trim "$@" ;;
@@ -255,18 +256,18 @@ function len() {
   print "${#item}"
 }
 function count() {
-  function count.lines() { 
-    local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim; 
+  function count.lines() {
+    local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim;
   }
-  function count.words() { 
-    local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim; 
+  function count.words() {
+    local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim;
   }
-  function count.chars() { 
-    local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim; 
+  function count.chars() {
+    local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim;
   }
   local opt="$1"
   shift
-  case "$opt" in 
+  case "$opt" in
     lines) count.lines  "$@" ;;
     words) count.words "$@" ;;
     chars) count.chars "$@" ;;
@@ -278,12 +279,12 @@ function file() {
   # restore filename.txt => overwrites filename.txt
   function files() { fd --hidden --type file --maxdepth="${1:-1}"; }
   function file.bkp() { cp "${1:-$(cat -)}"{,.bak}; }
-  function file.exists() { 
-    if [[ -s "${1:-$(cat -)}" ]]; then 
-      true 
-    else 
-      false 
-    fi 
+  function file.exists() {
+    if [[ -s "${1:-$(cat -)}" ]]; then
+      true
+    else
+      false
+    fi
   }
   function file.copy() { <"${1:-$(cat -)}" | pbcopy; }
   function file.new() { touch "$@"; }
@@ -300,22 +301,22 @@ function file() {
       --threads=2 \
       --change-newer-than "${1:-5}"min
   }
-  function file.empty() { 
-    if [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; then 
-      true 
-    else 
-      false 
-    fi 
+  function file.empty() {
+    if [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; then
+      true
+    else
+      false
+    fi
   }
-  function file.isnewer() { 
+  function file.isnewer() {
     if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
   }
-  function file.isolder() { 
+  function file.isolder() {
     if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
   }
   local opt="$1"
   shift
-  case "$opt" in 
+  case "$opt" in
     list) files "$@" ;;
     backup) file.bkp "$@" ;;
     exists) file.exists "$@" ;;
@@ -327,7 +328,7 @@ function file() {
     listnew) files.listnew "$@" ;;
     isolder) file.isolder "$@" ;;
     isnewer) file.isnewer "$@" ;;
-    help) 
+    help)
       print "file <backup|exists|copy|new|read|restore|"
       print "      rmempty|listnew|isolder|isnewer> name"
     ;;
@@ -338,7 +339,7 @@ function file() {
 function dir() {
   function dir.get() { fd --hidden --type directory --maxdepth="${1:-1}"; }
   function dir.rmempty() { find . -type d -empty -print -delete; }
-  function dir.new() { 
+  function dir.new() {
     ccd() { mkdir -p "$1" && cd "$1"; }
     # mkdir "$@";
     case "$1" in
@@ -351,17 +352,17 @@ function dir() {
   }
   function dir.read() { ls "${1:-$(cat -)}"; }
   function dir.bkp() { cp -r "${1:-$(cat -)}" "${1:-$(cat -)}.bak"; }
-  function dir.rst() { 
+  function dir.rst() {
     cp -r "${1:-$(cat -)}.bak" "${1:-$(cat -)}" && \
-      rm -rf "${1:-$(cat -)}.bak"; 
+      rm -rf "${1:-$(cat -)}.bak";
   }
   function dir.parent() { dirname "${1:-(pwd)}"; }
-  function dir.exists() { 
+  function dir.exists() {
     if [[ -d "${1:-$(cat -)}" ]]; then true; else false; fi;
   }
   function dir.isempty() {
     local count=$(ls -la "${1:-$(cat -)}" | wc -l | trim.left)
-    if [[ $count -eq 0 ]]; then true; else false; fi; 
+    if [[ $count -eq 0 ]]; then true; else false; fi;
   }
   function dir.up() {
     case "${1}" in
@@ -369,15 +370,15 @@ function dir() {
       *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
     esac
   }
-  function dir.isnewer() { 
-    if [[ "${1:-$(cat -)}" -nt "${2}" ]]; then true; else false; fi; 
+  function dir.isnewer() {
+    if [[ "${1:-$(cat -)}" -nt "${2}" ]]; then true; else false; fi;
   }
-  function dir.isolder() { 
-    if [[ "${1:-$(cat -)}" -ot "${2}" ]]; then true; else false; fi; 
-  }  
+  function dir.isolder() {
+    if [[ "${1:-$(cat -)}" -ot "${2}" ]]; then true; else false; fi;
+  }
   local opt="$1"
   shift
-  case "$opt" in 
+  case "$opt" in
     get) dir.get "$@" ;;
     rmempty) dir.rmempty "$@" ;;
     new) dir.new "$@" ;;
@@ -391,7 +392,7 @@ function dir() {
     up) dir.up "$@" ;;
     isolder) dir.isolder "$@" ;;
     isnewer) dir.isnewer "$@" ;;
-    help) 
+    help)
       print "dir <get|rmempty|new|read|backup|restore|parent|"
       print "     previous|exists|isempty|up|isolder|isnewer> name"
     ;;
