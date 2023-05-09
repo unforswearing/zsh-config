@@ -20,9 +20,7 @@ fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
   source "$_config_file_" || print "failed: $shortname"
 done
-import help
-import iterm
-import lnks
+# use dsl
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 ## the folling are not used:
