@@ -1,5 +1,6 @@
 # For interactive use. 
 # Use Lua / Teal to write shell scripts. See zconf/src.
+export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 # ---------------------------------------
 function reload() { exec zsh; }
 function error() { 
@@ -71,7 +72,7 @@ declare -A nums
 function num() {
   local name="$1"
   local value="$2"
-  nums["$name"]="$value"
+  nums["$name"]="$((value))"
   eval "function $name() print $value;"
 }
 # const utencil "spoon"
@@ -275,9 +276,15 @@ function count() {
 function file() {
   # bkp filename.txt => filename.txt.bak
   # restore filename.txt => overwrites filename.txt
-  function files() { fd --type file --maxdepth="${1:-1}"; }
+  function files() { fd --hidden --type file --maxdepth="${1:-1}"; }
   function file.bkp() { cp "${1:-$(cat -)}"{,.bak}; }
-  function file.exists() { [[ -s "${1:-$(cat -)}" ]]; }
+  function file.exists() { 
+    if [[ -s "${1:-$(cat -)}" ]]; then 
+      true 
+    else 
+      false 
+    fi 
+  }
   function file.copy() { <"${1:-$(cat -)}" | pbcopy; }
   function file.new() { touch "$@"; }
   function file.read() { print "$(<"${1:-$(cat -)}")"; }
@@ -293,9 +300,19 @@ function file() {
       --threads=2 \
       --change-newer-than "${1:-5}"min
   }
-  function file.empty() { [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; }
-  function file.isnewer() { [[ "${1:-$(cat -)}" -nt "${2}" ]]; }
-  function file.isolder() { [[ "${1:-$(cat -)}" -ot "${2}" ]]; }
+  function file.empty() { 
+    if [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; then 
+      true 
+    else 
+      false 
+    fi 
+  }
+  function file.isnewer() { 
+    if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
+  }
+  function file.isolder() { 
+    if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
+  }
   local opt="$1"
   shift
   case "$opt" in 
@@ -319,7 +336,7 @@ function file() {
 }
 # directory actions
 function dir() {
-  function dir.get() { fd --type directory --maxdepth="${1:-1}"; }
+  function dir.get() { fd --hidden --type directory --maxdepth="${1:-1}"; }
   function dir.rmempty() { find . -type d -empty -print -delete; }
   function dir.new() { 
     ccd() { mkdir -p "$1" && cd "$1"; }
@@ -339,10 +356,12 @@ function dir() {
       rm -rf "${1:-$(cat -)}.bak"; 
   }
   function dir.parent() { dirname "${1:-(pwd)}"; }
-  function dir.exists() { [[ -d "${1:-$(cat -)}" ]]; }
+  function dir.exists() { 
+    if [[ -d "${1:-$(cat -)}" ]]; then true; else false; fi;
+  }
   function dir.isempty() {
     local count=$(ls -la "${1:-$(cat -)}" | wc -l | trim.left)
-    [[ $count -eq 0 ]];
+    if [[ $count -eq 0 ]]; then true; else false; fi; 
   }
   function dir.up() {
     case "${1}" in
@@ -350,8 +369,12 @@ function dir() {
       *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
     esac
   }
-  function dir.isnewer() { [[ "${1:-$(cat -)}" -nt "${2}" ]]; }
-  function dir.isolder() { [[ "${1:-$(cat -)}" -ot "${2}" ]]; }  
+  function dir.isnewer() { 
+    if [[ "${1:-$(cat -)}" -nt "${2}" ]]; then true; else false; fi; 
+  }
+  function dir.isolder() { 
+    if [[ "${1:-$(cat -)}" -ot "${2}" ]]; then true; else false; fi; 
+  }  
   local opt="$1"
   shift
   case "$opt" in 
@@ -511,10 +534,8 @@ function sum() {
 function calc() { print "$@" | bc; }
 ## ---------------------------------------------
 function new() {
-  local opt="$1"
-  shift
-  function new::number() {
-    ## a number "object"
+  function number() {
+    # a number "object"
     @num() {
       unsetopt warn_create_global
       local name="${1}"
@@ -545,11 +566,10 @@ function new() {
       }
       _n "$value"
     }
-    functions["@num"]="@num"
-    alias -g @num="@num"
+    @num "$@"
   }
   ## ---------------------------------------------
-  function new::string() {
+  function string() {
     # a string object
     function @str() {
       unsetopt warn_create_global
@@ -568,12 +588,11 @@ function new() {
     function $name.len() { print ${value} | len ; }
     "
     }
-    functions["@str"]="@str"
-    alias -g @str="@str"
+    @str "$@"
   }
-  case "$opt" in
-    "number") new::number ;;
-    "string") new::string ;;
+  case "$1" in
+    num) number "$@" ;;
+    str) string "$@" ;;
   esac
 }
 # run a command in another language

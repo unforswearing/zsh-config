@@ -156,10 +156,20 @@
   bindkey '\e' vi-kill-line
 }
 {
-  source "${ZSH_USR_DIR}/lnks.bash"
-  source "${ZSH_USR_DIR}/conversion.zsh"
-  source "${ZSH_USR_DIR}/help.zsh"
-  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+  function import() {
+    unsetopt warncreateglobal
+    case "$1" in
+    "help") source "${ZSH_USR_DIR}/help.zsh" ;;
+    "lnks") source "${ZSH_USR_DIR}/lnks.bash" ;;
+    "update") source "${ZSH_USR_DIR}/update.zsh" ;;
+    "conv") source "${ZSH_USR_DIR}/conversion.zsh" ;;
+    "net") source "${ZSH_USR_DIR}/net.zsh" ;;
+    "iterm")
+      test -e "${HOME}/.iterm2_shell_integration.zsh" &&
+        source "${HOME}/.iterm2_shell_integration.zsh"
+      ;;
+    esac
+  }
 }
 {
   # move stuff from $HOME to zconf/log
@@ -172,5 +182,5 @@
   /bin/cp "${HOME}/zsh-config/.zshenv" "${HOME}/.zshenv"
   /bin/cp "${HOME}/zsh-config/.zshrc" "${HOME}/.zshrc"
   /bin/cp "${HOME}/zsh-config/.direnvrc" "${HOME}/.direnvrc"
-  /bin/cp "${HOME}/zsh-config/usr/hosts.py" "${HOME}/hosts.py"
+  /bin/cp "${HOME}/zsh-config/hosts.py" "${HOME}/hosts.py"
 }

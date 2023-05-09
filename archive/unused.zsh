@@ -1,4 +1,4 @@
- this file contains code that attempts to make zsh more like a
+# this file contains code that attempts to make zsh more like a
 # traditional programming language via new keywords, env variables, and "objects"
 # NB. use this DSL in scripts, not interactively!
 #

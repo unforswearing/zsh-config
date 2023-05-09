@@ -1,3 +1,4 @@
+# add stuff  from insect - 
 rgb~hex() {
   unsetopt warncreateglobal
   for var in "$@"; do
