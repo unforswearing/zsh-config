@@ -163,6 +163,7 @@
     "color") source "${ZSH_USR_DIR}/color.zsh" ;;
     "datetime") source "${ZSH_USR_DIR}/datetime.bash" ;;
     "net") source "${ZSH_USR_DIR}/net.zsh" ;;
+    "extract") source "${ZSH_USR_DIR}/extract.bash" ;;
     "conv") source "${ZSH_USR_DIR}/conversion.zsh" ;;
     "update") source "${ZSH_USR_DIR}/update.zsh" ;;
     "help") source "${ZSH_USR_DIR}/help.zsh" ;;
@@ -172,6 +173,10 @@
       test -e "${HOME}/.iterm2_shell_integration.zsh" &&
         source "${HOME}/.iterm2_shell_integration.zsh"
       ;;
+    *) 
+      print "import <color|datetime|net|extract|conv|"
+      print "        update|help|lnks|repl|iterm>"
+    ;;
     esac
     imports["$1"]=true
   }
