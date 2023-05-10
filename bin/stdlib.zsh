@@ -51,6 +51,7 @@ function num() {
   local value="$2"
   nums["$name"]="$((value))"
   eval "function $name() print $value;"
+  functions["$name"]
 }
 # const utencil "spoon"
 declare -A consts
