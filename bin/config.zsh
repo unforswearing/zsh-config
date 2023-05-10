@@ -166,6 +166,7 @@
     "repl") source "${ZSH_USR_DIR}/replify.sh" ;;
     "conv") source "${ZSH_USR_DIR}/conversion.zsh" ;;
     "net") source "${ZSH_USR_DIR}/net.zsh" ;;
+    "color") source "${ZSH_USR_DIR/color.zsh}"
     "iterm")
       test -e "${HOME}/.iterm2_shell_integration.zsh" &&
         source "${HOME}/.iterm2_shell_integration.zsh"
