@@ -184,8 +184,11 @@
     esac
     imports["$1"]=true
   }
+  # to remove imported functions from the environment
+  # unload "conv"
   function unload() {
-    imports["$1"]=
+    ${imports["$1"]::=}
+    unhash -f "$1"
   }
 }
 {
