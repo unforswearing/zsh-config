@@ -34,7 +34,6 @@ function topt() {
   fi
   if [[ "$2" != "quiet" ]] && checkopt $1;
 }
-function async() { ({ eval "$@"; } &) >/dev/null 2>&1; }
 ################################################
 # create pseudo types: nil, num, const, atom
 declare -A stdtypes
