@@ -10,6 +10,6 @@ push ()
             loc_ip="100.95.96.84"
         ;;
     esac;
-    git push && ssh ${loc_ip} "cd $HOME/zsh-config && git pull && direnv allow && exec zsh"
+    git push && ssh ${loc_ip} "cd $HOME/zsh-config && git pull"
 }
 push
