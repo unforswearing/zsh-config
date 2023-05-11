@@ -1,5 +1,6 @@
 # For interactive use.
 # Use Lua / Teal to write shell scripts. See zconf/src.
+import color
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 # ---------------------------------------
 function reload() { exec zsh; }
@@ -20,7 +21,7 @@ function sysinfo() {
       ;;
     temp | temperature) nu -c "sys|get temp" ;;
     net | io) nu -c "sys|get net" ;;
-    help) print "sysinfo <hist|cpu|disks|mem|temp|net>" ;;
+    *) color red "$0: no method named '$opt'" ;;
   esac
 }
 function memory() { sysinfo memory; }
@@ -158,7 +159,7 @@ function get() {
     dir) dir read "$@" ;;
     path) getpath "$@" ;;
     asbpath) abspath "$@" ;;
-    help) print "get <num|const|atom|var|fn|opt|file|dir|path|abspath> name" ;;
+    *) color red "$0: no method named '$opt'" ;;
   esac
 }
 function puts() { print "$@"; }
@@ -191,7 +192,7 @@ function cmd() {
     require) require "$@" ;;
     discard) discard "$@" ;;
     help) print "cmd [last|require|discard] name" ;;
-    *) command "$@" ;;
+    *) color red "$0: no method named '$opt'" ;;
   esac
 }
 ## ---------------------------------------------
@@ -259,7 +260,7 @@ function count() {
     lines) count.lines  "$@" ;;
     words) count.words "$@" ;;
     chars) count.chars "$@" ;;
-    *) print "count <lines | words | chars>"
+    *)  color red "$0: no method named '$opt'" ;;
   esac
 }
 function file() {
@@ -301,11 +302,7 @@ function file() {
     listnew) files.listnew "$@" ;;
     isolder) file.isolder "$@" ;;
     isnewer) file.isnewer "$@" ;;
-    help)
-      print "file <backup|exists|copy|new|read|restore|"
-      print "      rmempty|listnew|isolder|isnewer> name"
-    ;;
-    *) files "$@" ;;
+    *) color red "$0: no method named '$opt'" ;;
   esac
 }
 # directory actions
@@ -364,11 +361,7 @@ function dir() {
     up) dir.up "$@" ;;
     isolder) dir.isolder "$@" ;;
     isnewer) dir.isnewer "$@" ;;
-    help)
-      print "dir <get|rmempty|new|read|backup|restore|parent|"
-      print "     previous|exists|isempty|up|isolder|isnewer> name"
-    ;;
-    *) dir.get "$@" ;;
+    *) color red "$0: no method named '$opt'" ;;
   esac
 }
 # fs prefix works for files and dirs
