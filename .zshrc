@@ -20,6 +20,7 @@ fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
   source "$_config_file_" || print "failed: $shortname"
 done
+# the  `import` function is in bin/config.zsh
 import help
 import iterm
 import lnks
@@ -70,7 +71,6 @@ periodic() {
     } &
   ) >|/dev/null 2>&1
   db put periodic_function "$(which periodic | base64)"
-  # functions[periodic]=
 }
 ## ---------------------------------------------
 # update path in db

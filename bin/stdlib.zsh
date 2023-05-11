@@ -23,6 +23,7 @@ function sysinfo() {
     help) print "sysinfo <hist|cpu|disks|mem|temp|net>" ;;
   esac
 }
+function memory() { sysinfo memory; }
 # topt: toggle the option - if on, turn off. if off, turn on
 function topt() {
   if [[ $options[$1] == "on" ]]; then
@@ -32,26 +33,29 @@ function topt() {
   fi
   if [[ "$2" != "quiet" ]] && checkopt $1;
 }
-function memory() { sysinfo memory; }
 function async() { ({ eval "$@"; } &) >/dev/null 2>&1; }
 ################################################
 # create pseudo types: nil, num, const, atom
+declare -A stdtypes
 declare -A nils
 function nil() {
   # a nil type
-  # for sending commands to nothingness, use `cmd discard`
+  # use `cmd discard` for sending commands to nothingness
   local name="$1"
   local value="$(cat /dev/null)"
+  declare -rg "$name=$value"
   nils["$name"]=true
+  stdtypes["$name"]="nil"
   eval "function $name() print $value;"
 }
 declare -A nums
 function num() {
   local name="$1"
   local value="$2"
+  declare -rg "$name=$value"
   nums["$name"]="$((value))"
+  stdtypes["$name"]="num"
   eval "function $name() print $value;"
-  functions["$name"]
 }
 # const utencil "spoon"
 declare -A consts
@@ -61,6 +65,7 @@ function const() {
   local value="$@"
   declare -rg "$name=$@"
   consts["$name"]="$@"
+  stdtypes["$name"]="const"
   eval "function $name() print $value"
 }
 # atom, single item of data. a number or word
@@ -76,8 +81,13 @@ function atom() {
   declare -rg $nameval="$nameval" >|/dev/null 2>&1;
   functions["$nameval"]="$nameval" >|/dev/null 2>&1;
   atoms["$nameval"]="$nameval" >|/dev/null 2>&1;
+  stdtypes["$name"]="atom"
 }
 # check the type of various vars
+function typeof() {
+  local val=$stdtypes["$1"]
+  if [[ -z $val ]]; then print "none"; else print "$val"; fi;
+}
 function isnil() {
   # nil has no value so there is no `get nil` command
   local testval=$nils["$1"]
@@ -101,26 +111,17 @@ function isfn() {
 function get() {
   function getnum() {
     local val=$nums["$1"]
-    if [[ -z $val ]]; then
-      false
-    else
-      print "$val"
+    if [[ -z $val ]]; then false; else print "$val";
     fi;
   }
   function getconst() {
     local val=$consts["$1"]
-    if [[ -z $val ]]; then
-      false
-    else
-      print "$val"
+    if [[ -z $val ]]; then false; else print "$val";
     fi;
   }
   function getatom() {
     local val=$atoms["$1"]
-    if [[ -z $val ]]; then
-      false
-    else
-      print "$val"
+    if [[ -z $val ]]; then false; else print "$val";
     fi;
   }
   # https://unix.stackexchange.com/a/290373
@@ -135,6 +136,7 @@ function get() {
     # todo: hide output if there is no match
     declare -f ${(Mk)functions:#$1}
   }
+  ## ---------------------------------------------
   # https://unix.stackexchange.com/a/121892
   function checkopt() {
     print $options[$1]
@@ -159,9 +161,7 @@ function get() {
     help) print "get <num|const|atom|var|fn|opt|file|dir|path|abspath> name" ;;
   esac
 }
-function puts() {
-  print "$@"
-}
+function puts() { print "$@"; }
 function putf() {
   local str="$1"
   shift
@@ -257,27 +257,12 @@ function file() {
   function files() { fd --hidden --type file --maxdepth="${1:-1}"; }
   function file.bkp() { cp "${1:-$(cat -)}"{,.bak}; }
   function file.exists() {
-    if [[ -s "${1:-$(cat -)}" ]]; then
-      true
-    else
-      false
-    fi
+    if [[ -s "${1:-$(cat -)}" ]]; then true; else false; fi;
   }
   function file.copy() { <"${1:-$(cat -)}" | pbcopy; }
   function file.new() { touch "$@"; }
   function file.read() { print "$(<"${1:-$(cat -)}")"; }
   function file.rest() { cp "${1:-$(cat -)}"{.bak,} && rm "${1:-$(cat -)}.bak"; }
-  function file.rmempty() { find . -type f -empty -print -delete; }
-  function files.listnew() {
-    # recency=2
-    # ls.new $recency
-    fd --type file \
-      --base-directory $(pwd) \
-      --absolute-path \
-      --max-depth=1 \
-      --threads=2 \
-      --change-newer-than "${1:-5}"min
-  }
   function file.empty() {
     if [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; then
       true
@@ -315,7 +300,6 @@ function file() {
 # directory actions
 function dir() {
   function dir.get() { fd --hidden --type directory --maxdepth="${1:-1}"; }
-  function dir.rmempty() { find . -type d -empty -print -delete; }
   function dir.new() {
     ccd() { mkdir -p "$1" && cd "$1"; }
     # mkdir "$@";
@@ -376,7 +360,6 @@ function dir() {
     *) dir.get "$@" ;;
   esac
 }
-function rmempty() { file rmempty && dir rmempty; }
 # fs prefix works for files and dirs
 # filepath.abs "../../file.txt"
 # math -------------------------------------------
@@ -511,76 +494,3 @@ function sum() {
 }
 function calc() { print "$@" | bc; }
 ## ---------------------------------------------
-## pseudo objects: string and number
-## TBD: obj:file, obj:dir
-function obj:file() {
-  # read, write, append, created, modified, path, copy, rm, close
-}
-function obj:dir() {
-  # read, write, newfile, newdir, path, copy, created, modified, rm, close
-}
-function obj:number() {
-  # a number "object"
-  @num() {
-    unsetopt warn_create_global
-    local name="${1}"
-    local value=${2}
-    declare -rg $name=$value
-    functions[$name]="print ${value}"
-    eval "
-  function $name { print ${value}; }
-  alias -g $name="$name"
-  "
-    function _n() {
-      val="$1"
-      function "$name".add() { local opt=$1; add "$val" "$opt" }
-      function "$name".sub() { local opt=$1; sub "$val" "$opt" }
-      function "$name".mul() { local opt=$1; mul "$val" "$opt" }
-      function "$name".div() { local opt=$1; div "$val" "$opt" }
-      function "$name".pow() { local opt=$1; pow "$val" "$opt" }
-      function "$name".mod() { local opt=$1; mod "$val" "$opt" }
-      function "$name".eq() { local opt=$1; eq "$val" "$opt" }
-      function "$name".ne() { local opt=$1; ne "$val" "$opt" }
-      function "$name".gt() { local opt=$1; gt "$val" "$opt" }
-      function "$name".lt() { local opt=$1; lt "$val" "$opt" }
-      function "$name".ge() { local opt=$1; ge "$val" "$opt" }
-      function "$name".le() { local opt=$1; le "$val" "$opt" }
-      function "$name".incr() { incr $val }
-      function "$name".decr() { decr $val }
-      function "$name".sum() { local args="$@"; sum "$args" }
-    }
-    _n "$value"
-  }
-  @num "$@"
-}
-function obj:string() {
-  # a string object
-  function @str() {
-    unsetopt warn_create_global
-    local name="${1}" && shift
-    local value="\"${@}\""
-    declare -rg $name=$value
-    functions[$name]="print ${value}"
-    eval "
-  function "$name" { print "${value}"; }
-  alias -g $name="$name"
-  function $name.upper() { print ${value} | upper ; }
-  function $name.lower() { print ${value} | lower ; }
-  function $name.trim() { print ${value} | trim ; }
-  function $name.trim.left() { print ${value} | trim.left ; }
-  function $name.trim.right() { print ${value} | trim.right ; }
-  function $name.len() { print ${value} | len ; }
-  "
-  }
-  @str "$@"
-}
-# run a command in another language
-function use() {
-  local opt="$1"
-  shift
-  case "$opt" in
-    "py") python -c "$@" ;;
-    "lua") lua -e "$@" ;;
-    "js") node -e "$@" ;;
-  esac
-}
