@@ -184,7 +184,9 @@
     esac
     imports["$1"]=true
   }
-  
+  function unload() {
+    imports["$1"]=
+  }
 }
 {
   # move stuff from $HOME to zconf/
