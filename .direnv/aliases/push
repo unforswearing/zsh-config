@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 push () 
 { 
-    echo "need to ssh a pull on unf-b after push"
+    local loc_ip=;
+    case "$(hostname)" in 
+        unforswearing-b.local)
+            loc_ip="100.118.230.76"
+        ;;
+        unforswearing-original.local)
+            loc_ip="100.95.96.84"
+        ;;
+    esac;
+    git push && ssh ${loc_ip} "cd $HOME/zsh-config && git pull"
 }
 push
