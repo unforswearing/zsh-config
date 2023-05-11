@@ -260,7 +260,7 @@ function count() {
     lines) count.lines  "$@" ;;
     words) count.words "$@" ;;
     chars) count.chars "$@" ;;
-    *)  color red "$0: no method named '$opt'" ;;
+    *) color red "$0: no method named '$opt'" ;;
   esac
 }
 function file() {
