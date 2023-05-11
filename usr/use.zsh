@@ -3,8 +3,8 @@ function use() {
   local opt="$1"
   shift
   case "$opt" in
-    "py") python -c "$@" ;;
-    "lua") lua -e "$@" ;;
-    "js") node -e "$@" ;;
+  "py") python -c "$@" ;;
+  "lua") lua -e "$@" ;;
+  "js") node -e "$@" ;;
   esac
 }

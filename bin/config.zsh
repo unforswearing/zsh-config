@@ -171,6 +171,7 @@
     "cleanup") source "${ZSH_USR_DIR}/cleanup.zsh" ;;
     "lnks") source "${ZSH_USR_DIR}/lnks.bash" ;;
     "repl") source "${ZSH_USR_DIR}/replify.sh" ;;
+    "jobs") source "${ZSH_USR_DIR}/jobs.zsh" ;;
     "iterm")
       test -e "${HOME}/.iterm2_shell_integration.zsh" &&
         source "${HOME}/.iterm2_shell_integration.zsh"

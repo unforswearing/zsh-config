@@ -225,6 +225,17 @@ function trim() {
     *) trim "$@" ;;
   esac
 }
+# a string matcher, since the `eq` function only works for numbers
+function match() {
+  local left=
+  local right="${2:-$1}"
+  if [[ "$right" == "$1" ]] && [[ -z "$2" ]]; then
+    left="$(cat -)"
+  else
+    left="$1"
+  fi
+  if [[ "$left" == "$right" ]]; then true; else false; fi
+}
 # a simple replace command
 function replace() { sd "$1" "${2:-$(cat -)}"; }
 # # strings and arrays can use len ----------------
