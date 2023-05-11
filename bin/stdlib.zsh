@@ -158,7 +158,7 @@ function get() {
     dir) dir read "$@" ;;
     path) getpath "$@" ;;
     asbpath) abspath "$@" ;;
-    *) color red "$0: no method named '$opt'" ;;
+    *) color red "$0: no method named '$opt'" && return 1 ;;
   esac
 }
 function puts() { print "$@"; }
@@ -191,7 +191,7 @@ function cmd() {
     require) require "$@" ;;
     discard) discard "$@" ;;
     help) print "cmd [last|require|discard] name" ;;
-    *) color red "$0: no method named '$opt'" ;;
+    *) color red "$0: no method named '$opt'" && return 1 ;;
   esac
 }
 ## ---------------------------------------------
@@ -301,7 +301,7 @@ function file() {
     listnew) files.listnew "$@" ;;
     isolder) file.isolder "$@" ;;
     isnewer) file.isnewer "$@" ;;
-    *) color red "$0: no method named '$opt'" ;;
+    *) color red "$0: no method named '$opt'" && return 1;;
   esac
 }
 # directory actions
@@ -360,7 +360,7 @@ function dir() {
     up) dir.up "$@" ;;
     isolder) dir.isolder "$@" ;;
     isnewer) dir.isnewer "$@" ;;
-    *) color red "$0: no method named '$opt'" ;;
+    *) color red "$0: no method named '$opt'" && return 1 ;;
   esac
 }
 # fs prefix works for files and dirs

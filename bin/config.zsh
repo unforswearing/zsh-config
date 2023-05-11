@@ -93,8 +93,8 @@
   setopt local_loops
   setopt menucomplete
   setopt no_append_create
-  setopt no_bare_glob_qual
   setopt no_clobber
+  setopt no_bare_glob_qual
   setopt no_nomatch
   setopt numeric_glob_sort
   setopt pushd_to_home
