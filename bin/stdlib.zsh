@@ -287,7 +287,7 @@ function file() {
   }
   function file.isolder() {
     if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
-  }
+  } 
   local opt="$1"
   shift
   case "$opt" in
