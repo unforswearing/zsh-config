@@ -1,4 +1,18 @@
 #!/opt/local/bin/zsh
 source "/Users/unforswearing/zsh-config/bin/stdlib.zsh"
-
+generate_binfile () {
+	local bindir="/Users/unforswearing/zsh-config/src/bin" 
+	path+="$bindir" 
+	local functionname="${1}" 
+	local functionbody=$(get fn $functionname) 
+	local binfile="${bindir}/${functionname}" 
+	local argitems=("\"" "$" "@" "\"") 
+	puts "#!/opt/local/bin/zsh" >| "$binfile"
+	{
+		puts "source "${stdlib}""
+		puts "$functionbody"
+		puts "$functionname "$(puts $argitems | sd " " "")""
+	} >>| "$binfile"
+	chmod +x "$binfile"
+}
 generate_binfile "$@"

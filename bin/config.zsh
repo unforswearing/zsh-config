@@ -173,6 +173,7 @@
     "lnks") source "${ZSH_USR_DIR}/lnks.bash" && imports["$1"]=true ;;
     "repl") source "${ZSH_USR_DIR}/replify.sh" && imports["$1"]=true ;;
     "jobs") source "${ZSH_USR_DIR}/jobs.zsh" && imports["$1"]=true ;;
+    "gc") source "${ZSH_USR_DIR}/garbage_collector.zsh" && imports["$1"]=true ;;
     "iterm")
       test -e "${HOME}/.iterm2_shell_integration.zsh" &&
         source "${HOME}/.iterm2_shell_integration.zsh" && 

@@ -1,4 +1,8 @@
 #!/opt/local/bin/zsh
 source "/Users/unforswearing/zsh-config/bin/stdlib.zsh"
-
+delete_binfiles () {
+	/bin/rm -r /Users/unforswearing/zsh-config/src/bin/*
+	generate_binfile "generate_binfile"
+	generate_binfile "delete_binfiles"
+}
 delete_binfiles "$@"

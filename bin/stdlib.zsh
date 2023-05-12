@@ -1,5 +1,16 @@
 # For interactive use.
 # Use Lua / Teal to write shell scripts. See zconf/src.
+## Uncommon Zsh Syntax to use
+# - in some cases it is easier to just use the uncommon versions of zsh syntax
+### examples:
+# - short versions of commands
+#   - these can be changed using various options via 'setopt'
+#   - https://unix.stackexchange.com/a/468597
+# - anonymous functions
+#   () {
+#     local thisvar="inside function"
+#     print "this will show $thisvar immediately"
+#   }
 import color
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 # ---------------------------------------
@@ -124,7 +135,6 @@ function get() {
     if [[ -z $val ]]; then false; else print "$val";
     fi;
   }
-  # https://unix.stackexchange.com/a/290373
   function getvar() {
     # dont use $ with var
     # getvar PATH
@@ -138,7 +148,7 @@ function get() {
   }
   function getfn() {
     # todo: hide output if there is no match
-    # declare -f ${(Mk)parameters:#$1}
+   declare -f "$1"
   }
   ## ---------------------------------------------
   # https://unix.stackexchange.com/a/121892
@@ -185,8 +195,7 @@ function cmd() {
   function discard() { eval "$@" >|/dev/null 2>&1; }
   function require() {
     hash "$1" 2>/dev/null && true || {
-      echo >&2 "Error: '$1' is required, but was not found.";
-      return 1
+      echo >&2 "Error: '$1' is required, but was not found."
    }
   }
   local opt="$1"
@@ -230,7 +239,13 @@ function trim() {
     *) trim "$@" ;;
   esac
 }
+function contains() { 
+  # using nushell
+  local result=$(nu -c "echo $(cat -) | str contains $@")
+  if [[ $result == "true" ]]; then true; else false; fi;
+}
 # a string matcher, since the `eq` function only works for numbers
+# match will check the entire string. use contains for string parts
 function match() {
   local left=
   local right="${2:-$1}"
@@ -501,6 +516,17 @@ function sum() {
       awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
 }
 function calc() { print "$@" | bc; }
+## ---------------------------------------------
+# disable the use of some keywords by creating empty aliases
+disable -r "integer" \
+           "time" \
+           "until" \
+           "select" \
+           "coproc" \
+           "nocorrect" \
+           "repeat" \
+           "float"
+
 ## ---------------------------------------------
 # create a standalone, top-level file for *almost* any zsh function
 # -> functions that use the ${1:-$(cat -)} construction wont work
