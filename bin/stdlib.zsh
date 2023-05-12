@@ -13,12 +13,24 @@
 #   }
 import color
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
+function lib:reload() { source "${stdlib}"; }
+# usage libutil:argtest num
+# libutil:argtest 2 => if $1 or $2 is not present, print message
+function libutil:argtest() { 
+  setopt errreturn
+  local caller=$funcstack[2];
+  if [[ -z "$1" ]]; then 
+    color red "$caller: argument missing"; 
+    return 1
+  fi; 
+}
 # ---------------------------------------
 function reload() { exec zsh; }
 function error() {
   :
 }
 function sysinfo() {
+  libutil:argtest "$1"
   case $1 in
     host) nu -c "sys|get host" ;;
     cpu) nu -c "sys|get cpu" ;;
@@ -38,6 +50,7 @@ function sysinfo() {
 function memory() { sysinfo memory; }
 # topt: toggle the option - if on, turn off. if off, turn on
 function topt() {
+  libutil:argtest "$1"
   if [[ $options[$1] == "on" ]]; then
     unsetopt "$1"
   else
@@ -50,6 +63,7 @@ function topt() {
 declare -A stdtypes
 declare -A nils
 function nil() {
+  libutil:argtest "$1"
   # a nil type
   # use `cmd discard` for sending commands to nothingness
   local name="$1"
@@ -61,6 +75,7 @@ function nil() {
 }
 declare -A nums
 function num() {
+  libutil:argtest "$1"
   local name="$1"
   local value="$2"
   declare -rg "$name=$value"
@@ -71,6 +86,7 @@ function num() {
 # const utencil "spoon"
 declare -A consts
 function const() {
+  libutil:argtest "$1"
   local name="$1"
   shift;
   local value="$@"
@@ -86,6 +102,7 @@ function const() {
 # useage: atom value
 declare -A atoms
 function atom() {
+  libutil:argtest "$1"
   local nameval="$1"
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare
@@ -96,30 +113,37 @@ function atom() {
 }
 # check the type of various vars
 function typeof() {
+  libutil:argtest "$1"
   local val=$stdtypes["$1"]
   if [[ -z $val ]]; then print "none"; else print "$val"; fi;
 }
 function isnil() {
   # nil has no value so there is no `get nil` command
+  libutil:argtest "$1"
   local testval=$nils["$1"]
   if [[ "$testval" != true ]]; then false; else true; fi
 }
 function isnum() {
+  libutil:argtest "$1"
   local testval="$(get num $1)"
   if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isconst() {
+  libutil:argtest "$1"
   local testval="$(get const $1)"
   if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isatom() {
+  libutil:argtest "$1"
   local testval="$(get atom $1)"
   if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isfn() {
+  libutil:argtest "$1"
   type -w "$1" | awk -F: '{print $2}' | trim.left
 }
 function get() {
+  libutil:argtest "$1"
   function getnum() {
     local val=$nums["$1"]
     if [[ -z $val ]]; then false; else print "$val";
@@ -155,10 +179,6 @@ function get() {
   function checkopt() {
     print $options[$1]
   }
-  function getpath() { print "$(pwd)/${1:-$(cat -)}"; }
-  function abspath() {
-    print "$(cd "$(dirname ${1:-$(cat -)})" && pwd)/$(basename "${1:-$(cat -)}")";
-  }
   local opt="$1"
   shift
   case "$opt" in
@@ -168,21 +188,20 @@ function get() {
     var) getvar "$@" ;;
     fn) getfn "$@" ;;
     opt) checkopt "$@" ;;
-    file) file read "$@" ;;
-    dir) dir read "$@" ;;
-    path) getpath "$@" ;;
-    asbpath) abspath "$@" ;;
     *) color red "$0: no method named '$opt'" && return 1 ;;
   esac
 }
 function puts() { print "$@"; }
 function putf() {
+  libutil:argtest "$1"
+  # libutil:argtest "$1" 2
   local str="$1"
   shift
   printf "$str" "$@"
 }
 ## ---------------------------------------------
 function cmd() {
+  libutil:argtest "$1"
   function cpl() {
     unsetopt warn_create_global
     OIFS="$IFS"
@@ -210,29 +229,31 @@ function cmd() {
 }
 ## ---------------------------------------------
 function lower() {
-  local opt="${1:-$(cat -)}" && \
-    print "$opt" | tr '[:upper:]' '[:lower:]';
+  local opt="${1}" && \
+    print "$opt" | tr '[:upper:]' '[:lower:]' || \
+    color red "$0: missing argument";
 }
 function upper() {
-  local opt="${1:-$(cat -)}" && \
-    print "$opt" | tr '[:lower:]' '[:upper:]';
+  local opt="${1}" && \
+    print "$opt" | tr '[:lower:]' '[:upper:]' || \
+    color red "$0: missing argument";
 }
 ## ---------------------------------------------
 function trim() {
   function trim() {
-  local opt="${1:-$(cat -)}" && \
-    print "$opt" | trim.left | trim.right;
+  local opt="${1}" && \
+    print "$opt" | trim.left | trim.right || \
+    color red "$0: missing argument";
   }
   function trim.left() {
-    local char=${1:-[:space:]}
+    local char=[:space:]
     sed "s%^[${char//%/\\%}]*%%"
   }
   function trim.right() {
-    local char=${1:-[:space:]}
+    local char=[:space:]
     sed "s%[${char//%/\\%}]*$%%"
   }
   local opt="$1"
-  shift
   case "$opt" in
     left) trim.left "$@" ;;
     right) trim.right "$@" ;;
@@ -241,26 +262,27 @@ function trim() {
 }
 function contains() { 
   # using nushell
+  libutil:argtest "$1"
   local result=$(nu -c "echo $(cat -) | str contains $@")
   if [[ $result == "true" ]]; then true; else false; fi;
 }
 # a string matcher, since the `eq` function only works for numbers
 # match will check the entire string. use contains for string parts
 function match() {
-  local left=
-  local right="${2:-$1}"
-  if [[ "$right" == "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
+  libutil:argtest "$1"
+  local left="${1}"
+  local right="${2}"
   if [[ "$left" == "$right" ]]; then true; else false; fi
 }
 # a simple replace command
-function replace() { sd "$1" "${2:-$(cat -)}"; }
+function replace() { 
+  libutil:argtest "$1"
+  sd "$1" "${2}"; 
+}
 # # strings and arrays can use len ----------------
 function len() {
-  local item="${1:-$(cat -)}"
+  libutil:argtest "$1"
+  local item="${1}"
   print "${#item}"
 }
 function count() {
@@ -283,42 +305,48 @@ function count() {
   esac
 }
 function file() {
+  libutil:argtest "$1"
   # bkp filename.txt => filename.txt.bak
   # restore filename.txt => overwrites filename.txt
-  function files() { fd --hidden --type file --maxdepth="${1:-1}"; }
-  function file.bkp() { cp "${1:-$(cat -)}"{,.bak}; }
-  function file.exists() {
-    if [[ -s "${1:-$(cat -)}" ]]; then true; else false; fi;
+  function file.bkp() { 
+    cp "${1}"{,.bak}; 
   }
-  function file.copy() { <"${1:-$(cat -)}" | pbcopy; }
-  function file.new() { touch "$@"; }
-  function file.read() { print "$(<"${1:-$(cat -)}")"; }
-  function file.rest() { cp "${1:-$(cat -)}"{.bak,} && rm "${1:-$(cat -)}.bak"; }
+  function file.exists() {
+    if [[ -s "${1}" ]]; then true; else false; fi;
+  }
+  function file.copy() { 
+    <"${1}" | pbcopy; 
+  }
+  function file.read() { 
+    print "$(<${1})"; 
+  }
+  function file.rest() { 
+    cp "${1}"{.bak,} && rm "${1}.bak"; 
+  }
   function file.empty() {
-    if [[ -a "${1:-$(cat -)}" ]] && [[ ! -s "${1:-$(cat -)}" ]]; then
+    if [[ -a "${1}" ]] && [[ ! -s "${1}" ]]; then
       true
     else
       false
     fi
   }
   function file.isnewer() {
+    libutil:argtest "$1"
     if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
   }
   function file.isolder() {
+    libutil:argtest "$1"
     if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
   } 
   local opt="$1"
   shift
   case "$opt" in
-    list) files "$@" ;;
     backup) file.bkp "$@" ;;
     exists) file.exists "$@" ;;
     copy) file.copy  "$@" ;;
-    new) file.new  "$@" ;;
     read) file.read "$@" ;;
     restore) file.rest "$@" ;;
-    rmempty) file.rmempty "$@" ;;
-    listnew) files.listnew "$@" ;;
+    isempty) file.empty "$0" ;;
     isolder) file.isolder "$@" ;;
     isnewer) file.isnewer "$@" ;;
     *) color red "$0: no method named '$opt'" && return 1;;
@@ -326,7 +354,7 @@ function file() {
 }
 # directory actions
 function dir() {
-  function dir.get() { fd --hidden --type directory --maxdepth="${1:-1}"; }
+  libutil:argtest "$1"
   function dir.new() {
     ccd() { mkdir -p "$1" && cd "$1"; }
     # mkdir "$@";
@@ -338,39 +366,37 @@ function dir() {
     *) mkdir "$@" ;;
     esac
   }
-  function dir.read() { ls "${1:-$(cat -)}"; }
-  function dir.bkp() { cp -r "${1:-$(cat -)}" "${1:-$(cat -)}.bak"; }
-  function dir.rst() {
-    cp -r "${1:-$(cat -)}.bak" "${1:-$(cat -)}" && \
-      rm -rf "${1:-$(cat -)}.bak";
+  function dir.bkp() { 
+    cp -r "${1}" "${1}.bak"; 
   }
-  function dir.parent() { dirname "${1:-(pwd)}"; }
+  function dir.rst() {
+    cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak";
+  }
+  function dir.parent() { dirname "${1}"; }
   function dir.exists() {
-    if [[ -d "${1:-$(cat -)}" ]]; then true; else false; fi;
+    if [[ -d "${1}" ]]; then true; else false; fi;
   }
   function dir.isempty() {
-    local count=$(ls -la "${1:-$(cat -)}" | wc -l | trim.left)
+    local count=$(ls -la "${1}" | wc -l | trim.left)
     if [[ $count -eq 0 ]]; then true; else false; fi;
   }
   function dir.up() {
+    libutil:argtest "$1"
     case "${1}" in
       "") cd .. || return ;;
       *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
     esac
   }
   function dir.isnewer() {
-    if [[ "${1:-$(cat -)}" -nt "${2}" ]]; then true; else false; fi;
+    if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
   }
   function dir.isolder() {
-    if [[ "${1:-$(cat -)}" -ot "${2}" ]]; then true; else false; fi;
+    if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
   }
   local opt="$1"
   shift
   case "$opt" in
-    get) dir.get "$@" ;;
-    rmempty) dir.rmempty "$@" ;;
     new) dir.new "$@" ;;
-    read) dir.read "$@" ;;
     backup) dir.bkp "$@" ;;
     restore) dir.rst "$@" ;;
     parent) dir.parent "$@" ;;
@@ -386,12 +412,13 @@ function dir() {
 # fs prefix works for files and dirs
 # filepath.abs "../../file.txt"
 # math -------------------------------------------
-# all math commands can be used in two ways:
+# all math commands (AND ONLY MATH COMMANDS) can be used in two ways:
 # add 2 2 => 4
 # print 2 | add 2 => 4
 function add() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -402,6 +429,7 @@ function add() {
 function sub() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -412,6 +440,7 @@ function sub() {
 function mul() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -422,6 +451,7 @@ function mul() {
 function div() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -432,6 +462,7 @@ function div() {
 function pow() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -442,6 +473,7 @@ function pow() {
 function mod() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -452,6 +484,7 @@ function mod() {
 function eq() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -462,6 +495,7 @@ function eq() {
 function ne() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -472,6 +506,7 @@ function ne() {
 function gt() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -482,6 +517,7 @@ function gt() {
 function lt() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -492,6 +528,7 @@ function lt() {
 function ge() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -502,6 +539,7 @@ function ge() {
 function le() {
   local left=
   local right="${2:-$1}"
+  libutil:argtest "$right"
   if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
     left="$(cat -)"
   else
@@ -509,13 +547,26 @@ function le() {
   fi
   if [[ "$left" -le "$right" ]]; then true; else false; fi
 }
-function incr() { local opt="${1:-$(cat -)}"; print $((++opt)); }
-function decr() { local opt="${1:-$(cat -)}"; print $((--opt)); }
+function incr() { 
+  local opt="${1:-$(cat -)}"; 
+  libutil:argtest "$opt"
+  print $((++opt)); 
+}
+function decr() { 
+  local opt="${1:-$(cat -)}"; 
+  libutil:argtest "$opt"
+  print $((--opt)); 
+}
 function sum() {
-  print "${@:-$(cat -)}" |
+  local valueargs="${@:-$(cat -)}" 
+  libutil:argtest "$valueargs"
+  print "${valueargs}" |
       awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
 }
-function calc() { print "$@" | bc; }
+function calc() { 
+  libutil:argtest "$1"
+  print "$@" | bc; 
+}
 ## ---------------------------------------------
 # disable the use of some keywords by creating empty aliases
 disable -r "integer" \
@@ -524,7 +575,7 @@ disable -r "integer" \
            "select" \
            "coproc" \
            "nocorrect" \
-           "repeat" \
+           # "repeat" \
            "float"
 
 ## ---------------------------------------------
