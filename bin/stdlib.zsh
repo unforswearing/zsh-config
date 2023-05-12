@@ -129,12 +129,16 @@ function get() {
     # dont use $ with var
     # getvar PATH
     # todo: hide output if there is no match
-    declare -p ${(Mk)parameters:#$1}
+    local value=$(eval "print \$"${1}"")
+    if [[ -z "$value" ]]; then
+      color red "$0: $1 not found"
+    else
+      print "$value"
+    fi
   }
-  # https://unix.stackexchange.com/a/290373
   function getfn() {
     # todo: hide output if there is no match
-    declare -f ${(Mk)functions:#$1}
+    # declare -f ${(Mk)parameters:#$1}
   }
   ## ---------------------------------------------
   # https://unix.stackexchange.com/a/121892
@@ -181,7 +185,8 @@ function cmd() {
   function discard() { eval "$@" >|/dev/null 2>&1; }
   function require() {
     hash "$1" 2>/dev/null && true || {
-      echo >&2 "Error: '$1' is required, but was not found."
+      echo >&2 "Error: '$1' is required, but was not found.";
+      return 1
    }
   }
   local opt="$1"
