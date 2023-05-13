@@ -1,7 +1,21 @@
-## ---------------------------------------------
-# `.zshrc` and `.zshenv` are hardlinked to $HOME from
-# ~zconf/bin/config.zsh. edit $PATH in ~zconf/.zshenv
-## ---------------------------------------------
+# ##################################################################
+# Zsh Configuration Outline
+# `$HOME/.zprofile`:
+#   - $ZDOTDIR is set to $HOME/zsh-config
+# `~zconf/.zshrc` and `~zconf/.zshenv`:
+#   - copied to $HOME from `~zconf/bin/config.zsh`
+#   - edit $PATH in `~zconf/.zshenv`
+# `~zconf/bin/config.zsh`:
+#   - exports, aliases, zsh config, setopt options, and source files
+#   - `config.zsh` uses files from `/plugin`, `/sql`, `/theme`
+# `~zconf/bin/stdlib.zsh`:
+#   - a standalone library for basic zsh interactive sessions
+#   - this file can also be used with lua shell scripts
+# `~zconf/src`:
+#   - structure for using lua to create shell scripts with stdlib.zsh as a library
+# `~zconf/usr`:
+#   - standalone files used with the `import` function in `/bin`
+# ##################################################################
 source ~/powerlevel10k/powerlevel10k.zsh-theme && source ~/.p10k.zsh
 ## ---------------------------------------------
 # return if the shell is not interactive (the commands would have no use)
