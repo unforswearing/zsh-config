@@ -155,21 +155,8 @@
   bindkey '\e' vi-kill-line
 }
 {
-  # The commands below are not needed when ZDOTDIR is set to $HOME/zsh-config
+  # generate ~/.zprofile if it does not exist and ZDOTDIR is unset
   if [[ -z $ZDOTDIR ]] && [[ ! -e "$HOME/zsh-config" ]]; then
     print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
   fi
-  # ----
-  # move stuff from $HOME to zconf/
-  # /bin/mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log/"
-  # /bin/mv "${HOME}/.zshrc" "${ZSH_CONFIG_DIR}/log/"
-  # /bin/mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log/"
-  # /bin/mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log/"
-
-  # copy stuff from zconf to $HOME
-  # /bin/cp "${HOME}/zsh-config/.zshenv" "${HOME}/.zshenv"
-  # /bin/cp "${HOME}/zsh-config/.zshrc" "${HOME}/.zshrc"
-  # /bin/cp "${HOME}/zsh-config/.direnvrc" "${HOME}/.direnvrc"
-  # /bin/cp "${HOME}/zsh-config/hosts.py" "${HOME}/hosts.py"
-
 }
