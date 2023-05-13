@@ -6,6 +6,8 @@ path=(
   "/sbin"
   "/usr/bin"
   "/usr/opt"
+  "/usr/opt/local/bin"
+  "/usr/opt/local/sbin"
   "/usr/sbin"
   "/usr/local"
   "/usr/local/bin"
