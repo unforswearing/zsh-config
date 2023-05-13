@@ -11,6 +11,7 @@
 #     local thisvar="inside function"
 #     print "this will show $thisvar immediately"
 #   }
+export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 
 source "${ZSH_BIN_DIR}/import.zsh"
 source "${ZSH_BIN_DIR}/require.zsh"
@@ -32,7 +33,6 @@ setopt no_clobber
 setopt sh_word_split
 setopt warn_create_global
 
-export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 function libreload() { source "${stdlib}"; }
 function reload() { exec zsh; }
 # usage libutil:argtest num
