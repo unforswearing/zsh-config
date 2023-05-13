@@ -26,9 +26,6 @@ function libutil:argtest() {
 }
 # ---------------------------------------
 function reload() { exec zsh; }
-function error() {
-  :
-}
 function sysinfo() {
   libutil:argtest "$1"
   case $1 in
@@ -76,6 +73,7 @@ function nil() {
 declare -A nums
 function num() {
   libutil:argtest "$1"
+  libutil:argtest "$2"
   local name="$1"
   local value="$2"
   declare -rg "$name=$value"
@@ -87,6 +85,7 @@ function num() {
 declare -A consts
 function const() {
   libutil:argtest "$1"
+  libutil:argtest "$2"
   local name="$1"
   shift;
   local value="$@"
@@ -140,24 +139,29 @@ function isatom() {
 }
 function isfn() {
   libutil:argtest "$1"
-  type -w "$1" | awk -F: '{print $2}' | trim.left
+  local char=" "
+  local result=$(type -w "$1" | awk -F: '{print $2}' | sed "s%^[${char//%/\\%}]*%%")
+  if [[ -z "$result" ]]; then 
+    false; 
+  elif [[ $result == "function" ]]; then 
+    true 
+  else 
+    false
+  fi
 }
 function get() {
   libutil:argtest "$1"
   function getnum() {
     local val=$nums["$1"]
-    if [[ -z $val ]]; then false; else print "$val";
-    fi;
+    if [[ -z $val ]]; then false; else print "$val"; fi;
   }
   function getconst() {
     local val=$consts["$1"]
-    if [[ -z $val ]]; then false; else print "$val";
-    fi;
+    if [[ -z $val ]]; then false; else print "$val"; fi;
   }
   function getatom() {
     local val=$atoms["$1"]
-    if [[ -z $val ]]; then false; else print "$val";
-    fi;
+    if [[ -z $val ]]; then false; else print "$val"; fi;
   }
   function getvar() {
     # dont use $ with var
@@ -194,9 +198,9 @@ function get() {
 function puts() { print "$@"; }
 function putf() {
   libutil:argtest "$1"
-  # libutil:argtest "$1" 2
   local str="$1"
   shift
+  libutil:argtest "$@"
   printf "$str" "$@"
 }
 ## ---------------------------------------------
@@ -211,7 +215,9 @@ function cmd() {
     IFS="$OIFS"
     setopt warn_create_global
   }
-  function discard() { eval "$@" >|/dev/null 2>&1; }
+  function discard() { 
+    eval "$@" >|/dev/null 2>&1; 
+  }
   function require() {
     hash "$1" 2>/dev/null && true || {
       echo >&2 "Error: '$1' is required, but was not found."
@@ -221,44 +227,25 @@ function cmd() {
   shift
   case "$opt" in
     last) cpl ;;
-    require) require "$@" ;;
-    discard) discard "$@" ;;
-    help) print "cmd [last|require|discard] name" ;;
+    require) libutil:argtest "$2" && require "$2" ;;
+    discard) libutil:argtest "$@" && discard "$@" ;;
     *) color red "$0: no method named '$opt'" && return 1 ;;
   esac
 }
 ## ---------------------------------------------
 function lower() {
-  local opt="${1}" && \
-    print "$opt" | tr '[:upper:]' '[:lower:]' || \
-    color red "$0: missing argument";
+  libutil:argtest "$1"
+  local opt="${1}"
+  print "$opt" | tr '[:upper:]' '[:lower:]'
 }
 function upper() {
-  local opt="${1}" && \
-    print "$opt" | tr '[:lower:]' '[:upper:]' || \
-    color red "$0: missing argument";
+  libutil:argtest "$1"
+  local opt="${1}"
+  print "$opt" | tr '[:lower:]' '[:upper:]'
 }
 ## ---------------------------------------------
 function trim() {
-  function trim() {
-  local opt="${1}" && \
-    print "$opt" | trim.left | trim.right || \
-    color red "$0: missing argument";
-  }
-  function trim.left() {
-    local char=[:space:]
-    sed "s%^[${char//%/\\%}]*%%"
-  }
-  function trim.right() {
-    local char=[:space:]
-    sed "s%[${char//%/\\%}]*$%%"
-  }
-  local opt="$1"
-  case "$opt" in
-    left) trim.left "$@" ;;
-    right) trim.right "$@" ;;
-    *) trim "$@" ;;
-  esac
+  :
 }
 function contains() { 
   # using nushell
@@ -270,6 +257,7 @@ function contains() {
 # match will check the entire string. use contains for string parts
 function match() {
   libutil:argtest "$1"
+  libutil:argtest "$2"
   local left="${1}"
   local right="${2}"
   if [[ "$left" == "$right" ]]; then true; else false; fi
@@ -277,6 +265,7 @@ function match() {
 # a simple replace command
 function replace() { 
   libutil:argtest "$1"
+  libutil:argtest "$2"
   sd "$1" "${2}"; 
 }
 # # strings and arrays can use len ----------------
@@ -286,14 +275,19 @@ function len() {
   print "${#item}"
 }
 function count() {
+  # do not use libutil:argtest for math / counting functions
+  local char=" "
   function count.lines() {
-    local opt="${1:-$(cat -)}" && print "$opt" | wc -l | trim;
+    local opt="${1:-$(cat -)}"
+    print "$opt" | wc -l | sed "s%^[${char//%/\\%}]*%%"
   }
   function count.words() {
-    local opt="${1:-$(cat -)}" && print "$opt" | wc -w | trim;
+    local opt="${1:-$(cat -)}"
+    print "$opt" | wc -w | sed "s%^[${char//%/\\%}]*%%"
   }
   function count.chars() {
-    local opt="${1:-$(cat -)}" && print "$opt" | wc -m | trim;
+    local opt="${1:-$(cat -)}"
+    print "$opt" | wc -m | sed "s%^[${char//%/\\%}]*%%"
   }
   local opt="$1"
   shift
@@ -332,10 +326,12 @@ function file() {
   }
   function file.isnewer() {
     libutil:argtest "$1"
+    libutil:argtest "$2"
     if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
   }
   function file.isolder() {
     libutil:argtest "$1"
+    libutil:argtest "$2"
     if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
   } 
   local opt="$1"
@@ -377,7 +373,9 @@ function dir() {
     if [[ -d "${1}" ]]; then true; else false; fi;
   }
   function dir.isempty() {
-    local count=$(ls -la "${1}" | wc -l | trim.left)
+    local char=" "
+    local count=$(ls -la "${1}" | wc -l | sd "^\s+" "")
+    print $count
     if [[ $count -eq 0 ]]; then true; else false; fi;
   }
   function dir.up() {
