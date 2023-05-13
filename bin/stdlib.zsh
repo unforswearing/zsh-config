@@ -128,7 +128,6 @@ function nil() {
   # use `cmd discard` for sending commands to nothingness
   local name="$1"
   local value="$(cat /dev/null)"
-  libutil:argtest "$value"
   declare -rg "$name=$value"
   nils["$name"]=true
   stdtypes["$name"]="nil"
@@ -205,7 +204,9 @@ function isatom() {
 function isfn() {
   libutil:argtest "$1"
   local char=" "
-  local result=$(type -w "$1" | awk -F: '{print $2}' | sed "s%^[${char//%/\\%}]*%%")
+  local result=$(
+    type -w "$1" | awk -F: '{print $2}' | sed "s%^[${char//%/\\%}]*%%"
+  )
   if [[ -z "$result" ]]; then
     false
   elif [[ $result == "function" ]]; then
