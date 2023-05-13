@@ -30,11 +30,10 @@ setopt no_clobber
 setopt sh_word_split
 setopt warn_create_global
 
-function libreload() { source "${stdlib}"; }
-function reload() { exec zsh; }
-# usage libutil:argtest num
-# libutil:argtest 2 => if $1 or $2 is not present, print message
+function libutil:reload() { source "${stdlib}"; }
 function libutil:argtest() {
+  # usage libutil:argtest num
+  # libutil:argtest 2 => if $1 or $2 is not present, print message
   setopt errreturn
   local caller=$funcstack[2]
   if [[ -z "$1" ]]; then

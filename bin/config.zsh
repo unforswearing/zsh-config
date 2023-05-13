@@ -166,4 +166,5 @@
   /bin/cp "${HOME}/zsh-config/.zshrc" "${HOME}/.zshrc"
   /bin/cp "${HOME}/zsh-config/.direnvrc" "${HOME}/.direnvrc"
   /bin/cp "${HOME}/zsh-config/hosts.py" "${HOME}/hosts.py"
+
 }

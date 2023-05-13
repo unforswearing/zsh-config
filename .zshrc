@@ -16,11 +16,14 @@ export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 export ZSH_ETC_DIR="$ZSH_CONFIG_DIR/etc"
 export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
+function reload() { exec zsh; }
+# source all files in the /usr directory
 fd -t f --max-depth 1 . "$ZSH_BIN_DIR" | while read _config_file_; do
   local shortname="$(basename $_config_file_)"
   source "$_config_file_" || print "failed: $shortname"
 done
 # the  `import` function is in bin/config.zsh
+import color
 import help
 import iterm
 import lnks
