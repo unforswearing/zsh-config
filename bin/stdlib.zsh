@@ -1,16 +1,13 @@
-# For interactive use.
-# Use Lua / Teal to write shell scripts. See zconf/src.
-## Uncommon Zsh Syntax to use
-# - in some cases it is easier to just use the uncommon versions of zsh syntax
-### examples:
-# - short versions of commands
-#   - these can be changed using various options via 'setopt'
-#   - https://unix.stackexchange.com/a/468597
-# - anonymous functions
-#   () {
-#     local thisvar="inside function"
-#     print "this will show $thisvar immediately"
-#   }
+# This file will mostly be used interactively, however it can
+# work as a standalone library when sourced from other zsh scripts.
+#
+# `stdlib.zsh` can also be used with Lua / Teal to write shell scripts
+#  by generating standalone files in the /src/bin directory for
+#  use as a lua/zsh shared library
+#    - See generate_binfiles() at the bottom of this file
+#    - See zconf/src
+#
+
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 
 source "${ZSH_BIN_DIR}/import.zsh"
