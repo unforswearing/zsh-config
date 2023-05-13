@@ -13,7 +13,8 @@
 #   }
 import color
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
-function lib:reload() { source "${stdlib}"; }
+function reload() { exec zsh; }
+function libreload() { source "${stdlib}"; }
 # usage libutil:argtest num
 # libutil:argtest 2 => if $1 or $2 is not present, print message
 function libutil:argtest() { 
@@ -25,7 +26,6 @@ function libutil:argtest() {
   fi; 
 }
 # ---------------------------------------
-function reload() { exec zsh; }
 function error() {
   :
 }
@@ -76,6 +76,7 @@ function nil() {
 declare -A nums
 function num() {
   libutil:argtest "$1"
+  libutil:argtest "$2"
   local name="$1"
   local value="$2"
   declare -rg "$name=$value"
@@ -89,6 +90,7 @@ function const() {
   libutil:argtest "$1"
   local name="$1"
   shift;
+  libutil:argtest "$@"
   local value="$@"
   declare -rg "$name=$@"
   consts["$name"]="$@"
@@ -424,6 +426,7 @@ function add() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   print "$((left + right))";
 }
 function sub() {
@@ -435,6 +438,7 @@ function sub() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   print "$((left - right))";
 }
 function mul() {
@@ -446,6 +450,7 @@ function mul() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   print "$((left * right))";
 }
 function div() {
@@ -457,6 +462,7 @@ function div() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   print "$((left / right))";
 }
 function pow() {
@@ -468,6 +474,7 @@ function pow() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   print "$((left ** right))";
 }
 function mod() {
@@ -479,6 +486,7 @@ function mod() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   print "$((left % right))";
 }
 function eq() {
@@ -490,6 +498,7 @@ function eq() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -eq "$right" ]]; then true; else false; fi
 }
 function ne() {
@@ -501,6 +510,7 @@ function ne() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -ne "$right" ]]; then true; else false; fi
 }
 function gt() {
@@ -512,6 +522,7 @@ function gt() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -gt "$right" ]]; then true; else false; fi
 }
 function lt() {
@@ -523,6 +534,7 @@ function lt() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -lt "$right" ]]; then true; else false; fi
 }
 function ge() {
@@ -534,6 +546,7 @@ function ge() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -ge "$right" ]]; then true; else false; fi
 }
 function le() {
@@ -545,6 +558,7 @@ function le() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -le "$right" ]]; then true; else false; fi
 }
 function incr() { 
@@ -575,7 +589,7 @@ disable -r "integer" \
            "select" \
            "coproc" \
            "nocorrect" \
-           # "repeat" \
+           "repeat" \
            "float"
 
 ## ---------------------------------------------
