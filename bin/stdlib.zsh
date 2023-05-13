@@ -537,7 +537,7 @@ function generate_binfile() {
   local binfile="${bindir}/${functionname}"
   local argitems=("\\"" "$" "@" "\\"")
 
-  puts "#!/opt/local/bin/zsh" >|"$binfile"
+  puts "#!/opt/local/bin/zsh" >"$binfile"
 
   {
     puts "source \"${stdlib}\""
