@@ -128,6 +128,7 @@ function nil() {
   # use `cmd discard` for sending commands to nothingness
   local name="$1"
   local value="$(cat /dev/null)"
+  libutil:argtest "$value"
   declare -rg "$name=$value"
   nils["$name"]=true
   stdtypes["$name"]="nil"
