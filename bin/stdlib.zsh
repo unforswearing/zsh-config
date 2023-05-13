@@ -19,7 +19,6 @@ require "sd"
 
 setopt bsd_echo
 setopt c_precedences
-setopt cshjunkie_history
 setopt cshjunkie_loops
 setopt function_argzero
 setopt ksh_zero_subscript
