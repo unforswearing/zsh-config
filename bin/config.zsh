@@ -160,10 +160,7 @@
     print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
   fi
 
-  
+  # copy direnvrc to HOME
   /bin/mv "${HOME}/.direnvrc" "${ZSH_CONFIG_DIR}/log/"
-  /bin/mv "${HOME}/hosts.py" "${ZSH_CONFIG_DIR}/log/"
-
   /bin/cp "${HOME}/zsh-config/.direnvrc" "${HOME}/.direnvrc"
-  /bin/cp "${HOME}/zsh-config/hosts.py" "${HOME}/hosts.py"
 }
