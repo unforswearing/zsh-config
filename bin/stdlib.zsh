@@ -11,43 +11,95 @@
 #     local thisvar="inside function"
 #     print "this will show $thisvar immediately"
 #   }
+
+source "${ZSH_BIN_DIR}/import.zsh"
+source "${ZSH_BIN_DIR}/require.zsh"
+
 import color
+require "nu"
+require "sd"
+
+setopt bsd_echo
+setopt c_precedences
+setopt cshjunkie_history
+setopt cshjunkie_loops
+setopt function_argzero
+setopt ksh_zero_subscript
+setopt local_loops
+setopt local_options
+setopt no_append_create
+setopt no_clobber
+setopt sh_word_split
+setopt warn_create_global
+
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
-function lib:reload() { source "${stdlib}"; }
+function libreload() { source "${stdlib}"; }
+function reload() { exec zsh; }
 # usage libutil:argtest num
 # libutil:argtest 2 => if $1 or $2 is not present, print message
-function libutil:argtest() { 
+function libutil:argtest() {
   setopt errreturn
-  local caller=$funcstack[2];
-  if [[ -z "$1" ]]; then 
-    color red "$caller: argument missing"; 
+  local caller=$funcstack[2]
+  if [[ -z "$1" ]]; then
+    color red "$caller: argument missing"
     return 1
-  fi; 
+  fi
 }
-# ---------------------------------------
-function reload() { exec zsh; }
-function error() {
-  :
+function libutil:error.option() {
+  libutil:argtest "$1"
+  setopt errreturn
+  local caller=$funcstack[2]
+  local fopt="$1"
+  color red "$caller: no method named '$fopt'" && return 1
 }
+function libutil:error.notfound() {
+  libutil:argtest "$1"
+  setopt errreturn
+  local caller=$funcstack[2]
+  local fopt="$1"
+  color red "$caller: $1 not found" && return 1
+}
+# ###############################################
 function sysinfo() {
   libutil:argtest "$1"
   case $1 in
-    host) nu -c "sys|get host" ;;
-    cpu) nu -c "sys|get cpu" ;;
-    disks) nu -c "sys|get disks" ;;
-    mem | memory)
-      nu -c "{
+  host) nu -c "sys|get host" ;;
+  cpu) nu -c "sys|get cpu" ;;
+  disks) nu -c "sys|get disks" ;;
+  mem | memory)
+    nu -c "{
         free: (sys|get mem|get free),
         used: (sys|get mem|get used),
         total: (sys|get mem|get total)
       }"
-      ;;
-    temp | temperature) nu -c "sys|get temp" ;;
-    net | io) nu -c "sys|get net" ;;
-    *) color red "$0: no method named '$opt'" ;;
+    ;;
+  temp | temperature) nu -c "sys|get temp" ;;
+  net | io) nu -c "sys|get net" ;;
+  *) libutil:error.option "$opt" ;;
   esac
 }
 function memory() { sysinfo memory; }
+function cmd() {
+  libutil:argtest "$1"
+  function cmd.cpl() {
+    require "pee"
+    OIFS="$IFS"
+    IFS=$'\n\t'
+    local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
+    echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
+    IFS="$OIFS"
+  }
+  function cmd.discard() {
+    eval "$@" >|/dev/null 2>&1
+  }
+  local opt="$1"
+  shift
+  case "$opt" in
+  last) cmd.cpl ;;
+  discard) libutil:argtest "$@" && cmd.discard "$@" ;;
+  *) libutil:error.option "$opt" ;;
+  esac
+}
 # topt: toggle the option - if on, turn off. if off, turn on
 function topt() {
   libutil:argtest "$1"
@@ -56,9 +108,22 @@ function topt() {
   else
     setopt "$1"
   fi
-  if [[ "$2" != "quiet" ]] && checkopt $1;
+  if [[ "$2" != "quiet" ]]; then checkopt $1; fi
 }
-################################################
+function checkopt() {
+  # https://unix.stackexchange.com/a/121892
+  print $options[$1]
+}
+# -------------------------------------------------
+function puts() { print "$@"; }
+function putf() {
+  libutil:argtest "$1"
+  local str="$1"
+  shift
+  libutil:argtest "$@"
+  printf "$str" "$@"
+}
+# -------------------------------------------------
 # create pseudo types: nil, num, const, atom
 declare -A stdtypes
 declare -A nils
@@ -76,6 +141,7 @@ function nil() {
 declare -A nums
 function num() {
   libutil:argtest "$1"
+  libutil:argtest "$2"
   local name="$1"
   local value="$2"
   declare -rg "$name=$value"
@@ -89,7 +155,7 @@ function const() {
   libutil:argtest "$1"
   libutil:argtest "$2"
   local name="$1"
-  shift;
+  shift
   local value="$@"
   declare -rg "$name=$@"
   consts["$name"]="$@"
@@ -107,16 +173,17 @@ function atom() {
   local nameval="$1"
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare
-  declare -rg $nameval="$nameval" >|/dev/null 2>&1;
-  functions["$nameval"]="$nameval" >|/dev/null 2>&1;
-  atoms["$nameval"]="$nameval" >|/dev/null 2>&1;
+  declare -rg $nameval="$nameval" >|/dev/null 2>&1
+  functions["$nameval"]="$nameval" >|/dev/null 2>&1
+  atoms["$nameval"]="$nameval" >|/dev/null 2>&1
   stdtypes["$name"]="atom"
 }
+# -------------------------------------------------
 # check the type of various vars
 function typeof() {
   libutil:argtest "$1"
   local val=$stdtypes["$1"]
-  if [[ -z $val ]]; then print "none"; else print "$val"; fi;
+  if [[ -z $val ]]; then print "none"; else print "$val"; fi
 }
 function isnil() {
   # nil has no value so there is no `get nil` command
@@ -143,11 +210,11 @@ function isfn() {
   libutil:argtest "$1"
   local char=" "
   local result=$(type -w "$1" | awk -F: '{print $2}' | sed "s%^[${char//%/\\%}]*%%")
-  if [[ -z "$result" ]]; then 
-    false; 
-  elif [[ $result == "function" ]]; then 
-    true 
-  else 
+  if [[ -z "$result" ]]; then
+    false
+  elif [[ $result == "function" ]]; then
+    true
+  else
     false
   fi
 }
@@ -155,15 +222,15 @@ function get() {
   libutil:argtest "$1"
   function getnum() {
     local val=$nums["$1"]
-    if [[ -z $val ]]; then false; else print "$val"; fi;
+    if [[ -z $val ]]; then false; else print "$val"; fi
   }
   function getconst() {
     local val=$consts["$1"]
-    if [[ -z $val ]]; then false; else print "$val"; fi;
+    if [[ -z $val ]]; then false; else print "$val"; fi
   }
   function getatom() {
     local val=$atoms["$1"]
-    if [[ -z $val ]]; then false; else print "$val"; fi;
+    if [[ -z $val ]]; then false; else print "$val"; fi
   }
   function getvar() {
     # dont use $ with var
@@ -171,67 +238,25 @@ function get() {
     # todo: hide output if there is no match
     local value=$(eval "print \$"${1}"")
     if [[ -z "$value" ]]; then
-      color red "$0: $1 not found"
+      libutil:error.notfound "$1"
     else
       print "$value"
     fi
   }
   function getfn() {
     # todo: hide output if there is no match
-   declare -f "$1"
-  }
-  ## ---------------------------------------------
-  # https://unix.stackexchange.com/a/121892
-  function checkopt() {
-    print $options[$1]
+    declare -f "$1"
   }
   local opt="$1"
+  #libutil:argtest "$2"
   shift
   case "$opt" in
-    num) getnum "$@" ;;
-    const) getconst "$@" ;;
-    atom) getatom "$@" ;;
-    var) getvar "$@" ;;
-    fn) getfn "$@" ;;
-    opt) checkopt "$@" ;;
-    *) color red "$0: no method named '$opt'" && return 1 ;;
-  esac
-}
-function puts() { print "$@"; }
-function putf() {
-  libutil:argtest "$1"
-  local str="$1"
-  shift
-  libutil:argtest "$@"
-  printf "$str" "$@"
-}
-## ---------------------------------------------
-function cmd() {
-  libutil:argtest "$1"
-  function cpl() {
-    unsetopt warn_create_global
-    OIFS="$IFS"
-    IFS=$'\n\t'
-    local comm=$(history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}')
-    echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
-    IFS="$OIFS"
-    setopt warn_create_global
-  }
-  function discard() { 
-    eval "$@" >|/dev/null 2>&1; 
-  }
-  function require() {
-    hash "$1" 2>/dev/null && true || {
-      echo >&2 "Error: '$1' is required, but was not found."
-   }
-  }
-  local opt="$1"
-  shift
-  case "$opt" in
-    last) cpl ;;
-    require) libutil:argtest "$2" && require "$2" ;;
-    discard) libutil:argtest "$@" && discard "$@" ;;
-    *) color red "$0: no method named '$opt'" && return 1 ;;
+  num) getnum "$2" ;;
+  const) getconst "$2" ;;
+  atom) getatom "$2" ;;
+  var) getvar "$2" ;;
+  fn) getfn "$2" ;;
+  *) libutil:error.option "$opt" ;;
   esac
 }
 ## ---------------------------------------------
@@ -245,15 +270,28 @@ function upper() {
   local opt="${1}"
   print "$opt" | tr '[:lower:]' '[:upper:]'
 }
-## ---------------------------------------------
 function trim() {
-  :
+  trim.left() {
+    local opt="${1:-$(cat -)}"
+    libutil:argtest "$opt"
+    print $opt | sd "^\s+" ""
+  }
+  trim.right() {
+    local opt="${1:-$(cat -)}"
+    libutil:argtest "$opt"
+    print $opt | sd "\s+$" ""
+  }
+  libutil:argtest "$2"
+  case "$1" in
+  left) trim.left "$2" ;;
+  right) trim.right "$2" ;;
+  esac
 }
-function contains() { 
+function contains() {
   # using nushell
   libutil:argtest "$1"
-  local result=$(nu -c "echo $(cat -) | str contains $@")
-  if [[ $result == "true" ]]; then true; else false; fi;
+  local result=$(nu -c "echo $(cat -) | str contains $1")
+  if [[ $result == "true" ]]; then true; else false; fi
 }
 # a string matcher, since the `eq` function only works for numbers
 # match will check the entire string. use contains for string parts
@@ -265,152 +303,35 @@ function match() {
   if [[ "$left" == "$right" ]]; then true; else false; fi
 }
 # a simple replace command
-function replace() { 
+function replace() {
   libutil:argtest "$1"
   libutil:argtest "$2"
-  sd "$1" "${2}"; 
-}
-# # strings and arrays can use len ----------------
-function len() {
-  libutil:argtest "$1"
-  local item="${1}"
-  print "${#item}"
+  sd "${1}" "${2}"
 }
 function count() {
   # do not use libutil:argtest for math / counting functions
   local char=" "
   function count.lines() {
     local opt="${1:-$(cat -)}"
-    print "$opt" | wc -l | sed "s%^[${char//%/\\%}]*%%"
+    print "$opt" | wc -l | sd "^\s+" ""
   }
   function count.words() {
     local opt="${1:-$(cat -)}"
-    print "$opt" | wc -w | sed "s%^[${char//%/\\%}]*%%"
+    print "$opt" | wc -w | sd "^\s+" ""
   }
   function count.chars() {
     local opt="${1:-$(cat -)}"
-    print "$opt" | wc -m | sed "s%^[${char//%/\\%}]*%%"
+    print "${#opt}"
   }
   local opt="$1"
   shift
   case "$opt" in
-    lines) count.lines  "$@" ;;
-    words) count.words "$@" ;;
-    chars) count.chars "$@" ;;
-    *) color red "$0: no method named '$opt'" ;;
+  lines) count.lines "$@" ;;
+  words) count.words "$@" ;;
+  chars) count.chars "$@" ;;
+  *) libutil:error.option "$opt" ;;
   esac
 }
-function file() {
-  libutil:argtest "$1"
-  # bkp filename.txt => filename.txt.bak
-  # restore filename.txt => overwrites filename.txt
-  function file.bkp() { 
-    cp "${1}"{,.bak}; 
-  }
-  function file.exists() {
-    if [[ -s "${1}" ]]; then true; else false; fi;
-  }
-  function file.copy() { 
-    <"${1}" | pbcopy; 
-  }
-  function file.read() { 
-    print "$(<${1})"; 
-  }
-  function file.rest() { 
-    cp "${1}"{.bak,} && rm "${1}.bak"; 
-  }
-  function file.empty() {
-    if [[ -a "${1}" ]] && [[ ! -s "${1}" ]]; then
-      true
-    else
-      false
-    fi
-  }
-  function file.isnewer() {
-    libutil:argtest "$1"
-    libutil:argtest "$2"
-    if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
-  }
-  function file.isolder() {
-    libutil:argtest "$1"
-    libutil:argtest "$2"
-    if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
-  } 
-  local opt="$1"
-  shift
-  case "$opt" in
-    backup) file.bkp "$@" ;;
-    exists) file.exists "$@" ;;
-    copy) file.copy  "$@" ;;
-    read) file.read "$@" ;;
-    restore) file.rest "$@" ;;
-    isempty) file.empty "$0" ;;
-    isolder) file.isolder "$@" ;;
-    isnewer) file.isnewer "$@" ;;
-    *) color red "$0: no method named '$opt'" && return 1;;
-  esac
-}
-# directory actions
-function dir() {
-  libutil:argtest "$1"
-  function dir.new() {
-    ccd() { mkdir -p "$1" && cd "$1"; }
-    # mkdir "$@";
-    case "$1" in
-    "cd")
-      shift
-      ccd "$1"
-      ;;
-    *) mkdir "$@" ;;
-    esac
-  }
-  function dir.bkp() { 
-    cp -r "${1}" "${1}.bak"; 
-  }
-  function dir.rst() {
-    cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak";
-  }
-  function dir.parent() { dirname "${1}"; }
-  function dir.exists() {
-    if [[ -d "${1}" ]]; then true; else false; fi;
-  }
-  function dir.isempty() {
-    local char=" "
-    local count=$(ls -la "${1}" | wc -l | sd "^\s+" "")
-    print $count
-    if [[ $count -eq 0 ]]; then true; else false; fi;
-  }
-  function dir.up() {
-    libutil:argtest "$1"
-    case "${1}" in
-      "") cd .. || return ;;
-      *) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
-    esac
-  }
-  function dir.isnewer() {
-    if [[ "${1}" -nt "${2}" ]]; then true; else false; fi;
-  }
-  function dir.isolder() {
-    if [[ "${1}" -ot "${2}" ]]; then true; else false; fi;
-  }
-  local opt="$1"
-  shift
-  case "$opt" in
-    new) dir.new "$@" ;;
-    backup) dir.bkp "$@" ;;
-    restore) dir.rst "$@" ;;
-    parent) dir.parent "$@" ;;
-    # previous) ;;
-    exists) dir.exists "$@" ;;
-    isempty) dir.isempty "$@" ;;
-    up) dir.up "$@" ;;
-    isolder) dir.isolder "$@" ;;
-    isnewer) dir.isnewer "$@" ;;
-    *) color red "$0: no method named '$opt'" && return 1 ;;
-  esac
-}
-# fs prefix works for files and dirs
-# filepath.abs "../../file.txt"
 # math -------------------------------------------
 # all math commands (AND ONLY MATH COMMANDS) can be used in two ways:
 # add 2 2 => 4
@@ -424,7 +345,8 @@ function add() {
   else
     left="$1"
   fi
-  print "$((left + right))";
+  libutil:argtest "$left"
+  print "$((left + right))"
 }
 function sub() {
   local left=
@@ -435,7 +357,8 @@ function sub() {
   else
     left="$1"
   fi
-  print "$((left - right))";
+  libutil:argtest "$left"
+  print "$((left - right))"
 }
 function mul() {
   local left=
@@ -446,7 +369,8 @@ function mul() {
   else
     left="$1"
   fi
-  print "$((left * right))";
+  libutil:argtest "$left"
+  print "$((left * right))"
 }
 function div() {
   local left=
@@ -457,7 +381,8 @@ function div() {
   else
     left="$1"
   fi
-  print "$((left / right))";
+  libutil:argtest "$left"
+  print "$((left / right))"
 }
 function pow() {
   local left=
@@ -468,7 +393,8 @@ function pow() {
   else
     left="$1"
   fi
-  print "$((left ** right))";
+  libutil:argtest "$left"
+  print "$((left ** right))"
 }
 function mod() {
   local left=
@@ -479,7 +405,8 @@ function mod() {
   else
     left="$1"
   fi
-  print "$((left % right))";
+  libutil:argtest "$left"
+  print "$((left % right))"
 }
 function eq() {
   local left=
@@ -490,6 +417,7 @@ function eq() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -eq "$right" ]]; then true; else false; fi
 }
 function ne() {
@@ -501,6 +429,7 @@ function ne() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -ne "$right" ]]; then true; else false; fi
 }
 function gt() {
@@ -512,6 +441,7 @@ function gt() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -gt "$right" ]]; then true; else false; fi
 }
 function lt() {
@@ -523,6 +453,7 @@ function lt() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -lt "$right" ]]; then true; else false; fi
 }
 function ge() {
@@ -534,6 +465,7 @@ function ge() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -ge "$right" ]]; then true; else false; fi
 }
 function le() {
@@ -545,38 +477,39 @@ function le() {
   else
     left="$1"
   fi
+  libutil:argtest "$left"
   if [[ "$left" -le "$right" ]]; then true; else false; fi
 }
-function incr() { 
-  local opt="${1:-$(cat -)}"; 
+function incr() {
+  local opt="${1:-$(cat -)}"
   libutil:argtest "$opt"
-  print $((++opt)); 
+  print $((++opt))
 }
-function decr() { 
-  local opt="${1:-$(cat -)}"; 
+function decr() {
+  local opt="${1:-$(cat -)}"
   libutil:argtest "$opt"
-  print $((--opt)); 
+  print $((--opt))
 }
 function sum() {
-  local valueargs="${@:-$(cat -)}" 
+  local valueargs="${@:-$(cat -)}"
   libutil:argtest "$valueargs"
   print "${valueargs}" |
-      awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
+    awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
 }
-function calc() { 
+function calc() {
   libutil:argtest "$1"
-  print "$@" | bc; 
+  print "$@" | bc
 }
 ## ---------------------------------------------
 # disable the use of some keywords by creating empty aliases
 disable -r "integer" \
-           "time" \
-           "until" \
-           "select" \
-           "coproc" \
-           "nocorrect" \
-           # "repeat" \
-           "float"
+  "time" \
+  "until" \
+  "select" \
+  "coproc" \
+  "nocorrect" \
+  "repeat" \
+  "float"
 
 ## ---------------------------------------------
 # create a standalone, top-level file for *almost* any zsh function
@@ -590,13 +523,15 @@ disable -r "integer" \
 # print(incr(5))
 # ```
 # generated files are added to "/Users/unforswearing/zsh-config/src/bin"
-# 
+#
 function delete_binfiles() {
   /bin/rm -r /Users/unforswearing/zsh-config/src/bin/*
   generate_binfile "generate_binfile"
   generate_binfile "delete_binfiles"
 }
 function generate_binfile() {
+  unsetopt no_append_create
+  unsetopt no_clobber
   local bindir="/Users/unforswearing/zsh-config/src/bin"
   path+="$bindir"
 
@@ -606,15 +541,17 @@ function generate_binfile() {
   local binfile="${bindir}/${functionname}"
   local argitems=("\\"" "$" "@" "\\"")
 
-  puts "#!/opt/local/bin/zsh" >| "$binfile"
+  puts "#!/opt/local/bin/zsh" >|"$binfile"
 
   {
-    puts "source \"${stdlib}\"";
-    puts "$functionbody";
-    puts "$functionname \"$(puts $argitems | sd " " "")\"";
-  } >>| "$binfile"
+    puts "source \"${stdlib}\""
+    puts "$functionbody"
+    puts "$functionname \"$(puts $argitems | sd " " "")\""
+  } >>"$binfile"
 
   chmod +x "$binfile"
+  setopt no_append_create
+  setopt no_clobber
 }
 generate_binfile "generate_binfile"
 generate_binfile "delete_binfiles"

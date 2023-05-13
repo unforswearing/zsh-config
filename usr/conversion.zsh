@@ -6,14 +6,12 @@
 
 function conv() {
   rgb.tohex() {
-    unsetopt warncreateglobal
     for var in "$@"; do
       printf '%x' "$var"
     done
     printf '\n'
   }
   hex.torgb() {
-    unsetopt warncreateglobal
     hex="$@"
     printf "%d %d %d\n" 0x${hex:0:2} 0x${hex:2:2} 0x${hex:4:2}
   }
