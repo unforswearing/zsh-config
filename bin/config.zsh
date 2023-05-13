@@ -156,6 +156,9 @@
 }
 {
   # The commands below are not needed when ZDOTDIR is set to $HOME/zsh-config
+  if [[ -z $ZDOTDIR ]] && [[ ! -e "$HOME/zsh-config" ]]; then
+    print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
+  fi
   # ----
   # move stuff from $HOME to zconf/
   # /bin/mv "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/log/"
