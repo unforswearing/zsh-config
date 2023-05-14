@@ -176,11 +176,7 @@ function isfn() {
   )
   if [[ -z "$result" ]]; then
     false
-  elif [[ $result == "function" ]]; then
-    true
-  else
-    false
-  fi
+  elif [[ $result == "function" ]]; then true; else false; fi
 }
 function get() {
   libutil:argtest "$1"
