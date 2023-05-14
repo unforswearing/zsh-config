@@ -155,6 +155,27 @@
   bindkey '\e' vi-kill-line
 }
 {
+  function sysinfo() {
+    libutil:argtest "$1"
+    case $1 in
+    host) nu -c "sys|get host" ;;
+    cpu) nu -c "sys|get cpu" ;;
+    disks) nu -c "sys|get disks" ;;
+    mem | memory)
+      nu -c "{
+        free: (sys|get mem|get free),
+        used: (sys|get mem|get used),
+        total: (sys|get mem|get total)
+      }"
+      ;;
+    temp | temperature) nu -c "sys|get temp" ;;
+    net | io) nu -c "sys|get net" ;;
+    *) libutil:error.option "$opt" ;;
+    esac
+  }
+  function memory() { sysinfo memory; }
+}
+{
   # generate ~/.zprofile if it does not exist and ZDOTDIR is unset
   if [[ -z $ZDOTDIR ]] && [[ ! -e "$HOME/zsh-config" ]]; then
     print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
