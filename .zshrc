@@ -41,7 +41,6 @@ import color
 import help
 import iterm
 import lnks
-import use
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 ## the folling are not used:
