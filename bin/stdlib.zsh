@@ -59,7 +59,7 @@ function cmd() {
   libutil:argtest "$1"
   function cmd.cpl() {
     require "pee"
-    OIFS="$IFS"
+    local OIFS="$IFS"
     IFS=$'\n\t'
     local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
     echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
