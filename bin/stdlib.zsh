@@ -8,10 +8,10 @@
 #    - See zconf/src
 #
 
-export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
+export stdlib="${HOME}/zsh-config/bin/stdlib.zsh"
 
-source "${ZSH_BIN_DIR}/import.zsh"
-source "${ZSH_BIN_DIR}/require.zsh"
+source "${HOME}/zsh-config/bin/import.zsh"
+source "${HOME}/zsh-config/bin/require.zsh"
 
 import color
 require "nu"

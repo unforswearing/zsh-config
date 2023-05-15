@@ -1,6 +1,8 @@
+  ZSH_USR_DIR="${HOME}/zsh-config/usr/"
   declare -A imports
   function import() {
     case "$1" in
+    "db") source "${ZSH_USR_DIR}/zdb.zsh" && imports["$1"]=true ;;
     "object") source "${ZSH_USR_DIR}/object.zsh" && imports["$1"]=true ;;
     "color") source "${ZSH_USR_DIR}/color.zsh" && imports["$1"]=true ;;
     "datetime") source "${ZSH_USR_DIR}/datetime.bash" && imports["$1"]=true ;;
