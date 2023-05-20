@@ -1,0 +1,66 @@
+#!/opt/local/bin/zsh
+source "/Users/unforswearing/zsh-config/bin/stdlib.zsh"
+file () {
+	libutil:argtest "$1"
+	file.bkp () {
+		/bin/cp "${1}"{,.bak}
+	}
+	file.exists () {
+		if [[ -s "${1}" ]]
+		then
+			true
+		else
+			false
+		fi
+	}
+	file.copy () {
+		 < "${1}" | pbcopy
+	}
+	file.read () {
+		print "$(<${1})"
+	}
+	file.rest () {
+		/bin/cp "${1}"{.bak,} && rm -i "${1}.bak"
+	}
+	file.empty () {
+		if [[ -e "${1}" ]] && [[ ! -s "${1}" ]]
+		then
+			true
+		else
+			false
+		fi
+	}
+	file.isnewer () {
+		libutil:argtest "$1"
+		libutil:argtest "$2"
+		if [[ "${1}" -nt "${2}" ]]
+		then
+			true
+		else
+			false
+		fi
+	}
+	file.isolder () {
+		libutil:argtest "$1"
+		libutil:argtest "$2"
+		if [[ "${1}" -ot "${2}" ]]
+		then
+			true
+		else
+			false
+		fi
+	}
+	local opt="$1" 
+	shift
+	case "$opt" in
+		(backup) file.bkp "$@" ;;
+		(copy) file.copy "$@" ;;
+		(read) file.read "$@" ;;
+		(restore) file.rest "$@" ;;
+		(isempty) file.empty "$0" ;;
+		(isolder) file.isolder "$@" ;;
+		(isnewer) file.isnewer "$@" ;;
+		(*) libutil:error.option "$opt" ;;
+	esac
+}
+file "$@"

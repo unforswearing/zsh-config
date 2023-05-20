@@ -1,0 +1,26 @@
+#!/opt/local/bin/zsh
+source /Users/unforswearing/zsh-config/bin/stdlib.zsh
+count () {
+	local char=" " 
+	count.lines () {
+		local opt="${1:-$(cat -)}" 
+		print "$opt" | wc -l | sd "^s+" ""
+	}
+	count.words () {
+		local opt="${1:-$(cat -)}" 
+		print "$opt" | wc -w | sd "^s+" ""
+	}
+	count.chars () {
+		local opt="${1:-$(cat -)}" 
+		print "${#opt}"
+	}
+	local opt="$1" 
+	shift
+	case "$opt" in
+		(lines) count.lines "$@" ;;
+		(words) count.words "$@" ;;
+		(chars) count.chars "$@" ;;
+		(*) libutil:error.option "$opt" ;;
+	esac
+}
+count "$@"

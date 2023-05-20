@@ -1,0 +1,13 @@
+#!/opt/local/bin/zsh
+source /Users/unforswearing/zsh-config/bin/stdlib.zsh
+contains () {
+	libutil:argtest "$1"
+	local result=$(nu -c "echo $(cat -) | str contains $1") 
+	if [[ $result == "true" ]]
+	then
+		true
+	else
+		false
+	fi
+}
+contains "$@"

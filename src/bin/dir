@@ -1,0 +1,61 @@
+#!/opt/local/bin/zsh
+source "/Users/unforswearing/zsh-config/bin/stdlib.zsh"
+dir () {
+	libutil:argtest "$1"
+	dir.new () {
+		ccd () {
+			mkdir -p "$1" && cd "$1"
+		}
+		case "$1" in
+			("cd") shift
+				ccd "$1" ;;
+			(*) libutil:argtest "$@"
+				mkdir "$@" ;;
+		esac
+	}
+	dir.bkp () {
+		cp -i -r "${1}" "${1}.bak"
+	}
+	dir.rst () {
+		cp -i -r "${1}.bak" "${1}" && rm -i -rf "${1}.bak"
+	}
+	dir.parent () {
+		dirname "${1}"
+	}
+	dir.up () {
+		libutil:argtest "$1"
+		case "${1}" in
+			("") cd .. || return ;;
+			(*) cd "$(eval "printf -- '../'%.0s {1..$1}")" || return ;;
+		esac
+	}
+	dir.isnewer () {
+		if [[ "${1}" -nt "${2}" ]]
+		then
+			true
+		else
+			false
+		fi
+	}
+	dir.isolder () {
+		if [[ "${1}" -ot "${2}" ]]
+		then
+			true
+		else
+			false
+		fi
+	}
+	local opt="$1" 
+	shift
+	case "$opt" in
+		(new) dir.new "$@" ;;
+		(backup) dir.bkp "$@" ;;
+		(restore) dir.rst "$@" ;;
+		(parent) dir.parent "$@" ;;
+		(up) dir.up "$@" ;;
+		(isolder) dir.isolder "$@" ;;
+		(isnewer) dir.isnewer "$@" ;;
+		(*) libutil:error.option "$opt" ;;
+	esac
+}
+dir "$@"

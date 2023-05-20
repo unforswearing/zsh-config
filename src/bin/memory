@@ -1,0 +1,6 @@
+#!/opt/local/bin/zsh
+source /Users/unforswearing/zsh-config/bin/stdlib.zsh
+memory () {
+	sysinfo memory
+}
+memory "$@"

@@ -1,0 +1,8 @@
+#!/opt/local/bin/zsh
+source /Users/unforswearing/zsh-config/bin/stdlib.zsh
+decr () {
+	local opt="${1:-$(cat -)}" 
+	libutil:argtest "$opt"
+	print $((--opt))
+}
+decr "$@"

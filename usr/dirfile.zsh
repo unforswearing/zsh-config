@@ -3,7 +3,7 @@ function file() {
   # bkp filename.txt => filename.txt.bak
   # restore filename.txt => overwrites filename.txt
   function file.bkp() {
-    cp "${1}"{,.bak}
+    /bin/cp "${1}"{,.bak}
   }
   function file.exists() {
     if [[ -s "${1}" ]]; then true; else false; fi
@@ -15,7 +15,7 @@ function file() {
     print "$(<${1})"
   }
   function file.rest() {
-    cp "${1}"{.bak,} && rm "${1}.bak"
+    /bin/cp "${1}"{.bak,} && rm "${1}.bak"
   }
   function file.empty() {
     if [[ -e "${1}" ]] && [[ ! -s "${1}" ]]; then

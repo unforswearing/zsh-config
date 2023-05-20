@@ -1,3 +1,5 @@
+# the next line prevents sourcing this file
+[[ "$ZSH_EVAL_CONTEXT" =~ :file$ ]] && return 0
 # exports, hash, aliases, options, bindkey, import function, moving source files
 {
   export KEYTIMEOUT=25
@@ -50,6 +52,8 @@
   alias -s git='git clone'
   ## ---------------------------------------------
   # -g == global alias. global as in expands anywhere on the current line
+  # -----------------------------------------------
+  # regular aliases
   alias finder='open .'
   alias ls='ls -a'
   alias purj='sudo purge && sudo purge && sudo purge'
@@ -66,6 +70,8 @@
   alias namesingle='vidir'
   alias sed='/usr/local/bin/gsed'
   alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
+
+  alias python='/usr/local/bin/python3'
 }
 {
   # setopt
@@ -126,14 +132,6 @@
   zstyle ':completion:*' verbose true
 }
 {
-  # source "$ZSH_PLUGIN_DIR/Tarrasch/zsh-colors/colors.plugin.zsh"
-  source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
-  source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
-  source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
-  source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
-}
-{
   # zmodload zsh/regex
   autoload fzf-tab
   autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
@@ -153,10 +151,4 @@
   bindkey "^[[A" history-substring-search-up
   bindkey "^[[B" history-substring-search-down
   bindkey '\e' vi-kill-line
-}
-{
-  # generate ~/.zprofile if: 1) it does not exist; 2) ZDOTDIR is unset
-  if [[ -d "$HOME/zsh-config" ]] && [[ -n "$ZDOTDIR" ]]; then
-    print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
-  fi
 }

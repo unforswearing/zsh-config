@@ -4,7 +4,7 @@ function use() {
   shift
   case "$opt" in
   "py") python -c "$@" ;;
-  "lua") lua -e "$@" ;;
+  # "lua") lua -e "$@" ;;
   "js") node -e "$@" ;;
   esac
 }

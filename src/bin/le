@@ -1,0 +1,21 @@
+#!/opt/local/bin/zsh
+source "/Users/unforswearing/zsh-config/bin/stdlib.zsh"
+le () {
+	local left= 
+	local right="${2:-$1}" 
+	libutil:argtest "$right"
+	if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]
+	then
+		left="$(cat -)" 
+	else
+		left="$1" 
+	fi
+	libutil:argtest "$left"
+	if [[ "$left" -le "$right" ]]
+	then
+		true
+	else
+		false
+	fi
+}
+le "$@"

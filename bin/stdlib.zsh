@@ -87,11 +87,16 @@ function cmd() {
   function cmd.discard() {
     eval "$@" >|/dev/null 2>&1
   }
+  function cmd.devnull() {
+    # for use with pipes
+    >|/dev/null # 2>&1
+  }
   local opt="$1"
   shift
   case "$opt" in
   last) cmd.cpl ;;
   discard) libutil:argtest "$@" && cmd.discard "$@" ;;
+  devnull) cmd.devnull ;;
   *) libutil:error.option "$opt" ;;
   esac
 }
@@ -533,7 +538,7 @@ function generate_binfile() {
   path+="$bindir"
 
   local functionname="${1}"
-  local functionbody=$(get fn $functionname)
+  local functionbody=$(declare -f $functionname)
 
   local binfile="${bindir}/${functionname}"
   local argitems=("\\"" "$" "@" "\\"")

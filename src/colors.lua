@@ -1,26 +1,6 @@
-local colors = require("ansicolors")
+local colors = require("libcolors.lua")
 
+local selected_color = arg[1]
+local text = arg[2]
 
-local M = {}
-
-local function red(text)
-   print(colors("%{red}" .. text))
-end
-M.red = red
-
-local function yellow(text)
-   print(colors("%{yellow}" .. text))
-end
-M.yellow = yellow
-
-local function green(text)
-   print(colors("%{green}" .. text))
-end
-M.green = green
-
-local function blue(text)
-   print(colors("%{blue}" .. text))
-end
-M.blue = blue
-
-return M
+print(colors[selected_color](text))
