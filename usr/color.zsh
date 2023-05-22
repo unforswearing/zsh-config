@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=2145
 function color() {
   local red="\033[31m"
   local green="\033[32m"

@@ -1,5 +1,4 @@
-#!/bin/sh
-
+# shellcheck shell=bash
 replify() {
   command="${*}"
   printf "Initialized REPL for [%s]

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # This file will mostly be used interactively, however it can
 # work as a standalone library when sourced from other zsh scripts.
 #
@@ -8,10 +9,13 @@
 #    - See zconf/src
 #
 
-export stdlib="${HOME}/zsh-config/bin/stdlib.zsh"
+# shellcheck source=/Users/unforswearing/zsh-config/bin/stdlib.zsh
+export stdlib="/Users/unforswearing/zsh-config/bin/stdlib.zsh"
 
-source "${HOME}/zsh-config/bin/import.zsh"
-source "${HOME}/zsh-config/bin/require.zsh"
+# shellcheck source="/Users/unforswearing/zsh-config/bin/import.zsh"
+# shellcheck source="/Users/unforswearing/zsh-config/bin/require.zsh"
+source "/Users/unforswearing/zsh-config/bin/import.zsh"
+source "/Users/unforswearing/zsh-config/bin/require.zsh"
 
 import color
 require "nu"
@@ -29,12 +33,13 @@ setopt no_clobber
 setopt sh_word_split
 setopt warn_create_global
 
+
 function libutil:reload() { source "${stdlib}"; }
 function libutil:argtest() {
   # usage libutil:argtest num
   # libutil:argtest 2 => if $1 or $2 is not present, print message
   setopt errreturn
-  local caller=$funcstack[2]
+  local caller=${funcstack[2]}
   if [[ -z "$1" ]]; then
     color red "$caller: argument missing"
     return 1
@@ -43,18 +48,33 @@ function libutil:argtest() {
 function libutil:error.option() {
   libutil:argtest "$1"
   setopt errreturn
-  local caller=$funcstack[2]
+  local caller=${funcstack[2]}
   local fopt="$1"
   color red "$caller: no method named '$fopt'" && return 1
 }
 function libutil:error.notfound() {
   libutil:argtest "$1"
   setopt errreturn
-  local caller=$funcstack[2]
+  local caller=${funcstack[2]}
   local fopt="$1"
   color red "$caller: $1 not found" && return 1
 }
 # ###############################################
+# test `isfn get`; and "
+#   print yes
+# "; or "
+#   print no
+# ";
+function and() {
+  libutil:argtest "$@"
+  # shellcheck disable=2181
+  (($? == 0)) && eval "$@"
+}
+function or() {
+  libutil:argtest "$@"
+  # shellcheck disable=2181
+  (($? == 0)) || eval "$@"
+}
 function sysinfo() {
   libutil:argtest "$1"
   case $1 in
@@ -78,18 +98,43 @@ function cmd() {
   libutil:argtest "$1"
   function cmd.cpl() {
     require "pee"
-    OIFS="$IFS"
+    local OIFS="$IFS"
     IFS=$'\n\t'
-    local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
+    local comm;
+    comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
     echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
     IFS="$OIFS"
   }
+  # similar to cmd.devnull, but command is used as
+  # an argument to the function.
+  # usage: cmd discard "ls | wc -l"
   function cmd.discard() {
     eval "$@" >|/dev/null 2>&1
   }
+  # similar to cmd.devnull, but command is used
+  # in / at the end of a pipe, not as an argument.
+  # usage: ls | wc -l | cmd devnull
   function cmd.devnull() {
     # for use with pipes
-    >|/dev/null # 2>&1
+    true >|/dev/null # 2>&1
+  }
+  # cmd norcs "declare -f periodic"
+  # the above will print nothing since periodic is set in zshrc
+  # use cmd norcs to run command in an env with no zsh sourcefiles
+  function cmd.norcs() { zsh --no-rcs -c "$@"; }
+  # run a command with options enabled
+  # cmd withopt "warncreateglobal warnnestedvars" "<cmd>"
+  function cmd.withopt() {
+    local opt="$1"
+    shift
+    setopt "$opt"
+    eval "$@"
+  }
+  function cmd.noopt() {
+    local opt="$1"
+    shift
+    unsetopt "$opt"
+    eval "$@"
   }
   local opt="$1"
   shift
@@ -97,31 +142,37 @@ function cmd() {
   last) cmd.cpl ;;
   discard) libutil:argtest "$@" && cmd.discard "$@" ;;
   devnull) cmd.devnull ;;
+  norcs) cmd.norcs "$@" ;;
+  withopt) cmd.withopt "$@" ;;
+  noopt) cmd.noopt "$@" ;;
   *) libutil:error.option "$opt" ;;
   esac
+}
+function settimeout() {
+  local opt="$1"
+  shift
+  (sleep "$opt" && eval "$@") &
 }
 # topt: toggle the option - if on, turn off. if off, turn on
 function topt() {
   libutil:argtest "$1"
-  if [[ $options[$1] == "on" ]]; then
+  # shellcheck disable=2154,2203
+  if [[ ${options[$1]} == "on" ]]; then
     unsetopt "$1"
   else
     setopt "$1"
   fi
-  if [[ "$2" != "quiet" ]]; then checkopt $1; fi
+  if [[ "$2" != "quiet" ]]; then checkopt "$1"; fi
 }
 function checkopt() {
   # https://unix.stackexchange.com/a/121892
-  print $options[$1]
+  print "${options[$1]}"
 }
 # -------------------------------------------------
 function puts() { print "$@"; }
 function putf() {
-  libutil:argtest "$1"
-  local str="$1"
-  shift
   libutil:argtest "$@"
-  printf "$str" "$@"
+  printf "%s" "$@"
 }
 # -------------------------------------------------
 # create pseudo types: nil, num, const, atom
@@ -132,7 +183,8 @@ function nil() {
   # a nil type
   # use `cmd discard` for sending commands to nothingness
   local name="$1"
-  local value="$(cat /dev/null)"
+  local value=
+  value="$(cat /dev/null)"
   declare -rg "$name=$value"
   nils["$name"]=true
   stdtypes["$name"]="nil"
@@ -156,8 +208,10 @@ function const() {
   libutil:argtest "$2"
   local name="$1"
   shift
-  local value="$@"
+  local value="$*"
+  # shellcheck disable=2145
   declare -rg "$name=$@"
+  # shellcheck disable=2124
   consts["$name"]="$@"
   stdtypes["$name"]="const"
   eval "function $name() print $value"
@@ -173,7 +227,8 @@ function atom() {
   local nameval="$1"
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare
-  declare -rg $nameval="$nameval" >|/dev/null 2>&1
+  declare -rg "$nameval=$nameval" >|/dev/null 2>&1
+  # shellcheck disable=2034
   functions["$nameval"]="$nameval" >|/dev/null 2>&1
   atoms["$nameval"]="$nameval" >|/dev/null 2>&1
   stdtypes["$name"]="atom"
@@ -182,34 +237,38 @@ function atom() {
 # check the type of various vars
 function typeof() {
   libutil:argtest "$1"
-  local val=$stdtypes["$1"]
+  local val=${stdtypes["$1"]}
   if [[ -z $val ]]; then print "none"; else print "$val"; fi
 }
 function isnil() {
   # nil has no value so there is no `get nil` command
   libutil:argtest "$1"
-  local testval=$nils["$1"]
+  local testval=${nils["$1"]}
   if [[ "$testval" != true ]]; then false; else true; fi
 }
 function isnum() {
   libutil:argtest "$1"
-  local testval="$(get num $1)"
+  local testval
+  testval="$(get num "$1")"
   if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isconst() {
   libutil:argtest "$1"
-  local testval="$(get const $1)"
+  local testval
+  testval="$(get const "$1")"
   if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isatom() {
   libutil:argtest "$1"
-  local testval="$(get atom $1)"
+  local testval
+  testval="$(get atom "$1")"
   if [[ -z "$testval" ]]; then false; else true; fi
 }
 function isfn() {
   libutil:argtest "$1"
   local char=" "
-  local result=$(
+  local result
+  result=$(
     type -w "$1" | awk -F: '{print $2}' | sed "s%^[${char//%/\\%}]*%%"
   )
   if [[ -z "$result" ]]; then
@@ -223,22 +282,23 @@ function isfn() {
 function get() {
   libutil:argtest "$1"
   function getnum() {
-    local val=$nums["$1"]
+    local val=${nums["$1"]}
     if [[ -z $val ]]; then false; else print "$val"; fi
   }
   function getconst() {
-    local val=$consts["$1"]
+    local val=${consts["$1"]}
     if [[ -z $val ]]; then false; else print "$val"; fi
   }
   function getatom() {
-    local val=$atoms["$1"]
+    local val=${atoms["$1"]}
     if [[ -z $val ]]; then false; else print "$val"; fi
   }
   function getvar() {
     # dont use $ with var
     # getvar PATH
     # todo: hide output if there is no match
-    local value=$(eval "print \$"${1}"")
+    local value
+    value=$(eval "print \$${1}")
     if [[ -z "$value" ]]; then
       libutil:error.notfound "$1"
     else
@@ -250,15 +310,14 @@ function get() {
     declare -f "$1"
   }
   local opt="$1"
-  #libutil:argtest "$2"
   shift
   case "$opt" in
-  num) getnum "$2" ;;
-  const) getconst "$2" ;;
-  atom) getatom "$2" ;;
-  var) getvar "$2" ;;
-  fn) getfn "$2" ;;
-  *) libutil:error.option "$opt" ;;
+  num) libutil:argtest "$1" && getnum "$1" ;;
+  const) libutil:argtest "$1" && getconst "$1" ;;
+  atom) libutil:argtest "$1" && getatom "$1" ;;
+  var) libutil:argtest "$1" && getvar "$1" ;;
+  fn) libutil:argtest "$1" && getfn "$1" ;;
+  *) libutil:argtest "$1" && libutil:error.option "$opt" ;;
   esac
 }
 ## ---------------------------------------------
@@ -276,12 +335,12 @@ function trim() {
   trim.left() {
     local opt="${1:-$(cat -)}"
     libutil:argtest "$opt"
-    print $opt | sd "^\s+" ""
+    print "$opt" | sd "^\s+" ""
   }
   trim.right() {
     local opt="${1:-$(cat -)}"
     libutil:argtest "$opt"
-    print $opt | sd "\s+$" ""
+    print "$opt" | sd "\s+$" ""
   }
   libutil:argtest "$2"
   case "$1" in
@@ -292,7 +351,8 @@ function trim() {
 function contains() {
   # using nushell
   libutil:argtest "$1"
-  local result=$(nu -c "echo $(cat -) | str contains $1")
+  local result
+  result=$(nu -c "echo $(cat -) | str contains $1")
   if [[ $result == "true" ]]; then true; else false; fi
 }
 # a string matcher, since the `eq` function only works for numbers
@@ -493,6 +553,7 @@ function decr() {
   print $((--opt))
 }
 function sum() {
+  # shellcheck disable=2124
   local valueargs="${@:-$(cat -)}"
   libutil:argtest "$valueargs"
   print "${valueargs}" |
@@ -538,9 +599,11 @@ function generate_binfile() {
   path+="$bindir"
 
   local functionname="${1}"
-  local functionbody=$(declare -f $functionname)
+  local functionbody
+  functionbody=$(declare -f "$functionname")
 
   local binfile="${bindir}/${functionname}"
+  # shellcheck disable=2140
   local argitems=("\\"" "$" "@" "\\"")
 
   puts "#!/opt/local/bin/zsh" >"$binfile"
@@ -548,7 +611,8 @@ function generate_binfile() {
   {
     puts "source \"${stdlib}\""
     puts "$functionbody"
-    puts "$functionname \"$(puts $argitems | sd " " "")\""
+    # shellcheck disable=2128
+    puts "$functionname \"$(puts "$argitems" | sd " " "")\""
   } >>"$binfile"
 
   chmod +x "$binfile"

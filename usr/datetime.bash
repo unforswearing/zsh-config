@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # very simple time and date
 # https://geek.co.il/2015/09/10/script-day-persistent-memoize-in-bash
 datetime() {
@@ -14,7 +15,7 @@ datetime() {
   "add_days")
     local convtime
     convtime=$(st get_time "$(st now)")
-    timestamp="$(st get_time ${2})"
+    timestamp="$(st get_time "${2}")"
     day=${3:-1}
     gdate -d "$(gdate -d "@${timestamp}" '+%F %T')+${day} day" +'%s'
     ;;
@@ -23,7 +24,7 @@ datetime() {
     local convtime
     local ts
     convtime=$(st get_time "$(st now)")
-    ts=$(st get_time ${2})
+    ts=$(st get_time "${2}")
     timestamp="${ts:$convtime}"
     month=${3:-1}
     gdate -d "$(gdate -d "@${timestamp}" '+%F %T')+${month} month" +'%s'
@@ -33,7 +34,7 @@ datetime() {
     local convtime
     local ts
     convtime=$(st get_time "$(st now)")
-    ts=$(st get_time ${2})
+    ts=$(st get_time "${2}")
     timestamp="${ts:$convtime}"
     week=${3:-1}
     gdate -d "$(gdate -d "@${timestamp}" '+%F %T')+${week} week" +'%s'

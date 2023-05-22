@@ -6,14 +6,15 @@ generate_binfile () {
 	local bindir="/Users/unforswearing/zsh-config/src/bin" 
 	path+="$bindir" 
 	local functionname="${1}" 
-	local functionbody=$(declare -f $functionname) 
+	local functionbody
+	functionbody=$(declare -f "$functionname") 
 	local binfile="${bindir}/${functionname}" 
 	local argitems=("\"" "$" "@" "\"") 
 	puts "#!/opt/local/bin/zsh" > "$binfile"
 	{
 		puts "source "${stdlib}""
 		puts "$functionbody"
-		puts "$functionname "$(puts $argitems | sd " " "")""
+		puts "$functionname "$(puts "$argitems" | sd " " "")""
 	} >> "$binfile"
 	chmod +x "$binfile"
 	setopt no_append_create

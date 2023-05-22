@@ -1,5 +1,5 @@
-#!/opt/local/bin/zsh
-
+# shellcheck shell=bash
+# shellcheck disable=2034
 gc() {
   {
     unhash "$1"

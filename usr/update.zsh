@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 function update() {
   update.macports() {
     # try to update macports (not sure if working)

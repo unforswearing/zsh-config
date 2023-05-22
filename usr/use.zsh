@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # run a command in another language
 function use() {
   local opt="$1"

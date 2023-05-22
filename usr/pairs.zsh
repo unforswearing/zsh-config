@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## a very simple data structure --------------------------
 pair() {
   print "${1};${2}"
@@ -16,15 +17,16 @@ pair.setcdr() {
 }
 # change ; to \n so pair can be used with loops
 pair.iter() {
+  :
 }
 pair.torange() {
-  range $(pair.cons "$1") $(pair.cdr "$1")
+  range "$(pair.cons "$1")" "$(pair.cdr "$1")"
 }
 pair.torange.reverse() {
-  range $(pair.cdr "$1") $(pair.cons "$1")
+  range "$(pair.cdr "$1")" "$(pair.cons "$1")"
 }
 pair.tovar() {
-  atom $(pair.cons "$1") $(pair.cdr "$1")
+  atom "$(pair.cons "$1")" "$(pair.cdr "$1")"
 }
 ## ---------------------------------------------
 green "dsl/pairs loaded"

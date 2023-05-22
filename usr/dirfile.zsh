@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 function file() {
   libutil:argtest "$1"
   # bkp filename.txt => filename.txt.bak
@@ -6,13 +7,15 @@ function file() {
     /bin/cp "${1}"{,.bak}
   }
   function file.exists() {
+    # shellcheck disable=2317
     if [[ -s "${1}" ]]; then true; else false; fi
   }
   function file.copy() {
+    # shellcheck disable=2189
     <"${1}" | pbcopy
   }
   function file.read() {
-    print "$(<${1})"
+    print "$(<"${1}")"
   }
   function file.rest() {
     /bin/cp "${1}"{.bak,} && rm "${1}.bak"
@@ -51,6 +54,7 @@ function file() {
 function dir() {
   libutil:argtest "$1"
   function dir.new() {
+    # shellcheck disable=2164
     ccd() { mkdir -p "$1" && cd "$1"; }
     # mkdir "$@";
     case "$1" in

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # add stuff  from insect - https://github.com/sharkdp/insect#terminal-version
 # add, subtract, and convert from and to
 # seconds, minutes, hours, days; inches, feet, miles
@@ -12,8 +13,9 @@ function conv() {
     printf '\n'
   }
   hex.torgb() {
+    # shellcheck disable=2124
     hex="$@"
-    printf "%d %d %d\n" 0x${hex:0:2} 0x${hex:2:2} 0x${hex:4:2}
+    printf "%d %d %d\n" 0x"${hex:0:2}" 0x"${hex:2:2}" 0x"${hex:4:2}"
   }
   # #######################################
   html.tomd() { pandoc -f html -t markdown "${1}"; }

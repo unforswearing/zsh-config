@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 function extract() {
   # Extract archives - use: extract <file>
   # Credits to http://dotfiles.org/~pseup/.bashrc

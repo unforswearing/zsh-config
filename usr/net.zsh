@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=2145
 # https://www.nushell.sh/book/commands/fetch.html
 # https://www.nushell.sh/book/commands/post.html
 # https://www.nushell.sh/book/commands/url_host.html
@@ -6,8 +8,6 @@
 # https://www.nushell.sh/book/commands/url_scheme.html
 
 function net() {
-  local opt="$1"
-
   uget() { nu -c "fetch ${@:-$(cat -)}"; }
   uput() { nu -c "put ${@:-$(cat -)}"; }
   url.host() { nu -c "\"${@:-$(cat -)}\" | url host"; }

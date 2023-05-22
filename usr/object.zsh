@@ -1,9 +1,12 @@
+# shellcheck shell=bash
 ## pseudo objects: string and number
 ## TBD: obj:file, obj:dir
 function obj:file() {
+  :
   # read, write, append, created, modified, path, copy, rm, close
 }
 function obj:dir() {
+  :
   # read, write, newfile, newdir, path, copy, created, modified, rm, close
 }
 function obj:number() {
