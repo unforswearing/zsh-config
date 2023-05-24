@@ -14,6 +14,20 @@
 # shellcheck source=/Users/unforswearing/zsh-config/bin/stdlib.zsh
 export stdlib="/Users/unforswearing/zsh-config/bin/stdlib.zsh"
 # ###############################################
+function lib:env() {
+  setopt bsd_echo
+  setopt c_precedences  
+  setopt cshjunkie_loops
+  setopt function_argzero
+  setopt ksh_option_print
+  setopt ksh_zero_subscript
+  setopt local_loops
+  setopt no_append_create
+  setopt no_clobber
+  setopt sh_word_split
+  setopt warn_create_global
+  setopt warn_nested_var
+}
 function libutil:reload() { source "${stdlib}"; }
 function libutil:argtest() {
   # usage libutil:argtest num
@@ -40,54 +54,59 @@ function libutil:error.notfound() {
   local fopt="$1"
   color red "$caller: $1 not found" && return 1
 }
+function libutil:error.overwrite() {
+  libutil:argtest "$1"
+  setopt errreturn
+  local caller=${funcstack[2]}
+  local fopt="$1"
+  color red "$caller: file '$1' exists, will not overwrite" && return 1
+}
+function libutil:error.nofile() {
+  libutil:argtest "$1"
+  setopt errreturn
+  local caller=${funcstack[2]}
+  local fopt="$1"
+  color red "$caller: file '$1' does not exist" && return 1
+}
+function libutil:error.nodir() {
+  libutil:argtest "$1"
+  setopt errreturn
+  local caller=${funcstack[2]}
+  local fopt="$1"
+  color red "$caller: directory '$1' does not exist" && return 1
+}
 # ###############################################
 # stdlib.zsh functions are available in imported files
 function import() {
   declare ZSH_USR_DIR="/Users/unforswearing/zsh-config/usr"
   libutil:argtest "$1"
-  declare -A imports
   case "$1" in
-  "object") source "${ZSH_USR_DIR}/object.zsh" && imports["$1"]=true ;;
-  "color") source "${ZSH_USR_DIR}/color.zsh" && imports["$1"]=true ;;
-  "datetime") source "${ZSH_USR_DIR}/datetime.bash" && imports["$1"]=true ;;
-  "dir") source "${ZSH_USR_DIR}/dir.zsh" && imports["$1"]=true ;;
-  "file") source "${ZSH_USR_DIR}/file.zsh" && imports["$1"]=true ;;
-  "net") source "${ZSH_USR_DIR}/net.zsh" && imports["$1"]=true ;;
-  "async") source "${ZSH_USR_DIR}/async.zsh" && imports["$1"]=true ;;
-  "await") source "${ZSH_USR_DIR}/await.zsh" && imports["$1"]=true ;;
-  "extract") source "${ZSH_USR_DIR}/extract.bash" && imports["$1"]=true ;;
-  "conv") source "${ZSH_USR_DIR}/conversion.zsh" && imports["$1"]=true ;;
-  "update") source "${ZSH_USR_DIR}/update.zsh" && imports["$1"]=true ;;
-  "help") source "${ZSH_USR_DIR}/help.zsh" && imports["$1"]=true ;;
-  "cleanup") source "${ZSH_USR_DIR}/cleanup.zsh" && imports["$1"]=true ;;
-  "lnks") source "${ZSH_USR_DIR}/lnks.bash" && imports["$1"]=true ;;
-  "repl") source "${ZSH_USR_DIR}/replify.sh" && imports["$1"]=true ;;
-  "jobs") source "${ZSH_USR_DIR}/jobs.zsh" && imports["$1"]=true ;;
-  "gc") source "${ZSH_USR_DIR}/gc.zsh" && imports["$1"]=true ;;
+  "object") source "${ZSH_USR_DIR}/object.zsh" ;;
+  "color") source "${ZSH_USR_DIR}/color.zsh" ;;
+  "datetime") source "${ZSH_USR_DIR}/datetime.bash" ;;
+  "net") source "${ZSH_USR_DIR}/net.zsh" ;;
+  "async") source "${ZSH_USR_DIR}/async.zsh" ;;
+  "await") source "${ZSH_USR_DIR}/await.zsh" ;;
+  "extract") source "${ZSH_USR_DIR}/extract.bash" ;;
+  "conv") source "${ZSH_USR_DIR}/conversion.zsh" ;;
+  "update") source "${ZSH_USR_DIR}/update.zsh" ;;
+  "help") source "${ZSH_USR_DIR}/help.zsh" ;;
+  "cleanup") source "${ZSH_USR_DIR}/cleanup.zsh" ;;
+  "lnks") source "${ZSH_USR_DIR}/lnks.bash" ;;
+  "repl") source "${ZSH_USR_DIR}/replify.sh" ;;
+  "jobs") source "${ZSH_USR_DIR}/jobs.zsh" ;;
+  "gc") source "${ZSH_USR_DIR}/gc.zsh" ;;
   "iterm")
     test -e "${HOME}/.iterm2_shell_integration.zsh" &&
-      source "${HOME}/.iterm2_shell_integration.zsh" && 
-      imports["$1"]=true 
+      source "${HOME}/.iterm2_shell_integration.zsh"  
     ;;
   *) 
     libutil:error.option "$1"
     ;;
   esac
 }
-function getimports() {
-  # 2296 disabled: using (k) is a valid method to get keys from assoc arrays
-  # shellcheck disable=2296
-  for item in ${(k)imports}; do print "$item -> ${imports[$item]}"; done
-}
-function isimported() {
-  libutil:argtest "$1"
-  local val=${imports["$1"]}
-  if [[ -z "$val" ]]; then false; else true; fi
-}
 function unload() {
   libutil:argtest "$1"
-  # "imports[$1]"
-  ${imports["$1"]::=}
   unhash -f "$1" || libutil:error.option "$1"
 }
 # ###############################################
@@ -128,15 +147,6 @@ function checkopt() {
   # https://unix.stackexchange.com/a/121892
   print "${options[$1]}"
 }
-# function option() {
-#   libutil:argtest "$1"
-#   if [[ "$(checkopt "$1")" == "off" ]]; then
-#     setopt "$1"
-#   else 
-#     true
-#   fi
-# }
-# ###############################################
 # ###############################################
 # begin stdlib.zsh interactive functions
 # -----------------------------------------------
@@ -145,11 +155,7 @@ require "nu"
 require "sd"
 environ "options"
 environ "functions"
-# test `isfn get`; and "
-#   print yes
-# "; or "
-#   print no
-# ";
+# test `isfn get`; and "print yes"; or "print no";
 function and() {
   libutil:argtest "$@"
   # shellcheck disable=2181
@@ -245,7 +251,88 @@ function cmd() {
 function puts() { print "$@"; }
 function putf() {
   libutil:argtest "$@"
-  printf "%s" "$@"
+  printf "%s\n" "$@"
+}
+function dump() {
+  # dump file.txt
+  libutil:argtest "$1"
+  cat "$1"
+}
+function write() {
+  # write "text" file.txt
+  # print hi | write file.txt
+  # error if file exists and is not empty
+  local opt="${1:-$(cat -)}"
+  libutil:argtest "$opt"
+  if [[ -s "$opt" ]]; then
+    libutil:error.overwrite "$opt"
+  else 
+    printf "%s\n" "$@" >|"$opt"
+  fi
+}
+function append() {
+  # append "text" file.txt
+  # error if file does not exist
+  libutil:argtest "$1"
+  libutil:argtest "$2"
+  local txt="${1}"
+  local file="${2}"
+  if [[ ! -s "$file" ]]; then
+    libutil:error.nofile "$file"
+  else 
+    shift
+    # disabled shellcheck for zsh option `no_append_create`
+    # shellcheck disable=1009,1072,1073
+    printf "%s\n" "$txt" >>|"$file"
+  fi
+}
+function prepend() {
+  # prepend "text" file.txt
+  # print hi | prepend file.txt
+  # error if file does not exist
+  libutil:argtest "$1"
+  libutil:argtest "$2"
+  local txt="${1}"
+  local file="${2}"
+  if [[ ! -s "$file" ]]; then
+    libutil:error.nofile "$file"
+  else 
+    shift
+    local contents="_prepend_${RANDOM}.txt"
+    touch "${contents}"
+    # disabled shellcheck for zsh option `no_append_create`
+    # shellcheck disable=1009,1072,1073
+    cat "$file" | sort -r | 
+      {  cat -; print "$txt"; } | sort -r >> "${contents}"
+    /bin/mv "${contents}" "${file}"
+  fi
+}
+function direc() {
+  # print dir contents
+  # direc /Users
+  local opt="${1:-$(pwd)}"
+  libutil:argtest "$opt"
+  if [[ ! -d "$opt" ]]; then
+    libutil:error.nodir "$opt"
+  else 
+    require "fd"
+    fd --color never \
+       --type file \
+       --type directory \
+       --hidden \
+       --ignore-vcs \
+       --exclude "*.git" \
+       --max-depth 1 \
+       --search-path "$opt"
+  fi
+}
+# create a new dir that branches from the specified location
+# `cd Documents && branch files/newstuff` creates a files/newstuff
+# directory in the Documents folder
+function branch() {
+  libutil:argtest "$1"  
+  local opt="$1"
+  /bin/mkdir -p "$opt"
 }
 # -------------------------------------------------
 # create pseudo types: nil, num, const, atom
