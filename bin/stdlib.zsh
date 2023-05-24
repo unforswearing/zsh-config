@@ -8,37 +8,15 @@
 #    - See generate_binfiles() at the bottom of this file
 #    - See zconf/src
 #
-
 # shellcheck source=/Users/unforswearing/zsh-config/bin/stdlib.zsh
 export stdlib="/Users/unforswearing/zsh-config/bin/stdlib.zsh"
-
-# shellcheck source="/Users/unforswearing/zsh-config/bin/import.zsh"
-# shellcheck source="/Users/unforswearing/zsh-config/bin/require.zsh"
-source "/Users/unforswearing/zsh-config/bin/import.zsh"
-source "/Users/unforswearing/zsh-config/bin/require.zsh"
-
-import color
-require "nu"
-require "sd"
-
-setopt bsd_echo
-setopt c_precedences
-setopt cshjunkie_loops
-setopt function_argzero
-setopt ksh_zero_subscript
-setopt local_loops
-setopt local_options
-setopt no_append_create
-setopt no_clobber
-setopt sh_word_split
-setopt warn_create_global
-
-
+# ###############################################
 function libutil:reload() { source "${stdlib}"; }
 function libutil:argtest() {
   # usage libutil:argtest num
   # libutil:argtest 2 => if $1 or $2 is not present, print message
   setopt errreturn
+  # shellcheck disable=2154
   local caller=${funcstack[2]}
   if [[ -z "$1" ]]; then
     color red "$caller: argument missing"
@@ -59,6 +37,96 @@ function libutil:error.notfound() {
   local fopt="$1"
   color red "$caller: $1 not found" && return 1
 }
+# ###############################################
+function import() {
+  declare ZSH_USR_DIR="/Users/unforswearing/zsh-config/usr"
+  libutil:argtest "$1"
+  declare -A imports
+  case "$1" in
+  "object") source "${ZSH_USR_DIR}/object.zsh" && imports["$1"]=true ;;
+  "color") source "${ZSH_USR_DIR}/color.zsh" && imports["$1"]=true ;;
+  "datetime") source "${ZSH_USR_DIR}/datetime.bash" && imports["$1"]=true ;;
+  "dir") source "${ZSH_USR_DIR}/dir.zsh" && imports["$1"]=true ;;
+  "file") source "${ZSH_USR_DIR}/file.zsh" && imports["$1"]=true ;;
+  "net") source "${ZSH_USR_DIR}/net.zsh" && imports["$1"]=true ;;
+  "async") source "${ZSH_USR_DIR}/async.zsh" && imports["$1"]=true ;;
+  "await") source "${ZSH_USR_DIR}/await.zsh" && imports["$1"]=true ;;
+  "extract") source "${ZSH_USR_DIR}/extract.bash" && imports["$1"]=true ;;
+  "conv") source "${ZSH_USR_DIR}/conversion.zsh" && imports["$1"]=true ;;
+  "update") source "${ZSH_USR_DIR}/update.zsh" && imports["$1"]=true ;;
+  "help") source "${ZSH_USR_DIR}/help.zsh" && imports["$1"]=true ;;
+  "cleanup") source "${ZSH_USR_DIR}/cleanup.zsh" && imports["$1"]=true ;;
+  "lnks") source "${ZSH_USR_DIR}/lnks.bash" && imports["$1"]=true ;;
+  "repl") source "${ZSH_USR_DIR}/replify.sh" && imports["$1"]=true ;;
+  "jobs") source "${ZSH_USR_DIR}/jobs.zsh" && imports["$1"]=true ;;
+  "gc") source "${ZSH_USR_DIR}/gc.zsh" && imports["$1"]=true ;;
+  "iterm")
+    test -e "${HOME}/.iterm2_shell_integration.zsh" &&
+      source "${HOME}/.iterm2_shell_integration.zsh" && 
+      imports["$1"]=true 
+    ;;
+  *) 
+    libutil:error.option "$1"
+    ;;
+  esac
+}
+function getimports() {
+  # 2296 disabled: using (k) is a valid method to get keys from assoc arrays
+  # shellcheck disable=2296
+  for item in ${(k)imports}; do print "$item -> ${imports[$item]}"; done
+}
+function isimported() {
+  libutil:argtest "$1"
+  local val=${imports["$1"]}
+  if [[ -z "$val" ]]; then false; else true; fi
+}
+function unload() {
+  libutil:argtest "$1"
+  # "imports[$1]"
+  ${imports["$1"]::=}
+  unhash -f "$1" || libutil:error.option "$1"
+}
+# ###############################################
+# require: ensure a command or builtin is available in the environment
+# usage: require "gsed"
+function require() {
+  local comm
+  comm="$(command -v "$1")"
+  if [[ $comm ]]; then
+    true
+  else
+    color red "$0: command '$1' not found" && return 1
+  fi
+}
+function environ() {
+  local varname
+  varname="$1"
+  if [[ -v "$varname" ]] && [[ -n "$varname" ]]; then
+    true
+  else 
+    color red "$0: variable '$1' not found or not in environment" && return 1
+  fi
+}
+# ###############################################
+import color
+require "nu"
+require "sd"
+environ "options"
+environ "functions"
+# ------------------------------------------------
+setopt bsd_echo
+setopt c_precedences
+setopt cshjunkie_loops
+setopt function_argzero
+setopt ksh_zero_subscript
+setopt local_loops
+setopt local_options
+setopt no_append_create
+setopt no_clobber
+setopt sh_word_split
+setopt warn_create_global
+# ###############################################
+# begin stdlib.zsh interactive functions
 # ###############################################
 # test `isfn get`; and "
 #   print yes
@@ -121,7 +189,9 @@ function cmd() {
   # cmd norcs "declare -f periodic"
   # the above will print nothing since periodic is set in zshrc
   # use cmd norcs to run command in an env with no zsh sourcefiles
-  function cmd.norcs() { zsh --no-rcs -c "$@"; }
+  function cmd.norcs() { 
+    env -i zsh --no-rcs -c "$@"; 
+  }
   # run a command with options enabled
   # cmd withopt "warncreateglobal warnnestedvars" "<cmd>"
   function cmd.withopt() {
@@ -136,6 +206,11 @@ function cmd() {
     unsetopt "$opt"
     eval "$@"
   }
+  function cmd.settimeout() {
+    local opt="$1"
+    shift
+    (sleep "$opt" && eval "$@") &
+  }
   local opt="$1"
   shift
   case "$opt" in
@@ -145,13 +220,9 @@ function cmd() {
   norcs) cmd.norcs "$@" ;;
   withopt) cmd.withopt "$@" ;;
   noopt) cmd.noopt "$@" ;;
+  timeout) cmd.settimeout "$@" ;;
   *) libutil:error.option "$opt" ;;
   esac
-}
-function settimeout() {
-  local opt="$1"
-  shift
-  (sleep "$opt" && eval "$@") &
 }
 # topt: toggle the option - if on, turn off. if off, turn on
 function topt() {
@@ -165,6 +236,7 @@ function topt() {
   if [[ "$2" != "quiet" ]]; then checkopt "$1"; fi
 }
 function checkopt() {
+  libutil:argtest "$1"
   # https://unix.stackexchange.com/a/121892
   print "${options[$1]}"
 }
@@ -573,7 +645,6 @@ disable -r "integer" \
   "nocorrect" \
   "repeat" \
   "float"
-
 ## ---------------------------------------------
 # create a standalone, top-level file for *almost* any zsh function
 # -> functions that use the ${1:-$(cat -)} construction wont work

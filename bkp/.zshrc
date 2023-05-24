@@ -2,16 +2,14 @@
 [[ "$ZSH_EVAL_CONTEXT" =~ :file$ ]] && return 0
 function reload() { source "$HOME/.zshrc"; }
 # ----------------------------------------------------------
-ZSH_PLUGIN_DIR="/Users/unforswearing/zsh-config/plugin"
+declare ZSH_PLUGIN_DIR="/Users/unforswearing/zsh-config/plugin"
 source "${ZSH_PLUGIN_DIR}/zsh-defer/zsh-defer.plugin.zsh" &&
   function defer() { zsh-defer "$@"; }
 source ~/powerlevel10k/powerlevel10k.zsh-theme && source ~/.p10k.zsh
-source "${HOME}/.zshenv"
-source "${HOME}/.zshconfig"
-source "${HOME}/zsh-config/bin/stdlib.zsh"
-# reload the environment
+zsh-defer source "${HOME}/.zshenv"
+zsh-defer source "${HOME}/.zshconfig"
+zsh-defer source "${HOME}/zsh-config/bin/stdlib.zsh"
 # load zsh plugins
-# brew install zsh-syntax-highlighting
 () {
   unsetopt warncreateglobal
   local substring_search="zsh-history-substring-search"
@@ -21,9 +19,8 @@ source "${HOME}/zsh-config/bin/stdlib.zsh"
 }
 # ----------------------------------------------------------
 # backup .zshrc, .zshenv, .zshconfig to $HOME/zsh-config/bkp
-# use async to speed up the reload process
-import async && async '{ 
-  require "fd"
+({ 
+  eval 'require "fd"
   /bin/rm -rf /Users/unforswearing/zsh-config/bkp
   cmd discard "mkdir /Users/unforswearing/zsh-config/bkp"
   fd ".zsh(config|env|rc)" --hidden --type file --max-depth 1 |
@@ -36,8 +33,9 @@ import async && async '{
         # print file contents
         cat "${HOME}/${line}"
       } >|"${HOME}/zsh-config/bkp/${line}"
-    done
-}' && unload async
+    done' & 
+  }) >/dev/null 2>&1 
+ 
 # ----------------------------------------------------------
 # PERIOD=90000; insect "$PERIOD seconds -> hours" == 25 h
 function periodic() { "/usr/local/bin/python3" "$HOME/hosts.py"; }
@@ -46,6 +44,7 @@ autoload compinit
 autoload bashcompinit
 # keep the syntax highlighting at the bottom, see faq
 # https://github.com/zsh-users/zsh-syntax-highlighting#faq
+# brew install zsh-syntax-highlighting
 source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 # : success=true is a no-op for metadata purposes
 : success=true

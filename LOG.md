@@ -1,5 +1,15 @@
 # Log 
 
+## Changes, 5/23/2023
+
+Moved contents of bin files to bin/stdlib.zsh, as sourcing loops became annoying.
+
+these files include:
+
+- util.zsh
+- import.zsh
+- require.zsh
+
 ## Changes, 5/21/2023
 
 The original zshrc broke things so I backed out. Changes include

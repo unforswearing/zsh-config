@@ -1,5 +1,6 @@
 # the next line prevents sourcing this file
 [[ "$ZSH_EVAL_CONTEXT" =~ :file$ ]] && return 0
+# shellcheck shell=bash
 # exports, hash, aliases, options, bindkey, import function, moving source files
 {
   export KEYTIMEOUT=25
