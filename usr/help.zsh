@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 xman() { man "${1}" | man2html | browser; }
 pman() { man -t "${1}" | open -f -a /Applications/Preview.app; }
 sman() {

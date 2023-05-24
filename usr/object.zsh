@@ -1,6 +1,5 @@
 # shellcheck shell=bash
-# shellcheck source="/Users/unforswearing/zsh-config/bin/import.zsh"
-source "/Users/unforswearing/zsh-config/bin/import.zsh"
+environ "stdlib"
 ## pseudo objects: string and number
 ## TBD: obj:file, obj:dir
 # 5/23/2023: obj:file / @file does not work

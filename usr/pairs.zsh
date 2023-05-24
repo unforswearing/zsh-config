@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 ## a very simple data structure --------------------------
 pair() {
   print "${1};${2}"

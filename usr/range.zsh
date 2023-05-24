@@ -1,5 +1,6 @@
 # shellcheck shell=bash
 # shellcheck disable=2051
+environ "stdlib"
 # formatted ranges
 # do not quote - range can be alpha or num
 #  - maybe: range int $1 $2 / range str "$1" "$2"

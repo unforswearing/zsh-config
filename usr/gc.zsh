@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 # shellcheck disable=2034
 gc() {
   {

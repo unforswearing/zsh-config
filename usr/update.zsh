@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 function update() {
   update.macports() {
     # try to update macports (not sure if working)

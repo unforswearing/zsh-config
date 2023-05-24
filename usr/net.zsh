@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 # shellcheck disable=2145
 # https://www.nushell.sh/book/commands/fetch.html
 # https://www.nushell.sh/book/commands/post.html

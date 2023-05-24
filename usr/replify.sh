@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 replify() {
   command="${*}"
   printf "Initialized REPL for [%s]

@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 # shellcheck disable=2145
 function color() {
   local red="\033[31m"

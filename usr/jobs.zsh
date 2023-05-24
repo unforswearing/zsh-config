@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 function jobs() {
   # Find the PID of a process by name
   find_pid() {

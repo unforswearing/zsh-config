@@ -8,6 +8,9 @@
 #    - See generate_binfiles() at the bottom of this file
 #    - See zconf/src
 #
+# check if a file has access to stdlib.zsh by using `environ "stdlib"`
+# at the top of the file. the command will fail at environ and when 
+# checking for stdlib, if environ is somehow set and available. 
 # shellcheck source=/Users/unforswearing/zsh-config/bin/stdlib.zsh
 export stdlib="/Users/unforswearing/zsh-config/bin/stdlib.zsh"
 # ###############################################
@@ -38,6 +41,7 @@ function libutil:error.notfound() {
   color red "$caller: $1 not found" && return 1
 }
 # ###############################################
+# stdlib.zsh functions are available in imported files
 function import() {
   declare ZSH_USR_DIR="/Users/unforswearing/zsh-config/usr"
   libutil:argtest "$1"
@@ -639,12 +643,12 @@ function calc() {
 # disable the use of some keywords by creating empty aliases
 disable -r "integer" \
   "time" \
-  "until" \
   "select" \
   "coproc" \
   "nocorrect" \
   "repeat" \
   "float"
+  # "until" \
 ## ---------------------------------------------
 # create a standalone, top-level file for *almost* any zsh function
 # -> functions that use the ${1:-$(cat -)} construction wont work

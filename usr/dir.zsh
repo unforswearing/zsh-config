@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 # directory actions
 function dir() {
   libutil:argtest "$1"

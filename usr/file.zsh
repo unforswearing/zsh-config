@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 function file() {
   libutil:argtest "$1"
   # bkp filename.txt => filename.txt.bak

@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 # very simple time and date
 # https://geek.co.il/2015/09/10/script-day-persistent-memoize-in-bash
 datetime() {

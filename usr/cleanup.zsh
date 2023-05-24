@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+environ "stdlib"
 function cleanup() {
   function dir.rmempty() { find "$(pwd)" -type d -empty -print -delete; }
   function file.rmempty() { find "$(pwd)" -type f -empty -print -delete; }
