@@ -108,30 +108,43 @@ function environ() {
   if [[ -v "$varname" ]] && [[ -n "$varname" ]]; then
     true
   else 
-    color red "$0: variable '$1' not found or not in environment" && return 1
+    color red "$0: variable '$1' is not set or is not in environment" && return 1
   fi
 }
 # ###############################################
+# topt: toggle the option - if on, turn off. if off, turn on
+function topt() {
+  libutil:argtest "$1"
+  # shellcheck disable=2154,2203
+  if [[ ${options[$1]} == "on" ]]; then
+    unsetopt "$1"
+  else
+    setopt "$1"
+  fi
+  if [[ "$2" != "quiet" ]]; then checkopt "$1"; fi
+}
+function checkopt() {
+  libutil:argtest "$1"
+  # https://unix.stackexchange.com/a/121892
+  print "${options[$1]}"
+}
+# function option() {
+#   libutil:argtest "$1"
+#   if [[ "$(checkopt "$1")" == "off" ]]; then
+#     setopt "$1"
+#   else 
+#     true
+#   fi
+# }
+# ###############################################
+# ###############################################
+# begin stdlib.zsh interactive functions
+# -----------------------------------------------
 import color
 require "nu"
 require "sd"
 environ "options"
 environ "functions"
-# ------------------------------------------------
-setopt bsd_echo
-setopt c_precedences
-setopt cshjunkie_loops
-setopt function_argzero
-setopt ksh_zero_subscript
-setopt local_loops
-setopt local_options
-setopt no_append_create
-setopt no_clobber
-setopt sh_word_split
-setopt warn_create_global
-# ###############################################
-# begin stdlib.zsh interactive functions
-# ###############################################
 # test `isfn get`; and "
 #   print yes
 # "; or "
@@ -227,22 +240,6 @@ function cmd() {
   timeout) cmd.settimeout "$@" ;;
   *) libutil:error.option "$opt" ;;
   esac
-}
-# topt: toggle the option - if on, turn off. if off, turn on
-function topt() {
-  libutil:argtest "$1"
-  # shellcheck disable=2154,2203
-  if [[ ${options[$1]} == "on" ]]; then
-    unsetopt "$1"
-  else
-    setopt "$1"
-  fi
-  if [[ "$2" != "quiet" ]]; then checkopt "$1"; fi
-}
-function checkopt() {
-  libutil:argtest "$1"
-  # https://unix.stackexchange.com/a/121892
-  print "${options[$1]}"
 }
 # -------------------------------------------------
 function puts() { print "$@"; }
