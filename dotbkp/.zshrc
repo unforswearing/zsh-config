@@ -6,10 +6,12 @@
 #   - edit $PATH in `~zconf/.zshenv`
 # `~zconf/bin/config.zsh`:
 #   - exports, aliases, zsh config, setopt options, and source files
+#   - `config.zsh` uses files from `/plugin`, `/sql`, `/theme`
 # `~zconf/bin/stdlib.zsh`:
 #   - a standalone library for basic zsh interactive sessions
+#   - this file can also be used with lua shell scripts
 # `~zconf/usr`:
-#   - standalone files used with the `req` function in `/bin`
+#   - standalone files used with the `import` function in `/bin`
 # #################################################################
 unsetopt warn_create_global
 ## ---------------------------------------------

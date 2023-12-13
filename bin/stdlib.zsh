@@ -10,12 +10,7 @@
 
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 
-source "${ZSH_BIN_DIR}/import.zsh"
-source "${ZSH_BIN_DIR}/require.zsh"
-
-import color
-require "nu"
-require "sd"
+req color
 
 setopt bsd_echo
 setopt c_precedences
@@ -57,6 +52,7 @@ function libutil:error.notfound() {
 # ###############################################
 function sysinfo() {
   libutil:argtest "$1"
+  req nu
   case $1 in
   host) nu -c "sys|get host" ;;
   cpu) nu -c "sys|get cpu" ;;
@@ -77,7 +73,7 @@ function memory() { sysinfo memory; }
 function cmd() {
   libutil:argtest "$1"
   function cmd.cpl() {
-    require "pee"
+    req "pee"
     OIFS="$IFS"
     IFS=$'\n\t'
     local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
@@ -257,242 +253,6 @@ function get() {
   esac
 }
 ## ---------------------------------------------
-function lower() {
-  libutil:argtest "$1"
-  local opt="${1}"
-  print "$opt" | tr '[:upper:]' '[:lower:]'
-}
-function upper() {
-  libutil:argtest "$1"
-  local opt="${1}"
-  print "$opt" | tr '[:lower:]' '[:upper:]'
-}
-function trim() {
-  trim.left() {
-    local opt="${1:-$(cat -)}"
-    libutil:argtest "$opt"
-    print $opt | sd "^\s+" ""
-  }
-  trim.right() {
-    local opt="${1:-$(cat -)}"
-    libutil:argtest "$opt"
-    print $opt | sd "\s+$" ""
-  }
-  libutil:argtest "$2"
-  case "$1" in
-  left) trim.left "$2" ;;
-  right) trim.right "$2" ;;
-  esac
-}
-function contains() {
-  # using nushell
-  libutil:argtest "$1"
-  local result=$(nu -c "echo $(cat -) | str contains $1")
-  if [[ $result == "true" ]]; then true; else false; fi
-}
-# a string matcher, since the `eq` function only works for numbers
-# match will check the entire string. use contains for string parts
-function match() {
-  libutil:argtest "$1"
-  libutil:argtest "$2"
-  local left="${1}"
-  local right="${2}"
-  if [[ "$left" == "$right" ]]; then true; else false; fi
-}
-# a simple replace command
-function replace() {
-  libutil:argtest "$1"
-  libutil:argtest "$2"
-  sd "${1}" "${2}"
-}
-function count() {
-  # do not use libutil:argtest for math / counting functions
-  local char=" "
-  function count.lines() {
-    local opt="${1:-$(cat -)}"
-    print "$opt" | wc -l | sd "^\s+" ""
-  }
-  function count.words() {
-    local opt="${1:-$(cat -)}"
-    print "$opt" | wc -w | sd "^\s+" ""
-  }
-  function count.chars() {
-    local opt="${1:-$(cat -)}"
-    print "${#opt}"
-  }
-  local opt="$1"
-  shift
-  case "$opt" in
-  lines) count.lines "$@" ;;
-  words) count.words "$@" ;;
-  chars) count.chars "$@" ;;
-  *) libutil:error.option "$opt" ;;
-  esac
-}
-# math -------------------------------------------
-# all math commands (AND ONLY MATH COMMANDS) can be used in two ways:
-# add 2 2 => 4
-# print 2 | add 2 => 4
-function add() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  print "$((left + right))"
-}
-function sub() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  print "$((left - right))"
-}
-function mul() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  print "$((left * right))"
-}
-function div() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  print "$((left / right))"
-}
-function pow() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  print "$((left ** right))"
-}
-function mod() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  print "$((left % right))"
-}
-function eq() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  if [[ "$left" -eq "$right" ]]; then true; else false; fi
-}
-function ne() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  if [[ "$left" -ne "$right" ]]; then true; else false; fi
-}
-function gt() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  if [[ "$left" -gt "$right" ]]; then true; else false; fi
-}
-function lt() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  if [[ "$left" -lt "$right" ]]; then true; else false; fi
-}
-function ge() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  if [[ "$left" -ge "$right" ]]; then true; else false; fi
-}
-function le() {
-  local left=
-  local right="${2:-$1}"
-  libutil:argtest "$right"
-  if [[ "$right" -eq "$1" ]] && [[ -z "$2" ]]; then
-    left="$(cat -)"
-  else
-    left="$1"
-  fi
-  libutil:argtest "$left"
-  if [[ "$left" -le "$right" ]]; then true; else false; fi
-}
-function incr() {
-  local opt="${1:-$(cat -)}"
-  libutil:argtest "$opt"
-  print $((++opt))
-}
-function decr() {
-  local opt="${1:-$(cat -)}"
-  libutil:argtest "$opt"
-  print $((--opt))
-}
-function sum() {
-  local valueargs="${@:-$(cat -)}"
-  libutil:argtest "$valueargs"
-  print "${valueargs}" |
-    awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
-}
 function calc() {
   libutil:argtest "$1"
   print "$@" | bc
@@ -506,49 +266,4 @@ disable -r "integer" \
   "coproc" \
   "nocorrect" \
   "repeat" \
-  "float"
-
-## ---------------------------------------------
-# create a standalone, top-level file for *almost* any zsh function
-# -> functions that use the ${1:-$(cat -)} construction wont work
-#
-# for use with lua scripts via "luash". for example:
-#
-# ```lua
-# require("luash")
-# generate_binfile("incr")
-# print(incr(5))
-# ```
-# generated files are added to "/Users/unforswearing/zsh-config/src/bin"
-#
-function delete_binfiles() {
-  /bin/rm -r /Users/unforswearing/zsh-config/src/bin/*
-  generate_binfile "generate_binfile"
-  generate_binfile "delete_binfiles"
-}
-function generate_binfile() {
-  unsetopt no_append_create
-  unsetopt no_clobber
-  local bindir="/Users/unforswearing/zsh-config/src/bin"
-  path+="$bindir"
-
-  local functionname="${1}"
-  local functionbody=$(get fn $functionname)
-
-  local binfile="${bindir}/${functionname}"
-  local argitems=("\\"" "$" "@" "\\"")
-
-  puts "#!/opt/local/bin/zsh" >"$binfile"
-
-  {
-    puts "source \"${stdlib}\""
-    puts "$functionbody"
-    puts "$functionname \"$(puts $argitems | sd " " "")\""
-  } >>"$binfile"
-
-  chmod +x "$binfile"
-  setopt no_append_create
-  setopt no_clobber
-}
-generate_binfile "generate_binfile"
-generate_binfile "delete_binfiles"
+  "float";

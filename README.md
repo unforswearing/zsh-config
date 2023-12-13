@@ -1,6 +1,24 @@
 # Zsh Config
 
-My overly complicated z-shell configuration files. 
+My overly complicated z-shell configuration files.
+
+## Changes 12/12/2023
+
+Havent thought about this in a while, want to revisit with a more simple approach:
+
+- Stop using Lua/Teal/Whatever
+- Add a build step to combine everything into a single file.
+  - build can run manually for testing new stuff
+  - build will be run automatically when running exec zsh
+- Add backup command to archive things from the home folder
+  - p10k theme
+  - hosts.py
+  - etc?
+- Reduce the amount of stuff I will never use
+  - zsh db stuff
+  - etc?
+- Simplify zshrc file
+- Create tests
 
 ## Changes, 5/7/2023
 
@@ -20,7 +38,7 @@ Anything that is not interactive can be rewritten in teal. Focus on rewriting th
 
 - conv.zsh
 - dsl.zsh
-- fs.zsh 
+- fs.zsh
   - files()
   - dir()
 - utils.zsh
@@ -50,15 +68,15 @@ Resources
 
 This config was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. The customization options in `zsh` create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions.
 
-Below is a list of files and folders along with a brief description of their contents and purpose. 
+Below is a list of files and folders along with a brief description of their contents and purpose.
 
 ## `.zshenv`
 
-Setting the $PATH environment variable 
+Setting the $PATH environment variable
 
 ## `.zshrc`
 
-Soucing files, some basic commands, and setting the builtin `precmd` and `periodic` functions. 
+Soucing files, some basic commands, and setting the builtin `precmd` and `periodic` functions.
 
 - Set a `DEBUG` environment variable, which can be toggled with the `debug` function
 - Create environment variables for configuration directories
@@ -70,7 +88,7 @@ Soucing files, some basic commands, and setting the builtin `precmd` and `period
 
 ## `zsh-config/bin`
 
-Startup files for the interactive shell. These files are sourced via `.zshrc`. 
+Startup files for the interactive shell. These files are sourced via `.zshrc`.
 
 - alias.zsh
 - config.zsh
@@ -83,7 +101,7 @@ Startup files for the interactive shell. These files are sourced via `.zshrc`.
 
 ### `zsh-config/bin/dsl`
 
-An attempt to create an alternate syntax and a "standard library" for zsh. 
+An attempt to create an alternate syntax and a "standard library" for zsh.
 
 With the exception of dsl.zsh, all dsl files can be loaded via `use::<filename>`
 
@@ -105,7 +123,7 @@ The `zsh-config/etc` directory contains zsh user-contributed functions, found at
 
 ## `zsh-config/plugin`
 
-Zsh plugins that would typically be installed via framework. See directory for details of each item. 
+Zsh plugins that would typically be installed via framework. See directory for details of each item.
 
 ## `zsh-config/usr`
 
@@ -117,4 +135,4 @@ Automated updates of [StevenBlack/hosts](https://github.com/StevenBlack/hosts) d
 
 - [lnks.bash](https://github.com/unforswearing/lnks)
 
-A script for printing / saving Google Chrome urls from the terminal on MacOS. 
+A script for printing / saving Google Chrome urls from the terminal on MacOS.
