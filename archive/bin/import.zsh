@@ -6,7 +6,7 @@
     "datetime") source "${ZSH_USR_DIR}/datetime.bash" && imports["$1"]=true ;;
     "dirfile") source "${ZSH_USR_DIR}/dirfile.zsh" && imports["$1"]=true ;;
     "net") source "${ZSH_USR_DIR}/net.zsh" && imports["$1"]=true ;;
-    "async") source "${ZSH_USR_DIR}/async.zsh" && imports["$1"]=true ;;
+    "async") source "${ZSH_USR_DIR}/async.zsh" ;;
     "use") source "${ZSH_USR_DIR}/use.zsh" && imports["$1"]=true ;;
     "extract") source "${ZSH_USR_DIR}/extract.bash" && imports["$1"]=true ;;
     "conv") source "${ZSH_USR_DIR}/conversion.zsh" && imports["$1"]=true ;;

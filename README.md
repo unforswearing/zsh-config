@@ -20,7 +20,15 @@ Havent thought about this in a while, want to revisit with a more simple approac
 - Simplify zshrc file
 - Create tests
 
-## Changes, 5/7/2023
+## Changes
+
+### 5/13/2023
+
+Too much fiddling made me fuck up this configuration on the old laptop. Installed commands aren't recognized, and nothing really works. Rebuiding from scratch. 
+
+Making repo readonly. DO NOT PUSH TO THIS REPO FOR ANY REASON
+
+### 5/7/2023
 
 Much of the zsh.dsl functionality will be replaced with lua / [teal](https://github.com/teal-language/tl) [types](https://pdesaulniers.github.io/tl/tutorial), [luash](https://github.com/zserge/luash), [ansicolors](https://github.com/kikito/ansicolors.lua), and [luafilesystem](https://github.com/lunarmodules/luafilesystem).
 

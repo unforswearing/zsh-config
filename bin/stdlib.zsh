@@ -91,20 +91,6 @@ function cmd() {
   *) libutil:error.option "$opt" ;;
   esac
 }
-# topt: toggle the option - if on, turn off. if off, turn on
-function topt() {
-  libutil:argtest "$1"
-  if [[ $options[$1] == "on" ]]; then
-    unsetopt "$1"
-  else
-    setopt "$1"
-  fi
-  if [[ "$2" != "quiet" ]]; then checkopt $1; fi
-}
-function checkopt() {
-  # https://unix.stackexchange.com/a/121892
-  print $options[$1]
-}
 # -------------------------------------------------
 function puts() { print "$@"; }
 function putf() {
@@ -205,11 +191,7 @@ function isfn() {
   )
   if [[ -z "$result" ]]; then
     false
-  elif [[ $result == "function" ]]; then
-    true
-  else
-    false
-  fi
+  elif [[ $result == "function" ]]; then true; else false; fi
 }
 function get() {
   libutil:argtest "$1"
