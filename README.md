@@ -8,6 +8,31 @@ My overly complicated z-shell configuration files.
 
 ### To Do
 
+> create a better data structure
+
+```
+# it will have to be wrapped in quotes to avoid errors during execution
+# this can be awk-based using comma separated values
+
+# create a new list using the 'list' command
+list info_table = "1, 'fish', $(date), 'hello'"
+
+# print all values of the list
+list print $info_table
+
+# get a list item at index
+list get $info_table 1
+
+# loop through a list
+list foreach $info_table "
+  while read item; do
+    echo "info_table item: $item"
+  done
+"
+
+# eventually include: pop push shift reverse filter
+```
+
 - make sure to seprate interactive code from scripting helpers 
   - stdlib is a scripting helper, not interactive
   - maybe create a `scripting` folder, move all stdlib related code there
