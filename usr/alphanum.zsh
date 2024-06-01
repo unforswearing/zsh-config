@@ -8,27 +8,37 @@ function upper() {
   local opt="${1}"
   print "$opt" | tr '[:lower:]' '[:upper:]'
 }
+ltrim() {
+  local opt="${1:-$(cat -)}"
+  libutil:argtest "$opt"
+  print $opt | sd "^\s+" ""
+}
+rtrim() {
+  local opt="${1:-$(cat -)}"
+  libutil:argtest "$opt"
+  print $opt | sd "\s+$" ""
+}
 function trim() {
-  trim.left() {
-    local opt="${1:-$(cat -)}"
-    libutil:argtest "$opt"
-    print $opt | sd "^\s+" ""
-  }
-  trim.right() {
-    local opt="${1:-$(cat -)}"
-    libutil:argtest "$opt"
-    print $opt | sd "\s+$" ""
-  }
-  libutil:argtest "$2"
-  case "$1" in
-  left) trim.left "$2" ;;
-  right) trim.right "$2" ;;
-  esac
+  local opt="${1:-$(cat -)}"
+  libutil:argtest "$opt"
+  print "$opt" | sd "(^\s+|\s+$)" ""
+}
+function length() {
+   libutil:argtest "$1"
+   local arg="${1}"
+   print "${#arg}"
+}
+function toiter() {
+  # split a string by char into newlines for iterating over
+   libutil:argtest "$1"
+   local arg="${1}"
+   print "$arg" | trim | sd "" "\n" | tail -n +2
 }
 function contains() {
   # using nushell
   libutil:argtest "$1"
-  local result=$(nu -c "echo $(cat -) | str contains $1")
+  local str="${2:-$(cat -)}"
+  local result=$(echo "$str" | grep -o "$1")
   if [[ $result == "true" ]]; then true; else false; fi
 }
 # a string matcher, since the `eq` function only works for numbers

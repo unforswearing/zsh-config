@@ -1,12 +1,6 @@
 # This file will mostly be used interactively, however it can
 # work as a standalone library when sourced from other zsh scripts.
 #
-# `stdlib.zsh` can also be used with Lua / Teal to write shell scripts
-#  by generating standalone files in the /src/bin directory for
-#  use as a lua/zsh shared library
-#    - See generate_binfiles() at the bottom of this file
-#    - See zconf/src
-#
 
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 
@@ -92,6 +86,10 @@ function cmd() {
   esac
 }
 # -------------------------------------------------
+# do something if the previous command succeeds
+function and() { (($? == 0)) && "$@"; }
+# do something if the previous command fails
+function or() { (($? == 0)) || "$@"; }
 function puts() { print "$@"; }
 function putf() {
   libutil:argtest "$1"
@@ -102,142 +100,93 @@ function putf() {
 }
 # -------------------------------------------------
 # create pseudo types: nil, num, const, atom
-declare -A stdtypes
-declare -A nils
+declare -a stdtypes=()
+declare -a nils
 function nil() {
-  libutil:argtest "$1"
+  libutil:argtest "$1" || return 
   # a nil type
   # use `cmd discard` for sending commands to nothingness
   local name="$1"
   local value="$(cat /dev/null)"
-  declare -rg "$name=$value"
-  nils["$name"]=true
-  stdtypes["$name"]="nil"
+  nils+=("$name=$(true)")
+  stdtypes+=("$name=nil")
   eval "function $name() print $value;"
+  declare -rg "$name=$value"
 }
-declare -A nums
+declare -a nums
 function num() {
-  libutil:argtest "$1"
-  libutil:argtest "$2"
+  { 
+    libutil:argtest "$1" &&
+    libutil:argtest "$2" 
+  } || return
   local name="$1"
   local value="$2"
-  declare -rg "$name=$value"
-  nums["$name"]="$((value))"
-  stdtypes["$name"]="num"
+  nums+=("$name=$((value))")
+  stdtypes+=("$name=num")
   eval "function $name() print $value;"
+  declare -rg "$name=$value"
 }
 # const utencil "spoon"
-declare -A consts
+declare -a consts
 function const() {
-  libutil:argtest "$1"
-  libutil:argtest "$2"
+  { 
+    libutil:argtest "$1" &&
+    libutil:argtest "$2" 
+  } || return
   local name="$1"
   shift
   local value="$@"
-  declare -rg "$name=$@"
-  consts["$name"]="$@"
-  stdtypes["$name"]="const"
+  consts+=("$name=$@")
+  stdtypes+=("$name=const")
   eval "function $name() print $value"
+  declare -rg "$name=$@"
 }
 # atom, single item of data. a number or word
 # the concept of atoms are taken from elixir
 #   - a constant whose value is its name
 # eg atom hello => hello=hello
 # useage: atom value
-declare -A atoms
+declare -a atoms
 function atom() {
-  libutil:argtest "$1"
+  libutil:argtest "$1" || return
   local nameval="$1"
   eval "function $nameval() print $nameval;"
   # if $1 is a number, don't use declare
   declare -rg $nameval="$nameval" >|/dev/null 2>&1
   functions["$nameval"]="$nameval" >|/dev/null 2>&1
-  atoms["$nameval"]="$nameval" >|/dev/null 2>&1
-  stdtypes["$name"]="atom"
+  atoms+=("$nameval") >|/dev/null 2>&1
+  stdtypes+=("$nameval=atom")
 }
 # -------------------------------------------------
 # check the type of various vars
 function typeof() {
   libutil:argtest "$1"
-  local val=$stdtypes["$1"]
-  if [[ -z $val ]]; then print "none"; else print "$val"; fi
-}
-function isnil() {
-  # nil has no value so there is no `get nil` command
-  libutil:argtest "$1"
-  local testval=$nils["$1"]
-  if [[ "$testval" != true ]]; then false; else true; fi
+  for val in ${stdtypes[@]}; do
+    test $(<<<"${val}" | grep -o $1) && \
+      print "${val}" | sd "^.*=" "" || \
+      print "none"
+    # if [[ $1 =~ $val ]]; then print "$val"; else print "none"; fi
+  done
 }
 function isnum() {
+  unsetopt warncreateglobal
   libutil:argtest "$1"
-  local testval="$(get num $1)"
-  if [[ -z "$testval" ]]; then false; else true; fi
+  local testval="$1"
+  # deprecated: if [[ -z "$testval" ]]; then false; else true; fi
+  # check if a value is a number (including floating point numbers and negatives)
+  [[ "$testval" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]
 }
-function isconst() {
+function isstr() {
+  unsetopt warncreateglobal
   libutil:argtest "$1"
-  local testval="$(get const $1)"
-  if [[ -z "$testval" ]]; then false; else true; fi
+  local testval="$1"  
+  [[ "$testval" =~ [^0-9] ]]
 }
-function isatom() {
+function isarray() {
+  unsetopt warncreateglobal
   libutil:argtest "$1"
-  local testval="$(get atom $1)"
-  if [[ -z "$testval" ]]; then false; else true; fi
-}
-function isfn() {
-  libutil:argtest "$1"
-  local char=" "
-  local result=$(
-    type -w "$1" | awk -F: '{print $2}' | sed "s%^[${char//%/\\%}]*%%"
-  )
-  if [[ -z "$result" ]]; then
-    false
-  elif [[ $result == "function" ]]; then true; else false; fi
-}
-function get() {
-  libutil:argtest "$1"
-  function getnum() {
-    local val=$nums["$1"]
-    if [[ -z $val ]]; then false; else print "$val"; fi
-  }
-  function getconst() {
-    local val=$consts["$1"]
-    if [[ -z $val ]]; then false; else print "$val"; fi
-  }
-  function getatom() {
-    local val=$atoms["$1"]
-    if [[ -z $val ]]; then false; else print "$val"; fi
-  }
-  function getvar() {
-    # dont use $ with var
-    # getvar PATH
-    # todo: hide output if there is no match
-    local value=$(eval "print \$"${1}"")
-    if [[ -z "$value" ]]; then
-      libutil:error.notfound "$1"
-    else
-      print "$value"
-    fi
-  }
-  function getfn() {
-    # todo: hide output if there is no match
-    declare -f "$1"
-  }
-  local opt="$1"
-  #libutil:argtest "$2"
-  shift
-  case "$opt" in
-  num) getnum "$2" ;;
-  const) getconst "$2" ;;
-  atom) getatom "$2" ;;
-  var) getvar "$2" ;;
-  fn) getfn "$2" ;;
-  *) libutil:error.option "$opt" ;;
-  esac
-}
-## ---------------------------------------------
-function calc() {
-  libutil:argtest "$1"
-  print "$@" | bc
+  local testval="$1"
+  # [[ "$(declare -p $testval)" =~ "declare -a" ]]
 }
 ## ---------------------------------------------
 # disable the use of some keywords by creating empty aliases

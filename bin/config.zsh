@@ -1,5 +1,6 @@
 # exports, hash, aliases, options, bindkey, import function, moving source files
 export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
+
 {
   export KEYTIMEOUT=25
   export CLICOLOR=1
@@ -21,10 +22,6 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   export VISUAL="$EDITOR"
   export XDG_CACHE_HOME="${HOME}/.cache"
   export XDG_CONFIG_HOME="${HOME}/.config"
-  export EXA_PERMISSIONS=
-  export EXA_DEFAULT_OPTIONS="--color auto --all --group-directories-first "
-  EXA_DEFAULT_OPTIONS+="--long --header --modified --sort=name "
-  EXA_DEFAULT_OPTIONS+="--git --time-style=iso --classify --no-permissions --no-user"
   export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
   export GOPATH="$HOME/go"
   export HOMEBREW_NO_ANALYTICS=1
@@ -56,7 +53,6 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   alias purj='sudo purge && sudo purge && sudo purge'
   alias pip='pip3'
   alias edit='micro' #'nvim'
-  alias prev="cd -"
   alias c="pbcopy"
   alias p="pbpaste"
   alias cf='pbpaste|pbcopy'

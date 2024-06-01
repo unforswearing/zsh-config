@@ -2,6 +2,20 @@
 
 My overly complicated z-shell configuration files.
 
+## Changes 6/1
+
+Starting to work on this again, it is annoyingly complicated, still. 
+
+Make everything more simple!
+
+- stop using the `req`  function for self made scripts, only use it to check if something is available in the path
+- merge color, alphanum, etc from /usr into stdlib and archive usr folder
+- try to simplify config.zsh
+- other cleanup and reorg tasks. 
+- KEEP the DSL aspects of this configuration, though I hardly ever do scripting these days
+  - maybe only load `config` and the zsh dotfiles by default
+    -> and make the dsl stuff in stdlib as a loadable module: `req stdlib` 
+
 ## Changes 12/12/2023
 
 Havent thought about this in a while, want to revisit with a more simple approach:
