@@ -1,3 +1,4 @@
+# add all contents of this file to $ZSH_BIN_DIR/stdlib.zsh
 function lower() {
   libutil:argtest "$1"
   local opt="${1}"

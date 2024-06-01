@@ -4,12 +4,50 @@ My overly complicated z-shell configuration files.
 
 ## Changes 6/1
 
+-> Update::::::
+
+### To Do
+
+- make sure to seprate interactive code from scripting helpers 
+  - stdlib is a scripting helper, not interactive
+  - maybe create a `scripting` folder, move all stdlib related code there
+- try to reduce the size of config.zsh
+- merge usr/ files into stdlib
+- make stdlib a req module
+- remove other modules from req
+  - only help and stdlib will remain as modules
+- in stdlib
+  - make typecasting more robust
+  - make error module for types
+  - add color and replify
+  - add alphanum
+  -> NOTE: see bash experimentation on old laptop
+
 Starting to work on this again, it is annoyingly complicated, still. 
 
 Make everything more simple!
 
 - stop using the `req`  function for self made scripts, only use it to check if something is available in the path
 - merge color, alphanum, etc from /usr into stdlib and archive usr folder
+  -> the file tree wil look like
+
+```
+- config
+  - archive
+  - bin
+    - config.zsh
+    - req.zsh
+    - stdlib.zsh
+  - plugin
+    - ...
+  - .zshenv
+  - .zshrc
+  - hosts.py
+  - pavs.zsh
+  - README
+  - codeworkspace
+```
+
 - try to simplify config.zsh
 - other cleanup and reorg tasks. 
 - KEEP the DSL aspects of this configuration, though I hardly ever do scripting these days

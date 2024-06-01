@@ -13,11 +13,14 @@ function req() {
     shift
   }
 
+  # merge alphanum and color into $ZSH_BIN_DIR/stdlib.zsh
+  # keep help and repl here as modules
   case "$1" in
   "alphanum") source "${ZSH_USR_DIR}/alphanum.zsh" && success ;;
   "color") source "${ZSH_USR_DIR}/color.zsh"  && success ;;
   "help") source "${ZSH_USR_DIR}/help.zsh" && success ;;
   "repl") source "${ZSH_USR_DIR}/replify.sh" && success ;;
+  "stdlib") source $ZSH_BIN_DIR/stdlib.zsh && success ;;
   ""|" "*) color red "$0: please enter a command" && success ;;
   *)
     local comm="$(command -v $1)"
