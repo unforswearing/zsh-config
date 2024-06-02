@@ -84,14 +84,42 @@ function swap() {
   source "/Users/unforswearing/zsh-config/.zshrc"
   setopt warn_create_global
 }
+function cpl() {
+  req "pee"
+  OIFS="$IFS"
+  IFS=$'\n\t'
+  local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
+  echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
+  IFS="$OIFS"
+}
 function opts() {
   if [[ -z ${options[$1]} ]]; then
-    libutil:error.notfound "$1"
+    # libutil:error.notfound "$1"
   else
     local optvalue=${options[$1]}
     print $optvalue
   fi
 }
+function sysinfo() {
+  # libutil:argtest "$1"
+  req nu
+  case $1 in
+  host) nu -c "sys|get host" ;;
+  cpu) nu -c "sys|get cpu" ;;
+  disks) nu -c "sys|get disks" ;;
+  mem | memory)
+    nu -c "{
+        free: (sys|get mem|get free),
+        used: (sys|get mem|get used),
+        total: (sys|get mem|get total)
+      }"
+    ;;
+  temp | temperature) nu -c "sys|get temp" ;;
+  net | io) nu -c "sys|get net" ;;
+  *) libutil:error.option "$opt" ;;
+  esac
+}
+function memory() { sysinfo memory; }
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 ## the folling are not used:

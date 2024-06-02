@@ -4,9 +4,22 @@
 
 export stdlib="${ZSH_BIN_DIR}/stdlib.zsh"
 
-source "${ZSH_BIN_DIR}/req.zsh"
+{ command -v req >/dev/null 2>&1; } || \
+  source "${ZSH_BIN_DIR}/req.zsh"
 
 req :mute print
+
+setopt bsd_echo
+setopt c_precedences
+setopt cshjunkie_loops
+setopt function_argzero
+setopt ksh_zero_subscript
+setopt local_loops
+setopt local_options
+setopt no_append_create
+setopt no_clobber
+setopt sh_word_split
+setopt warn_create_global
 
 function color() {
   local red="\033[31m"
@@ -33,18 +46,6 @@ function color() {
   esac
 }
 
-setopt bsd_echo
-setopt c_precedences
-setopt cshjunkie_loops
-setopt function_argzero
-setopt ksh_zero_subscript
-setopt local_loops
-setopt local_options
-setopt no_append_create
-setopt no_clobber
-setopt sh_word_split
-setopt warn_create_global
-
 setopt errreturn
 
 function libutil:reload() { source "${stdlib}"; }
@@ -69,27 +70,49 @@ function libutil:error.notfound() {
   local fopt="$1"
   color red "$caller: $1 not found" && return 1
 }
-# ###############################################
-function sysinfo() {
-  libutil:argtest "$1"
-  req nu
-  case $1 in
-  host) nu -c "sys|get host" ;;
-  cpu) nu -c "sys|get cpu" ;;
-  disks) nu -c "sys|get disks" ;;
-  mem | memory)
-    nu -c "{
-        free: (sys|get mem|get free),
-        used: (sys|get mem|get used),
-        total: (sys|get mem|get total)
-      }"
-    ;;
-  temp | temperature) nu -c "sys|get temp" ;;
-  net | io) nu -c "sys|get net" ;;
-  *) libutil:error.option "$opt" ;;
-  esac
+# ---------------
+# Function to handle errors with advanced features
+error() {
+  local exit_code=$1
+  shift
+  local message="$*"
+  local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
+  
+  # Print the error message to stderr with a timestamp
+  echo "$timestamp [ERROR] $message" >&2
+  
+  # Log the error message to a file (optional)
+  if [[ -n "$ERROR_LOG_FILE" ]]; then
+    echo "$timestamp [ERROR] $message" >> "$ERROR_LOG_FILE"
+  fi
+  
+  # Print stack trace (optional)
+  if [[ -n "$PRINT_STACK_TRACE" ]]; then
+    echo "Stack trace:" >&2
+    local i=0
+    while caller $i; do
+      ((i++))
+    done >&2
+  fi
+  
+  # Exit with the provided exit code (optional)
+  if [[ "$exit_code" -ne 0 ]]; then
+    exit "$exit_code"
+  fi
 }
-function memory() { sysinfo memory; }
+# # Example usage
+# ERROR_LOG_FILE="/path/to/error.log"  # Set this variable if you want to log errors to a file
+# PRINT_STACK_TRACE=1  # Set this variable if you want to print stack traces
+
+# # Example of logging an error with a stack trace
+# error 0 "This is a test error message that doesn't exit the script"
+
+# # Example of logging an error, printing a stack trace, and exiting the script
+# error 1 "This is a critical error message that will exit the script"
+# -----------------------------------------------
+function async() { ({ eval "$@"; } &) >/dev/null 2>&1 }
+function discard() { eval "$@" >|/dev/null 2>&1 }
+# ###############################################
 # run a command in another language
 function use() {
   local opt="$1"
@@ -100,32 +123,25 @@ function use() {
   "js") node -e "$@" ;;
   esac
 }
-function cmd() {
+# ifcmd "cmd" && cmd last
+# ifcmd "req" || source req
+function ifcmd() {
   libutil:argtest "$1"
-  function cmd.cpl() {
-    req "pee"
-    OIFS="$IFS"
-    IFS=$'\n\t'
-    local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
-    echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
-    IFS="$OIFS"
-  }
-  function cmd.discard() {
-    eval "$@" >|/dev/null 2>&1
-  }
-  local opt="$1"
-  shift
-  case "$opt" in
-  last) cmd.cpl ;;
-  discard) libutil:argtest "$@" && cmd.discard "$@" ;;
-  *) libutil:error.option "$opt" ;;
-  esac
+  test "$(command -v "${1}")"
 }
-# -------------------------------------------------
-# do something if the previous command succeeds
-function and() { (($? == 0)) && "$@"; }
-# do something if the previous command fails
-function or() { (($? == 0)) || "$@"; }
+# Function to retrieve user input with an optional message
+function input() {
+  local message="$1"
+  
+  # Print the message if provided
+  if [[ -n "$message" ]]; then
+    echo -n "$message "
+  fi
+  
+  # Retrieve and return user input
+  read user_input
+  echo "$user_input"
+}
 function puts() { print "$@"; }
 function putf() {
   libutil:argtest "$1"
@@ -134,6 +150,11 @@ function putf() {
   libutil:argtest "$@"
   printf "$str" "$@"
 }
+# -------------------------------------------------
+# do something if the previous command succeeds
+function and() { (($? == 0)) && "$@"; }
+# do something if the previous command fails
+function or() { (($? == 0)) || "$@"; }
 # -------------------------------------------------
 # create pseudo types: nil, num, const, atom
 declare -a stdtypes=()
@@ -484,7 +505,9 @@ function sum() {
     awk '{for(i=1; i<=NF; i++) sum+=$i; } END {print sum}'
 }
 ## ---------------------------------------------
-# datetime: NOTE needs testing
+# TESTING NEEDED FOR EVERYTHING BELOW
+## ---------------------------------------------
+# datetime:
 datetime() {
   req st
   local opt="${1}"
@@ -526,6 +549,48 @@ datetime() {
     ;;
   esac
 }
+# ------------------------------
+# file stuff
+function filemod() {
+  f.read() { cat $1; }
+  f.write() { local f="$1"; shift; print "$@" >| "$f"; }
+  # shellcheck disable=1009,1072,1073
+  f.append() { local f="$1"; shift; print "$@" >>| "$f"; }
+  f.copy() { local f="$1"; shift; /bin/cp "$f" "$2"; }
+
+  function {newfile,fs.file.new}() { touch "$@"; }
+  function {bkp,fs.file.backup}() { cp "${1}"{,.bak}; }
+  function {rst,fs.file.restore}() { cp "${1}"{.bak,} && rm "${1}.bak"; }
+  function {fexists,fs.file.exists}() { [[ -s "${1}" ]]; }
+  function {fempty,fs.file.isempty}() { [[ -a "${1}" ]] && [[ ! -s "${1}" ]]; }
+
+  case "$1" in
+    read) f.read ;;
+    write) f.write ;;
+    append) f.append ;;
+    copyto) f.copy ;;
+  esac
+}
+function dirmod() {
+  function {newdir,fs.dir.new}() { mkdir "${1}"; }
+  function {readdir,fs.dir.read}() { ls "${1}"; }
+  function {dbkp,fs.dir.backup}() { cp -r "${1}" "${1}.bak"; }
+  function {drst,fs.dir.restore}() { cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak"; }
+  function {pdir,fs.dir.parent}() { dirname "${1:-(pwd)}"; }
+  function {dexists,fs.dir.exists}() { [[ -d "${1}" ]]; } 
+  function {dempty,fs.dir.isempty}() { 
+    local count=$(ls -la "${1}" | wc -l | trim.left) 
+    [[ $count -eq 0 ]];  
+  }
+}
+function fspath() {
+  fs.path() { print "$(pwd)/${1}"; }
+  fs.abs() { print "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
+  fs.newer() { [[ "${1}" -nt "${2}" ]]; }
+  fs.older() { [[ "${1}" -ot "${2}" ]]; }
+}
+## ---------------------------------------------
+# END TESTING NEEDED
 ## ---------------------------------------------
 # disable the use of some keywords by creating empty aliases
 disable -r "integer" \

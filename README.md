@@ -6,21 +6,48 @@ My overly complicated z-shell configuration files.
 
 -> Update::::::
 
+### Interactive
+
+for use on the command line. basic variables and functions. 
+
+top-level files: 
+
+- .zshrc 
+- .zshenv 
+- hosts.py 
+- bin/config.zsh 
+- bin/req.zsh
+  - req sources: usr/help.zsh and usr/replify.sh
+- usr/color.zsh (must manually source, also exists in bin/stdlib.zsh)
+
+### Scripting
+
+for writing more robust scripts that do more detailed shell tasks.
+
+to use as a scripting addition / helper, source the following files:
+
+- bin/req.zsh
+- bin/stdlib.zsh
+- 
+
 ### To Do
 
 - make sure to seprate interactive code from scripting helpers 
   - stdlib is a scripting helper, not interactive
+    - separate the req command so it does not need to be required by .zshrc
+    - move all interactive code from stdlib
+    - eventaully use scripts in objects/ folder
   - maybe create a `scripting` folder, move all stdlib related code there
 - try to reduce the size of config.zsh
-- merge usr/ files into stdlib
-- make stdlib a req module
-- remove other modules from req
-  - only help and stdlib will remain as modules
+- [x] merge usr/ files into stdlib
+- [x] make stdlib a req module
+- [x] remove other modules from req
+  - only help and stdlib *(and replify)* will remain as modules
 - in stdlib
   - make typecasting more robust
   - make error module for types
-  - add color and replify
-  - add alphanum
+  - [x] add color ~and replify~
+  - [x] add alphanum
   -> NOTE: see bash experimentation on old laptop
 
 Starting to work on this again, it is annoyingly complicated, still. 
