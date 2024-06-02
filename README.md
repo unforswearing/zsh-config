@@ -32,6 +32,8 @@ to use as a scripting addition / helper, source the following files:
 
 ### To Do
 
+- make typecasting more robust
+- create an error module
 - make sure to seprate interactive code from scripting helpers 
   - stdlib is a scripting helper, not interactive
     - separate the req command so it does not need to be required by .zshrc
@@ -44,8 +46,6 @@ to use as a scripting addition / helper, source the following files:
 - [x] remove other modules from req
   - only help and stdlib *(and replify)* will remain as modules
 - in stdlib
-  - make typecasting more robust
-  - make error module for types
   - [x] add color ~and replify~
   - [x] add alphanum
   -> NOTE: see bash experimentation on old laptop

@@ -71,19 +71,48 @@ function libutil:error.notfound() {
   color red "$caller: $1 not found" && return 1
 }
 # ---------------
+RE_ALPHA="[aA-zZ]"
+RE_STRING="([aA-zZ]|[0-9])+"
+RE_WORD="\w"
+RE_NUMBER="\d"
+RE_NUMERIC="^[0-9]+$"
+RE_ALNUM="([aA-zZ]|[0-9])"
+RE_NEWLINE="\n"
+RE_SPACE=" "
+RE_TAB="\t"
+RE_WHITESPACE="\s"
+POSIX_UPPER="[:upper:]"
+POSIX_LOWER="[:lower:]"
+POSIX_ALPHA="[:alpha:]"
+POSIX_DIGIT="[:digit:]"
+POSIX_ALNUM="[:alnum:]"
+POSIX_PUNCT="[:punct:]"
+POSIX_SPACE="[:space:]"
+POSIX_WORD="[:word:]"
+
+ERROR_LOG_FILE=
+PRINT_STACK_TRACE=
+
+# ---------------
+timestamp() { "$(date +'%Y-%m-%d %H:%M:%S')"; }
+log() {
+  local message="$*"
+  color green "$(timestamp) [LOG] $message"
+}
 # Function to handle errors with advanced features
 error() {
   local exit_code=$1
   shift
   local message="$*"
-  local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
   
+  local timestamp="$(timestamp)"
+
   # Print the error message to stderr with a timestamp
-  echo "$timestamp [ERROR] $message" >&2
+  color red "$timestamp [ERROR] $message" >&2
   
   # Log the error message to a file (optional)
   if [[ -n "$ERROR_LOG_FILE" ]]; then
-    echo "$timestamp [ERROR] $message" >> "$ERROR_LOG_FILE"
+    color red "$timestamp [ERROR] $message" >> "$ERROR_LOG_FILE"
   fi
   
   # Print stack trace (optional)
@@ -258,6 +287,16 @@ safequote() {
   # Return the safely quoted string
   echo "$quoted"
 }
+strbuild() {
+  # strbuild new "name"
+  # name add "this is the next sentence."
+  # name add $(safequote "here is some unsafe text: eval rm -rf. this string will not execute")
+  # name print 
+  # name compile
+  case "$1" in
+  new) printf "%s" "${2}" ;;
+  esac
+}
 function lower() {
   libutil:argtest "$1"
   local opt="${1}"
@@ -309,6 +348,37 @@ function match() {
   local left="${1}"
   local right="${2}"
   if [[ "$left" == "$right" ]]; then true; else false; fi
+}
+# filter a stream of text (multiple lines) using basic regex
+# filter should be used in a pipe!
+function filter() {
+  local opt="${1}"
+  local excl=
+  [[ "$opt" == "exclude" ]] && {
+    excl="!"
+    opt="${2}"
+  }
+  case "${opt}" in
+  "alpha") awk ${excl}/"${RE_ALPHA}"/ ;;
+  "string") awk ${excl}/"${RE_STRING}"/ ;;
+  "word") awk ${excl}/"${RE_WORD}"/ ;;
+  "number") awk ${excl}/"${RE_NUMBER}"/ ;;
+  "numeric") awk ${excl}/"${RE_NUMERIC}"/ ;;
+  "alnum") awk ${excl}/"${RE_ALNUM}"/ ;;
+  "newline") awk ${excl}/"${RE_NEWLINE}"/ ;;
+  "space") awk ${excl}/"${RE_SPACE}"/ ;;
+  "tab") awk ${excl}/"${RE_TAB}"/ ;;
+  "whitespace") awk ${excl}/"${RE_WHITESPACE}"/ ;;
+  "pupper") awk ${excl}/"${POSIX_UPPER}"/ ;;
+  "plower") awk ${excl}/"${POSIX_LOWER}"/ ;;
+  "palpha") awk ${excl}/"${POSIX_ALPHA}"/ ;;
+  "pdigit") awk ${excl}/"${POSIX_DIGIT}"/ ;;
+  "palnum") awk ${excl}/"${POSIX_ALNUM}"/ ;;
+  "punct") awk ${excl}/"${POSIX_PUNCT}"/ ;;
+  "pspace") awk ${excl}/"${POSIX_SPACE}"/ ;;
+  "pword") awk ${excl}/"${POSIX_WORD}"/ ;;
+  *) awk ${excl}/"${opt}"/ ;;
+  esac
 }
 # a simple replace command
 function replace() {
@@ -520,74 +590,69 @@ datetime() {
   "now") gdate --universal ;;
     # a la new gDate().getTime() in javascript
   "get_time") gdate -d "${2}" +"%s" ;;
-  "add_days")
-    local convtime
-    convtime=$(st get_time "$(st now)")
-    timestamp="$(st get_time ${2})"
-    day=${3:-1}
-    gdate -d "$(gdate -d "@${timestamp}" '+%F %T')+${day} day" +'%s'
-    ;;
-  "add_months")
-    declare timestamp month
-    local convtime
-    local ts
-    convtime=$(st get_time "$(st now)")
-    ts=$(st get_time ${2})
-    timestamp="${ts:$convtime}"
-    month=${3:-1}
-    gdate -d "$(gdate -d "@${timestamp}" '+%F %T')+${month} month" +'%s'
-    ;;
-  "add_weeks")
-    declare timestamp week
-    local convtime
-    local ts
-    convtime=$(st get_time "$(st now)")
-    ts=$(st get_time ${2})
-    timestamp="${ts:$convtime}"
-    week=${3:-1}
-    gdate -d "$(gdate -d "@${timestamp}" '+%F %T')+${week} week" +'%s'
-    ;;
   esac
 }
 # ------------------------------
 # file stuff
 function filemod() {
+  local opt="${1}"
+  shift
+
   f.read() { cat $1; }
   f.write() { local f="$1"; shift; print "$@" >| "$f"; }
   # shellcheck disable=1009,1072,1073
   f.append() { local f="$1"; shift; print "$@" >>| "$f"; }
   f.copy() { local f="$1"; shift; /bin/cp "$f" "$2"; }
+  f.newfile() { touch "$@"; }
+  f.backup() { cp "${1}"{,.bak}; }
+  f.restore() { cp "${1}"{.bak,} && rm "${1}.bak"; }
+  f.exists() { [[ -s "${1}" ]]; }
+  f.isempty() { [[ -a "${1}" ]] && [[ ! -s "${1}" ]]; }
 
-  function {newfile,fs.file.new}() { touch "$@"; }
-  function {bkp,fs.file.backup}() { cp "${1}"{,.bak}; }
-  function {rst,fs.file.restore}() { cp "${1}"{.bak,} && rm "${1}.bak"; }
-  function {fexists,fs.file.exists}() { [[ -s "${1}" ]]; }
-  function {fempty,fs.file.isempty}() { [[ -a "${1}" ]] && [[ ! -s "${1}" ]]; }
-
-  case "$1" in
-    read) f.read ;;
-    write) f.write ;;
-    append) f.append ;;
-    copyto) f.copy ;;
+  case "$opt" in
+    read) f.read "${2}" ;;
+    write) f.write "${@}" ;;
+    append) f.append "${@}" ;;
+    copyto) f.copy "${@}" ;;
+    newfile) f.newfile "${@}" ;;
+    backup) f.backup "${2}";;
+    restore) f.restore "${2}" ;;
+    exists) f.exists "${2}" ;;
+    isempty) f.isempty "${2}" ;;
   esac
 }
 function dirmod() {
-  function {newdir,fs.dir.new}() { mkdir "${1}"; }
-  function {readdir,fs.dir.read}() { ls "${1}"; }
-  function {dbkp,fs.dir.backup}() { cp -r "${1}" "${1}.bak"; }
-  function {drst,fs.dir.restore}() { cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak"; }
-  function {pdir,fs.dir.parent}() { dirname "${1:-(pwd)}"; }
-  function {dexists,fs.dir.exists}() { [[ -d "${1}" ]]; } 
-  function {dempty,fs.dir.isempty}() { 
+  dir.new() { mkdir "${1}"; }
+  dir.read() { ls "${1}"; }
+  dir.backup() { cp -r "${1}" "${1}.bak"; }
+  dir.restore() { cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak"; }
+  dir.parent() { dirname "${1:-(pwd)}"; }
+  dir.exists() { [[ -d "${1}" ]]; } 
+  dir.isempty() { 
     local count=$(ls -la "${1}" | wc -l | trim.left) 
     [[ $count -eq 0 ]];  
   }
+  case "$1" in
+    new) dir.new "${2}" ;;
+    read) dir.read "${2}" ;;
+    backup) dir.backup "${2}" ;;
+    restore) dir.restore "${2}" ;;
+    parent) dir.parent "${2}" ;;
+    exists) dir.exists "${2}" ;;
+    isempty) dir.isempty "${2}" ;;
+  esac
 }
 function fspath() {
   fs.path() { print "$(pwd)/${1}"; }
   fs.abs() { print "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
   fs.newer() { [[ "${1}" -nt "${2}" ]]; }
   fs.older() { [[ "${1}" -ot "${2}" ]]; }
+  case "$1" in
+    path) fs.path "${2}" ;;
+    abs) fs.abs "${2}" ;;
+    newer) fs.newer "${2}" "${3}" ;;
+    older) fs.older "${2}" "${3}" ;;
+  esac
 }
 ## ---------------------------------------------
 # END TESTING NEEDED
