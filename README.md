@@ -32,8 +32,31 @@ to use as a scripting addition / helper, source the following files:
 
 ### To Do
 
-- make typecasting more robust
-- create an error module
+> create a better data structure
+
+```
+# it will have to be wrapped in quotes to avoid errors during execution
+# this can be awk-based using comma separated values
+
+# create a new list using the 'list' command
+list info_table = "1, 'fish', $(date), 'hello'"
+
+# print all values of the list
+list print $info_table
+
+# get a list item at index
+list get $info_table 1
+
+# loop through a list
+list foreach $info_table "
+  while read item; do
+    echo "info_table item: $item"
+  done
+"
+
+# eventually include: pop push shift reverse filter
+```
+
 - make sure to seprate interactive code from scripting helpers 
   - stdlib is a scripting helper, not interactive
     - separate the req command so it does not need to be required by .zshrc

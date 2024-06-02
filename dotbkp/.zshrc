@@ -30,6 +30,7 @@ source "${ZSH_BIN_DIR}/config.zsh"
 source "${ZSH_BIN_DIR}/req.zsh"
 # source "${ZSH_BIN_DIR}/stdlib.zsh"
 
+# merge help into stdlib and remove this command
 req help
 ## ---------------------------------------------
 function prev() {

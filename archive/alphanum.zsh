@@ -9,20 +9,38 @@ function upper() {
   local opt="${1}"
   print "$opt" | tr '[:lower:]' '[:upper:]'
 }
-ltrim() {
+function ltrim() {
   local opt="${1:-$(cat -)}"
   libutil:argtest "$opt"
-  print $opt | sd "^\s+" ""
+  print "$opt" | sd "^\s+" ""
 }
-rtrim() {
+function rtrim() {
   local opt="${1:-$(cat -)}"
   libutil:argtest "$opt"
-  print $opt | sd "\s+$" ""
+  print "$opt" | sd "\s+$" ""
 }
 function trim() {
   local opt="${1:-$(cat -)}"
   libutil:argtest "$opt"
   print "$opt" | sd "(^\s+|\s+$)" ""
+}
+function quote() {
+  libutil:argtest "$1"  
+  local input="$1"
+  printf "%s" "$input" | sd "(^|$)" "\""
+}
+# the resulting string is safetly quoted
+# and will not execute if used with eval
+function literal() {
+  libutil:argtest "$1"  
+  local input="$1"
+  local quoted=""
+
+  # Escape special characters
+  quoted=$(printf '%q' "$input")
+
+  # Return the safely quoted string
+  echo "$quoted"
 }
 function length() {
    libutil:argtest "$1"
