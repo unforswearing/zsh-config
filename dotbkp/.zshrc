@@ -28,7 +28,7 @@ export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
 source "${ZSH_BIN_DIR}/config.zsh"
 source "${ZSH_BIN_DIR}/req.zsh"
-source "${ZSH_BIN_DIR}/stdlib.zsh"
+# source "${ZSH_BIN_DIR}/stdlib.zsh"
 
 req help
 ## ---------------------------------------------
