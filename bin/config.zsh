@@ -1,3 +1,5 @@
+# attempt to cut this file down, remove unused things, etc.
+
 # exports, hash, aliases, options, bindkey, import function, moving source files
 export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
 

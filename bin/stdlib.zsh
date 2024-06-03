@@ -1,4 +1,4 @@
-# This file will mostly be used interactively, however it can
+# This file will mostly be used intectively, however it can
 # work as a standalone library when sourced from other zsh scripts.
 #
 
