@@ -2,50 +2,89 @@
 
 My overly complicated z-shell configuration files.
 
+## Changes 6/8
+
+Ignore previous updates. 
+
+- Start using [`abs`](https://abs-lang.com) for scripts.
+- ~~Finish `stdlib.zsh` and load into interactive shells by default.~~
+  - Don't bother with `stdlib.zsh`, it was never used. It is archived. 
+- Make the file and folder changes in the `### Directory List` section below. 
+
+### New Config Structure
+
+The config dir will not have a separate language / syntax included. `stdlib` is for interactive use, not scripts. `abs` will be used for scripting, replacing the syntax I have been creating. 
+
+### Directory List
+
+```
+zsh-config
+  - archive
+  - bin
+    - zsh
+      - color.zsh
+      - help.zsh
+      - replify.sh
+        ...
+    - abs 
+      - ...
+    - python
+      - hosts.py
+      - ...
+  - dotbkp
+  - plugin
+  - config.zsh
+  - req.zsh
+  - .zshenv
+  - .zshrc
+```
+
 ## Changes 6/1
 
 -> Update::::::
+
+### Interactive
+
+for use on the command line. basic variables and functions. 
+
+top-level files: 
+
+- .zshrc 
+- .zshenv 
+- hosts.py 
+- bin/config.zsh 
+- bin/req.zsh
+  - req sources: usr/help.zsh and usr/replify.sh
+- usr/color.zsh (must manually source, also exists in bin/stdlib.zsh)
+
+### Scripting
+
+for writing more robust scripts that do more detailed shell tasks.
+
+to use as a scripting addition / helper, source the following files:
+
+- bin/req.zsh
+- bin/stdlib.zsh
+- 
 
 ### To Do
 
 > create a better data structure
 
-```
-# it will have to be wrapped in quotes to avoid errors during execution
-# this can be awk-based using comma separated values
-
-# create a new list using the 'list' command
-list info_table = "1, 'fish', $(date), 'hello'"
-
-# print all values of the list
-list print $info_table
-
-# get a list item at index
-list get $info_table 1
-
-# loop through a list
-list foreach $info_table "
-  while read item; do
-    echo "info_table item: $item"
-  done
-"
-
-# eventually include: pop push shift reverse filter
-```
-
 - make sure to seprate interactive code from scripting helpers 
   - stdlib is a scripting helper, not interactive
+    - separate the req command so it does not need to be required by .zshrc
+    - move all interactive code from stdlib
+    - eventaully use scripts in objects/ folder
   - maybe create a `scripting` folder, move all stdlib related code there
 - try to reduce the size of config.zsh
-- merge usr/ files into stdlib
-- make stdlib a req module
-- remove other modules from req
-  - only help and stdlib will remain as modules
+- [x] merge usr/ files into stdlib
+- [x] make stdlib a req module
+- [x] remove other modules from req
+  - only help and stdlib *(and replify)* will remain as modules
 - in stdlib
-  - make typecasting more robust
-  - make error module for types
-  - add color and replify
-  - add alphanum
+  - [x] add color ~and replify~
+  - [x] add alphanum
   -> NOTE: see bash experimentation on old laptop
 
 Starting to work on this again, it is annoyingly complicated, still. 

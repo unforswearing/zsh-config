@@ -1,5 +1,7 @@
-source "/Users/unforswearing/zsh-config/usr/color.zsh"
-ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
+#!/usr/local/bin/zsh
+ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
+
+source "$ZSH_BIN_DIR/zsh/color.zsh"
 
 function req() {
   unsetopt warn_create_global && \
@@ -16,11 +18,9 @@ function req() {
   # merge alphanum and color into $ZSH_BIN_DIR/stdlib.zsh
   # keep help and repl here as modules
   case "$1" in
-  "alphanum") source "${ZSH_USR_DIR}/alphanum.zsh" && success ;;
-  "color") source "${ZSH_USR_DIR}/color.zsh"  && success ;;
-  "help") source "${ZSH_USR_DIR}/help.zsh" && success ;;
-  "repl") source "${ZSH_USR_DIR}/replify.sh" && success ;;
-  "stdlib") source $ZSH_BIN_DIR/stdlib.zsh && success ;;
+  "color") source "${ZSH_BIN_DIR}/zsh/color.sh" && success ;;
+  "help") source "${ZSH_BIN_DIR}/zsh/help.zsh" && success ;;
+  "repl") source "${ZSH_BIN_DIR}/zsh/replify.sh" && success ;;
   ""|" "*) color red "$0: please enter a command" && success ;;
   *)
     local comm="$(command -v $1)"
