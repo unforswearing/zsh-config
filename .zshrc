@@ -24,22 +24,21 @@ bindkey -e
 # export ALIAS=($(alias))
 export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
-export ZSH_USR_DIR="$ZSH_CONFIG_DIR/usr"
 ## ---------------------------------------------
-source "${ZSH_BIN_DIR}/config.zsh"
-source "${ZSH_BIN_DIR}/req.zsh"
-# source "${ZSH_BIN_DIR}/stdlib.zsh"
+rabs() { "/usr/local/bin/abs" "$ZSH_BIN_DIR/abs/rabs.abs" "${@}"; }
+source "${ZSH_CONFIG_DIR}/config.zsh"
+source "${ZSH_CONFIG_DIR}/req.zsh"
 
 req help
 ## ---------------------------------------------
 function prev() {
-    cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
+  cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
 }
 function reload() {
   source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
 }
 function async() { (
-    { eval "$@"; } &) >/dev/null 2>&1
+  { eval "$@"; } &) >/dev/null 2>&1
 }
 function debug() {
   case "${1}" in
@@ -142,6 +141,9 @@ precmd() {
   export LAST=${last}
 }
 periodic() {
+  # abs bin/abs/maintain.abs
+  #
+  # MOVE THESE COMMANDS TO zsh_config.abs
   # --------------------------------------
   # update hosts file from stevenblack/hosts
   ({
@@ -162,10 +164,13 @@ cd "$PREV" || cd "$HOME"
 test $DEBUG || eval $CLEAR
 ## ---------------------------------------------
 ({
+  # MOVE THESE COPY COMMANDS TO zsh_config.abs
   # backup .zshrc and .zshenv
-  \cp "${ZSH_CONFIG_DIR}/.zshrc" "${HOME}/zsh-config/dotbkp";
-  \cp "${ZSH_CONFIG_DIR}/hosts.py" "${HOME}/zsh-config/dotbkp";
-  \cp "${HOME}/.zshenv" "${HOME}/zsh-config/dotbkp";
+  # zsh-config/.zshrc is the main version of the file
+  \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
+  # bin/python/hosts.py is the main version of the file
+  \cp "${ZSH_BIN_DIR}/python/hosts.py" "${ZSH_CONFIG_DIR}/dotbkp";
+  \cp "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/dotbkp";
   # source zsh-config/.zshrc from $HOME/.zshrc
   echo "source $0" >| "${HOME}/.zshrc";
 }&) >|/dev/null 2>&1

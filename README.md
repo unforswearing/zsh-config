@@ -2,6 +2,43 @@
 
 My overly complicated z-shell configuration files.
 
+## Changes 6/8
+
+Ignore previous updates. 
+
+- Start using [`abs`](https://abs-lang.com) for scripts.
+- ~~Finish `stdlib.zsh` and load into interactive shells by default.~~
+  - Don't bother with `stdlib.zsh`, it was never used. It is archived. 
+- Make the file and folder changes in the `### Directory List` section below. 
+
+### New Config Structure
+
+The config dir will not have a separate language / syntax included. `stdlib` is for interactive use, not scripts. `abs` will be used for scripting, replacing the syntax I have been creating. 
+
+### Directory List
+
+```
+zsh-config
+  - archive
+  - bin
+    - zsh
+      - color.zsh
+      - help.zsh
+      - replify.sh
+        ...
+    - abs 
+      - ...
+    - python
+      - hosts.py
+      - ...
+  - dotbkp
+  - plugin
+  - config.zsh
+  - req.zsh
+  - .zshenv
+  - .zshrc
+```
+
 ## Changes 6/1
 
 -> Update::::::
@@ -33,29 +70,6 @@ to use as a scripting addition / helper, source the following files:
 ### To Do
 
 > create a better data structure
-
-```
-# it will have to be wrapped in quotes to avoid errors during execution
-# this can be awk-based using comma separated values
-
-# create a new list using the 'list' command
-list info_table = "1, 'fish', $(date), 'hello'"
-
-# print all values of the list
-list print $info_table
-
-# get a list item at index
-list get $info_table 1
-
-# loop through a list
-list foreach $info_table "
-  while read item; do
-    echo "info_table item: $item"
-  done
-"
-
-# eventually include: pop push shift reverse filter
-```
 
 - make sure to seprate interactive code from scripting helpers 
   - stdlib is a scripting helper, not interactive
