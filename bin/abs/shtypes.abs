@@ -1,0 +1,20 @@
+#!/usr/local/bin/abs
+
+# a type system that lives in precmd()
+# this will check for things like a="3"
+# if a (to-be-established) type-mismatch is found,
+#   a warning will be sent to the console and 
+#   execution will be terminated. 
+# 
+# types:
+# -------------------
+# integer (including floats)
+#   - math in the terminal can't be complicated
+# string 
+#   - a double quoted string
+# single
+#   - a single quoted string
+#   - check for these to ensure things are quoted properly
+# 
+# :: if there is a way to translate indexed arrays to abs lists
+#    then create a `list` type
