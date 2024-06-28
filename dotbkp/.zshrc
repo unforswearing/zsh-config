@@ -4,56 +4,151 @@
 #   - $ZDOTDIR is set to $HOME/zsh-config
 # `~zconf/.zshenv`:
 #   - edit $PATH in `~zconf/.zshenv`
-# `~zconf/bin/config.zsh`:
-#   - exports, aliases, zsh config, setopt options, and source files
-# `~zconf/bin/stdlib.zsh`:
-#   - a standalone library for basic zsh interactive sessions
-# `~zconf/usr`:
-#   - standalone files used with the `req` function in `/bin`
 # #################################################################
+# return if the shell is not interactive (the commands would have no use)
+trap "exec zsh" USR1 && [[ $- != *i* ]] && [ ! -t 0 ] && return
+## ---------------------------------------------
+setopt allexport
+unsetopt monitor
 unsetopt warn_create_global
 ## ---------------------------------------------
 source ~/powerlevel10k/powerlevel10k.zsh-theme && source ~/.p10k.zsh
-## ---------------------------------------------
-# return if the shell is not interactive (the commands would have no use)
-trap "exec zsh" USR1 && [[ $- != *i* ]] && [ ! -t 0 ] && return
+# brew install zsh-syntax-highlighting
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ## ---------------------------------------------
 # stop vi mode from loading automatically
 bindkey -e
 ## ---------------------------------------------
+# generate ~/.zprofile if it does not exist and ZDOTDIR is unset
+if [[ -z $ZDOTDIR ]] && [[ ! -e "$HOME/zsh-config" ]]; then
+  print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
+fi
+## ---------------------------------------------
 # export ALIAS=($(alias))
 export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
-## ---------------------------------------------
-# suffix aliases
-alias -s git='git clone'
-## ---------------------------------------------
-# -g == global alias. global as in expands anywhere on the current line
-alias finder='open .'
-alias ls='ls -a'
-alias purj='sudo purge && sudo purge && sudo purge'
-alias pip='pip3'
-alias edit='micro' #'nvim'
-alias c="pbcopy"
-alias p="pbpaste"
-alias cf='pbpaste|pbcopy'
-alias rm='rm -i'
-alias cp='cp -i'
-alias rmf='sudo rm -rf'
-alias plux='chmod +x'
-alias namesingle='vidir'
-alias sed='/usr/local/bin/gsed'
-alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
+#
+cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
 # rabs == "run abs"
+# ex. `rabs "env('ZSH_CONFIG_DIR')"`
 # abs: https://www.abs-lang.org/
 ABS_DIR="$ZSH_BIN_DIR/abs/"
 function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
 ## ---------------------------------------------
-source "${ZSH_CONFIG_DIR}/config.zsh"
+# exports, hash, aliases, options, bindkey, import function, moving source files
+{
+  ## ---------------------------------------------
+  # suffix aliases
+  alias -s git='git clone'
+  ## ---------------------------------------------
+  # -g == global alias. global as in expands anywhere on the current line
+  alias finder='open .'
+  alias ls='ls -a'
+  alias purj='sudo purge && sudo purge && sudo purge'
+  alias pip='pip3'
+  alias edit='micro' #'nvim'
+  alias c="pbcopy"
+  alias p="pbpaste"
+  alias cf='pbpaste|pbcopy'
+  alias rm='rm -i'
+  alias cp='cp -i'
+  alias rmf='sudo rm -rf'
+  alias plux='chmod +x'
+  alias namesingle='vidir'
+  alias sed='/usr/local/bin/gsed'
+  alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
+}
+{
+  export CLICOLOR=1
+  export EDITOR="micro" #"hx" #"nvim" #"micro"
+  export GPG_TTY=$TTY
+  export LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+  export LSCOLORS=ExFxBxDxCxegedabagacad
+  export PAGER="more"
+  export PS2=".."
+  export PERIOD=90000
+  export SHELLFUNCS_DEFAULT_SHELL="/opt/local/bin/bash"
+  export VISUAL="$EDITOR"
+  export XDG_CACHE_HOME="${HOME}/.cache"
+  export XDG_CONFIG_HOME="${HOME}/.config"
+  export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
+  export GOPATH="$HOME/go"
+  export HOMEBREW_NO_ANALYTICS=1
+  export HOMEBREW_NO_AUTO_UPDATE=0
+}
+{
+  # https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh
+  export HISTFILE="$HOME/.history"
+  export HISTSIZE=50000000
+  export SAVEHIST=10000000
+  export HISTTIMEFORMAT='%F %T '
+  export HISTIGNORE="exit:bg:fg:history:clear:reload"
+  setopt append_history
+  setopt cshjunkie_history
+  setopt hist_expire_dups_first 
+  setopt hist_lex_words 
+  setopt hist_reduce_blanks 
+  setopt inc_append_history 
+  setopt share_history
+}
+{
+  # setopt
+  setopt alwaystoend
+  setopt auto_cd
+  setopt automenu
+  setopt bsd_echo
+  setopt c_precedences
+  setopt cdable_vars
+  setopt cshjunkie_loops
+  setopt function_argzero
+  setopt interactive_comments
+  setopt ksh_zero_subscript
+  setopt local_loops
+  setopt menucomplete
+  setopt no_append_create
+  setopt no_clobber
+  setopt no_bare_glob_qual
+  setopt no_nomatch
+  setopt numeric_glob_sort
+  setopt sh_word_split
+  # UNSETOPT ----------------------------------------------- ::
+  unsetopt ksh_glob
+}
+{
+  export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
+  source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
+  source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+  source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
+}
+{
+  zstyle ':completion:*' use-cache yes
+  zstyle ':completion:*' cache-path $ZSH_CACHE_DIR
+  zstyle ':completion:*' fzf-search-display true
+  zstyle ':chpwd:*' recent-dirs-default
+  zstyle ':chpwd:*' recent-dirs-file
+  zstyle recent-dirs-file ':chpwd:*' ${ZDOTDIR:-$HOME}/.chpwd-recent-dirs-${TTY##*/} +
+  zstyle ':chpwd:*' recent-dirs-insert 'both'
+  # complete 'cd -<tab>' with menu
+  zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+  # insert all expansions for expand completer
+  zstyle ':completion:*:expand:*' tag-order all-expansions
+  zstyle ':completion:*:history-words' list false
+  # activate menu
+  zstyle ':completion:*:history-words' menu yes
+  zstyle ':completion:*:matches' group 'yes'
+  zstyle ':completion:*:options' description 'yes'
+  zstyle ':completion:*' verbose true
+}
+## ---------------------------------------------
 source "${ZSH_CONFIG_DIR}/req.zsh"
-
+## ---------------------------------------------
 req help
+ # run-help / help
+(($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
+autoload -Uz run-help
 ## ---------------------------------------------
 function mini() {
   ssh alvin@192.168.0.150
@@ -125,6 +220,7 @@ function cpl() {
   IFS="$OIFS"
 }
 function opts() {
+  setopt ksh_option_print
   if [[ -z ${options[$1]} ]]; then
     # libutil:error.notfound "$1"
   else
@@ -215,8 +311,6 @@ test $DEBUG || eval $CLEAR
 # LOAD COMPLETIONS LAST
 autoload compinit
 autoload bashcompinit
-# brew install zsh-syntax-highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 eval "$(direnv hook zsh)"
 ## ---------------------------------------------
 setopt warn_create_global
