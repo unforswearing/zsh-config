@@ -1,3 +1,4 @@
 #!/usr/local/bin/abs
 
+# https://serverfault.com/a/783506
 # read -d '' x <<EOF
