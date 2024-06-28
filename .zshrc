@@ -46,6 +46,7 @@ alias sed='/usr/local/bin/gsed'
 alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
 ## ---------------------------------------------
 # rabs == "run abs"
+# ex. `rabs "env('ZSH_CONFIG_DIR')"`
 # abs: https://www.abs-lang.org/
 ABS_DIR="$ZSH_BIN_DIR/abs/"
 function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
