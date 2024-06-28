@@ -24,5 +24,5 @@
                                            ▼                                                   
                                                                                                
  $HOME/.zshenv  ◀─── Copy ──   $HOME/zsh-config/.zshenv                                        
-                                                                                                                         
+                                                                                                                                                         
 ```
