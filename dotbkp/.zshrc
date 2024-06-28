@@ -25,20 +25,47 @@ bindkey -e
 export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 ## ---------------------------------------------
-rabs() { "/usr/local/bin/abs" "$ZSH_BIN_DIR/abs/rabs.abs" "${@}"; }
+# suffix aliases
+alias -s git='git clone'
+## ---------------------------------------------
+# -g == global alias. global as in expands anywhere on the current line
+alias finder='open .'
+alias ls='ls -a'
+alias purj='sudo purge && sudo purge && sudo purge'
+alias pip='pip3'
+alias edit='micro' #'nvim'
+alias c="pbcopy"
+alias p="pbpaste"
+alias cf='pbpaste|pbcopy'
+alias rm='rm -i'
+alias cp='cp -i'
+alias rmf='sudo rm -rf'
+alias plux='chmod +x'
+alias namesingle='vidir'
+alias sed='/usr/local/bin/gsed'
+alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
+## ---------------------------------------------
+# rabs == "run abs"
+# abs: https://www.abs-lang.org/
+ABS_DIR="$ZSH_BIN_DIR/abs/"
+function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
+## ---------------------------------------------
 source "${ZSH_CONFIG_DIR}/config.zsh"
 source "${ZSH_CONFIG_DIR}/req.zsh"
 
 req help
 ## ---------------------------------------------
+function mini() {
+  ssh alvin@192.168.0.150
+}
 function prev() {
   cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
 }
 function reload() {
   source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
 }
-function async() { (
-  { eval "$@"; } &) >/dev/null 2>&1
+function async() { 
+  ({ eval "$@"; } &) >/dev/null 2>&1
 }
 function debug() {
   case "${1}" in
@@ -72,23 +99,29 @@ function swap() {
     --change-newer-than 1min
   )
   # source bin files
-  fd --base-directory ~/zsh-config/bin ${fd_options[@]} |
+  fd --base-directory ~/zsh-config/bin/zsh ${fd_options[@]} |
     # source all recently updated files
     while read item; do print "sourcing ${item}"; source "${item}"; done
   # source usr files
-  fd --base-directory ~/zsh-config/usr ${fd_options[@]} |
-    # source all recently updated files
-    while read item; do print "sourcing ${item}"; source "${item}"; done
+  # fd --base-directory ~/zsh-config/zsh ${fd_options[@]} |
+  #   # source all recently updated files
+  #   while read item; do print "sourcing ${item}"; source "${item}"; done
 
   source "/Users/unforswearing/zsh-config/.zshrc"
   setopt warn_create_global
 }
 function cpl() {
   req "pee"
+
   OIFS="$IFS"
   IFS=$'\n\t'
-  local comm=$(history | tail -n 1 | awk '{first=$1; $1=""; print $0;}')
+  
+  local comm=$(
+    history | tail -n 1 | awk '{first=$1; $1=""; print $0;}'
+  )
+  
   echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
+  
   IFS="$OIFS"
 }
 function opts() {
@@ -123,8 +156,12 @@ function memory() { sysinfo memory; }
 # BOTTOM: hooks / builtin event handlers
 ## the folling are not used:
 # - command_not_found_handler() {;}
-# - preexec() {;}
+# preexec() { 
+  # add typechecking here via abs script
+  # the $1 arg holds the full text entered at the command line
+# }
 precmd() {
+  
   # save the current dir to auto-cd if iterm crashes
   ({
     pwd >|"$HOME/.zsh_reload.txt"

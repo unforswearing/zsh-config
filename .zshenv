@@ -1,3 +1,5 @@
+#!/usr/local/bin/zsh
+
 export GITHUB_API_TOKEN=$(grep '^.*$' "$HOME/.github.token") >|/dev/null 2>&1
 
 path=(
@@ -22,6 +24,7 @@ path=(
   "/Users/unforswearing/plan9port/bin"
   "/Applications/Sublime Text.app/Contents/SharedSupport/bin"
   "/Users/unforswearing/bin"
+  "/Users/unforswearing/go/bin"
   "/Users/unforswearing/.cargo/bin"
   "/Users/unforswearing/.local/bin"
   "/Users/unforswearing/.zsh_bin"

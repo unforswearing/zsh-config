@@ -1,11 +1,17 @@
 #!/usr/local/bin/zsh
 # attempt to cut this file down, remove unused things, etc.
 
+cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
+## ---------------------------------------------
+if [[ -z $ZSH_CONFIG_ENVIRONMENT ]]; then
+  # copy zsh-config/.zshrc to ~/.zshrc
+  export ZSH_CONFIG_ENVIRONMENT=true
+fi
+
 # exports, hash, aliases, options, bindkey, import function, moving source files
 export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
 
 {
-  export KEYTIMEOUT=25
   export CLICOLOR=1
   export EDITOR="micro" #"hx" #"nvim" #"micro"
   export GPG_TTY=$TTY
@@ -19,8 +25,7 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   export LC_ALL=en_US.UTF-8
   export LSCOLORS=ExFxBxDxCxegedabagacad
   export PAGER="more"
-  export PS2_COUNTER=1
-  export PS2=">.. "
+  export PS2=".."
   export PERIOD=90000
   export SHELLFUNCS_DEFAULT_SHELL="/opt/local/bin/bash"
   export VISUAL="$EDITOR"
@@ -30,10 +35,6 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   export GOPATH="$HOME/go"
   export HOMEBREW_NO_ANALYTICS=1
   export HOMEBREW_NO_AUTO_UPDATE=0
-  export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
-  export ZSH_HIGHLIGHT_HIGHLIGHTERS=(main cursor root line)
-  typeset -A ZSH_HIGHLIGHT_PATTERNS
-  ZSH_HIGHLIGHT_PATTERNS+=('rm -rf' 'fg=white,bold,bg=red')
 }
 {
   # use short directory names
@@ -47,26 +48,6 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   hash -d documents="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents"
   hash -d github="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Documents/__Github"
   hash -d writing="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Freelance Writing/freelance_writing_obsidian"
-  ## ---------------------------------------------
-  # suffix aliases
-  alias -s git='git clone'
-  ## ---------------------------------------------
-  # -g == global alias. global as in expands anywhere on the current line
-  alias finder='open .'
-  alias ls='ls -a'
-  alias purj='sudo purge && sudo purge && sudo purge'
-  alias pip='pip3'
-  alias edit='micro' #'nvim'
-  alias c="pbcopy"
-  alias p="pbpaste"
-  alias cf='pbpaste|pbcopy'
-  alias rm='rm -i'
-  alias cp='cp -i'
-  alias rmf='sudo rm -rf'
-  alias plux='chmod +x'
-  alias namesingle='vidir'
-  alias sed='/usr/local/bin/gsed'
-  alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
 }
 {
   # setopt
@@ -85,6 +66,14 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   # unsetopt bad_pattern
   unsetopt ksh_glob
   unsetopt monitor
+}
+{
+  # source "$ZSH_PLUGIN_DIR/Tarrasch/zsh-colors/colors.plugin.zsh"
+  # source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
+  source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
+  source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
+  source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
 }
 {
   zstyle ':completion:*' use-cache yes
@@ -106,33 +95,9 @@ export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   zstyle ':completion:*' verbose true
 }
 {
-  # source "$ZSH_PLUGIN_DIR/Tarrasch/zsh-colors/colors.plugin.zsh"
-  source "$ZSH_PLUGIN_DIR/hlissner/zsh-autopair/autopair.zsh"
-  source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
-  source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
-  source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
-}
-{
-  # zmodload zsh/regex
-  autoload fzf-tab
-  autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-  add-zsh-hook chpwd chpwd_recent_dirs
   # run-help / help
   (($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
   autoload -Uz run-help
-
-  # ZLE --------------------------------------------------- ::
-  autoload history-substring-search-up
-  autoload history-substring-search-down
-  zle -N history-substring-search-up
-  zle -N history-substring-search-down
-  # BINDKEY ----------------------------------------------- ::
-  bindkey "^[[H" backward-word # fn-left
-  bindkey "^[[F" forward-word  # fn-right
-  bindkey "^[[A" history-substring-search-up
-  bindkey "^[[B" history-substring-search-down
-  bindkey '\e' vi-kill-line
 }
 {
   # generate ~/.zprofile if it does not exist and ZDOTDIR is unset
