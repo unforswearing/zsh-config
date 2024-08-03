@@ -19,14 +19,17 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # stop vi mode from loading automatically
 bindkey -e
 ## ---------------------------------------------
+export ZSH_CONFIG_DIR="$HOME/zsh-config"
+export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
+## ---------------------------------------------
+# req: check for the existence of a command 'req'uired by a function or script. 
+# ex. `req python3; python3 -c "print('hello from python3')"`
+source "${ZSH_CONFIG_DIR}/bin/zsh/req.zsh"
+## ---------------------------------------------
 # generate ~/.zprofile if it does not exist and ZDOTDIR is unset
 if [[ -z $ZDOTDIR ]] && [[ ! -e "$HOME/zsh-config" ]]; then
   print "export ZDOTDIR=$HOME/zsh-config" >"$HOME/.zprofile"
 fi
-## ---------------------------------------------
-# export ALIAS=($(alias))
-export ZSH_CONFIG_DIR="$HOME/zsh-config"
-export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 #
 cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
@@ -34,11 +37,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 # ex. `rabs "env('ZSH_CONFIG_DIR')"`
 # abs: https://www.abs-lang.org/
 ABS_DIR="$ZSH_BIN_DIR/abs/"
-function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
-## ---------------------------------------------
-source "${ZSH_CONFIG_DIR}/zsh/req.zsh"
-## ---------------------------------------------
+function rabs() { req abs && "$ABS_DIR/rabs.abs" "${@}"; }
 # exports, hash, aliases, options, bindkey, import function, moving source files
+## ---------------------------------------------
 {
   ## ---------------------------------------------
   # suffix aliases
@@ -179,6 +180,7 @@ function debug() {
 }
 # hot reload recently updated files w/o reloading the entire env
 function swap() {
+  req fd
   unsetopt warn_create_global
 
   hash -r
@@ -212,7 +214,8 @@ function cpl() {
   IFS=$'\n\t'
   
   local comm=$(
-    history | tail -n 1 | awk '{first=$1; $1=""; print $0;}'
+    history | tail -n 1 | \
+      awk '{first=$1; $1=""; print $0;}'
   )
   
   echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
@@ -222,14 +225,12 @@ function cpl() {
 function opts() {
   setopt ksh_option_print
   if [[ -z ${options[$1]} ]]; then
-    # libutil:error.notfound "$1"
   else
     local optvalue=${options[$1]}
     print $optvalue
   fi
 }
 function sysinfo() {
-  # libutil:argtest "$1"
   req nu
   case $1 in
   host) nu -c "sys|get host" ;;
@@ -244,7 +245,7 @@ function sysinfo() {
     ;;
   temp | temperature) nu -c "sys|get temp" ;;
   net | io) nu -c "sys|get net" ;;
-  *) libutil:error.option "$opt" ;;
+  *) print "'$opt' not found." ;;
   esac
 }
 function memory() { sysinfo memory; }
@@ -257,7 +258,7 @@ function memory() { sysinfo memory; }
   # the $1 arg holds the full text entered at the command line
 # }
 precmd() {
-  
+  req gtail
   # save the current dir to auto-cd if iterm crashes
   ({
     pwd >|"$HOME/.zsh_reload.txt"
@@ -274,6 +275,8 @@ precmd() {
   export LAST=${last}
 }
 periodic() {
+  # req abs
+  req python3
   # abs bin/abs/maintain.abs
   #
   # MOVE THESE COMMANDS TO zsh_config.abs

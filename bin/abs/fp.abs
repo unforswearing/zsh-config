@@ -11,6 +11,7 @@ builtins = {
     "touch": "/usr/bin/touch",
     "mkdir": "/bin/mkdir",
     "cp": "/bin/cp",
+    "stat": "/usr/bin/stat"
 }
 
 fp["fexists"] = f(file) { `test -f $file`.ok }
@@ -107,6 +108,30 @@ fp["write"] = f(file, content) {
 fp["append"] = f(file, content) {
     if !!file && !!content {
         `echo $content >> $file`
+    } else {
+        msg = color.red("unable to append to file '%s'")
+        echo(msg, file)
+    }
+}
+
+fp["modified"] = f(file) {
+    stat = builtins.stat
+    if !!file {
+        `$stat -f "%Sm" $file`.split(" ")
+          .filter(f(x){!!x && x})
+          .join(" ")
+    } else {
+        msg = color.red("unable to append to file '%s'")
+        echo(msg, file)
+    }
+}
+
+fp["created"] = f(file) {
+    stat = builtins.stat
+    if !!file {
+        `$stat -f "%SB" $file`.split(" ")
+          .filter(f(x){!!x && x})
+          .join(" ")
     } else {
         msg = color.red("unable to append to file '%s'")
         echo(msg, file)

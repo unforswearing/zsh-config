@@ -1,0 +1,4 @@
+# all paths are relative to $HOME, where `.absrc` lives
+
+config = require("zsh-config/bin/abs/config.abs").config
+fp = require("zsh-config/bin/abs/fp.abs")
