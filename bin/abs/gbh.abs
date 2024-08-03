@@ -1,0 +1,19 @@
+#!/usr/local/bin/abs
+# gbh: git branch helper
+#
+# opts: create branch, delete branch, switch branch
+# daemon: pull every n hours, auto switch to master/main
+# 
+# 8258  git branch --delete --remotes origin/post_reviewable_config_directory
+# 8259  git pull
+# 8260  git status
+# 8261  git status
+# 8262  git checkout -b post_reviewable_settings_directory
+# 8263  git add src/blog/entries/2024_07_15_the_reviewable_config_directory.md
+# 8264  git add src/blog/entries/2024_07_15_announcing_the_reviewable_settings_directory.md
+# 8265  git status
+# 8266  git push --set-upstream origin post_reviewable_settings_directory
+# 8267  git status
+# 8268  git commit -m "add post: announcing reviewable config directory"
+# 8269  git push
+# 8270* git --upstream status

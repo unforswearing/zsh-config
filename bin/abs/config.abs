@@ -14,12 +14,12 @@ config = base["config"]
 
 config.root = base["home"] + "/zsh-config"
 config.archive = config["root"] + "/archive"
-config.abs = config["root"] + "/abs"
 config.bin = config["root"] + "/bin"
 config.plugin = config["root"] + "/plugin"
 config.dotbkp = config["root"] + "/dotbkp"
-config.python = config["root"] + "/python"
-config.zsh = config["root"] + "/zsh"
+config.python = config["bin"] + "/python"
+config.zsh = config["bin"] + "/zsh"
+config.abs = config["bin"] + "/abs"
 # ---
 config.req = config["root"] + "/req.zsh"
 config.zconfig = config["root"] + "/config.zsh"
