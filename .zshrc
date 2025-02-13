@@ -30,12 +30,6 @@ export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 #
 cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
-# rabs == "run abs"
-# ex. `rabs "env('ZSH_CONFIG_DIR')"`
-# abs: https://www.abs-lang.org/
-ABS_DIR="$ZSH_BIN_DIR/abs/"
-function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
-## ---------------------------------------------
 source "${ZSH_BIN_DIR}/zsh/req.zsh"
 ## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
@@ -260,7 +254,6 @@ function memory() { sysinfo memory; }
 ## the following are not used:
 # - command_not_found_handler() {;}
 # preexec() {
-  # add typechecking here via abs script
   # the $1 arg holds the full text entered at the command line
 # }
 # chpwd() {
@@ -286,9 +279,6 @@ precmd() {
   export LAST=${last}
 }
 periodic() {
-  # abs bin/abs/maintain.abs
-  #
-  # MOVE THESE COMMANDS TO zsh_config.abs
   # --------------------------------------
   # update hosts file from stevenblack/hosts
   ({
@@ -309,7 +299,6 @@ cd "$PREV" || cd "$HOME"
 test $DEBUG || eval $CLEAR
 ## ---------------------------------------------
 ({
-  # MOVE THESE COPY COMMANDS TO zsh_config.abs
   # backup .zshrc and .zshenv
   # zsh-config/.zshrc is the main version of the file
   \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
