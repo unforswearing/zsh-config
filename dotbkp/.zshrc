@@ -36,6 +36,8 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ABS_DIR="$ZSH_BIN_DIR/abs/"
 function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
 ## ---------------------------------------------
+source "${ZSH_BIN_DIR}/zsh/req.zsh"
+## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
 {
   ## ---------------------------------------------
@@ -43,6 +45,13 @@ function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
   alias -s git='git clone'
   ## ---------------------------------------------
   # -g == global alias. global as in expands anywhere on the current line
+  ## ---------------------------------------------
+  # standard aliases
+  # ---
+  # Languages
+  alias ruby='/usr/local/opt/ruby/bin/ruby'
+  alias irb='/usr/local/opt/ruby/bin/irb'
+  # Etc
   alias finder='open .'
   alias ls='ls -a'
   alias purj='sudo purge && sudo purge && sudo purge'
@@ -87,10 +96,10 @@ function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
   export HISTIGNORE="exit:bg:fg:history:clear:reload"
   setopt append_history
   setopt cshjunkie_history
-  setopt hist_expire_dups_first 
-  setopt hist_lex_words 
-  setopt hist_reduce_blanks 
-  setopt inc_append_history 
+  setopt hist_expire_dups_first
+  setopt hist_lex_words
+  setopt hist_reduce_blanks
+  setopt inc_append_history
   setopt share_history
 }
 {
@@ -143,8 +152,6 @@ function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
   zstyle ':completion:*' verbose true
 }
 ## ---------------------------------------------
-source "${ZSH_CONFIG_DIR}/req.zsh"
-## ---------------------------------------------
 req help
  # run-help / help
 (($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
@@ -159,7 +166,7 @@ function prev() {
 function reload() {
   source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
 }
-function async() { 
+function async() {
   ({ eval "$@"; } &) >/dev/null 2>&1
 }
 function debug() {
@@ -210,13 +217,13 @@ function cpl() {
 
   OIFS="$IFS"
   IFS=$'\n\t'
-  
+
   local comm=$(
     history | tail -n 1 | awk '{first=$1; $1=""; print $0;}'
   )
-  
+
   echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
-  
+
   IFS="$OIFS"
 }
 function opts() {
@@ -250,14 +257,19 @@ function sysinfo() {
 function memory() { sysinfo memory; }
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
-## the folling are not used:
+## the following are not used:
 # - command_not_found_handler() {;}
-# preexec() { 
+# preexec() {
   # add typechecking here via abs script
   # the $1 arg holds the full text entered at the command line
 # }
+# chpwd() {
+#  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
+#    echo "you're in it now, bb"
+#  fi
+# }
 precmd() {
-  
+
   # save the current dir to auto-cd if iterm crashes
   ({
     pwd >|"$HOME/.zsh_reload.txt"
@@ -284,9 +296,9 @@ periodic() {
   }&) >|/dev/null 2>&1
   # --------------------------------------
   # remove all .DS_Store files (not sure if working)
-  ({
-    find . -name '*.DS_Store' -type f -ls -delete
-  }&) >|/dev/null 2>&1
+  # ({
+  #  find . -name '*.DS_Store' -type f -ls -delete
+  # }&) >|/dev/null 2>&1
 }
 ## ---------------------------------------------
 # cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
@@ -307,6 +319,9 @@ test $DEBUG || eval $CLEAR
   # source zsh-config/.zshrc from $HOME/.zshrc
   echo "source $0" >| "${HOME}/.zshrc";
 }&) >|/dev/null 2>&1
+## ---------------------------------------------
+# watch for new feed entries for unforswearing.com/feed
+# old code deleted -- whether this is needed remains to be seen.
 ## ---------------------------------------------
 # LOAD COMPLETIONS LAST
 autoload compinit
