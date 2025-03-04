@@ -1,3 +1,5 @@
+#!/usr/local/bin/zsh
+
 function color() {
   local red="\033[31m"
   local green="\033[32m"

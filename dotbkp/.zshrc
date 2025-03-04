@@ -1,3 +1,4 @@
+#!/usr/local/bin/zsh
 # ##################################################################
 # Zsh Configuration Outline
 # `$HOME/.zprofile`:
@@ -30,14 +31,6 @@ export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 #
 cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
-# rabs == "run abs"
-# ex. `rabs "env('ZSH_CONFIG_DIR')"`
-# abs: https://www.abs-lang.org/
-ABS_DIR="$ZSH_BIN_DIR/abs/"
-function rabs() { "$ABS_DIR/rabs.abs" "${@}"; }
-## ---------------------------------------------
-source "${ZSH_BIN_DIR}/zsh/req.zsh"
-## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
 {
   ## ---------------------------------------------
@@ -51,6 +44,7 @@ source "${ZSH_BIN_DIR}/zsh/req.zsh"
   # Languages
   alias ruby='/usr/local/opt/ruby/bin/ruby'
   alias irb='/usr/local/opt/ruby/bin/irb'
+  alias rake='/usr/local/opt/ruby/bin/rake'
   # Etc
   alias finder='open .'
   alias ls='ls -a'
@@ -86,6 +80,7 @@ source "${ZSH_BIN_DIR}/zsh/req.zsh"
   export GOPATH="$HOME/go"
   export HOMEBREW_NO_ANALYTICS=1
   export HOMEBREW_NO_AUTO_UPDATE=0
+  export PIP_BREAK_SYSTEM_PACKAGES=1
 }
 {
   # https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh
@@ -152,14 +147,10 @@ source "${ZSH_BIN_DIR}/zsh/req.zsh"
   zstyle ':completion:*' verbose true
 }
 ## ---------------------------------------------
-req help
- # run-help / help
+# run-help / help
 (($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
 autoload -Uz run-help
 ## ---------------------------------------------
-function mini() {
-  ssh alvin@192.168.0.150
-}
 function prev() {
   cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
 }
@@ -183,6 +174,19 @@ function debug() {
     ;;
   *) print "${DEBUG}" ;;
   esac
+}
+function addpass() {
+  local key="${1}"
+  local value="${2}"
+  security add-generic-password -a "$(whoami)" -s "${key}" -w "${value}"
+}
+function getpass() {
+  local key="${1}"
+  security find-generic-password -w -s "${key}" -a "$(whoami)"
+}
+function rmpass() {
+  local key="${1}"
+  security delete-generic-password -s "${key}" -a "$(whoami)"
 }
 # hot reload recently updated files w/o reloading the entire env
 function swap() {
@@ -212,6 +216,89 @@ function swap() {
   source "/Users/unforswearing/zsh-config/.zshrc"
   setopt warn_create_global
 }
+function replify() {
+  command="${*}"
+  printf "Initialized REPL for [%s]
+  " "$command"
+  printf "%s> " "$command"
+  read -r input
+  while [ "$input" != "" ];
+  do
+      	eval "$command $input"
+  	printf "
+  %s> " "$command"
+      	read -r input
+  done
+}
+function xman() { man "${1}" | man2html | browser; }
+function pman() {
+  man -t "${1}" | open -f -a /Applications/Preview.app;
+}
+function sman() {
+  # type a command to read the man page
+  echo '' |
+    fzf --prompt='man> ' \
+      --height=$(tput lines) \
+      --padding=0 \
+      --margin=0% \
+      --preview-window=down,75% \
+      --layout=reverse \
+      --border \
+      --preview 'man {q}'
+}
+function color() {
+  local red="\033[31m"
+  local green="\033[32m"
+  local yellow="\033[33m"
+  local blue="\033[34m"
+  local reset="\033[39m"
+  local black="\033[30m"
+  local white="\033[37m"
+  local magenta="\033[35m"
+  local cyan="\033[36m"
+  local opt="$1"
+  shift
+  case "$opt" in
+    red) print "${red}$@${reset}" ;;
+    green) print "${green}$@${reset}" ;;
+    yellow) print "${yellow}$@${reset}" ;;
+    blue) print "${blue}$@${reset}" ;;
+    black) print "${black}$@${reset}" ;;
+    white) print "${white}$@${reset}" ;;
+    magenta) print "${magenta}$@${reset}" ;;
+    cyan) print "${cyan}$@${reset}" ;;
+    help) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
+  esac
+}
+# example:
+#   use ls
+#   use zyx.null -> error
+function use() {
+  unsetopt warn_create_global && \
+    caller="$0" && arg="$1" && \
+    setopt warn_create_global
+
+  function success() { color green "$caller: '$arg' loaded"; }
+  function failure() { color red "$caller: ${1}"; }
+
+  if [[ "$1" == ":mute" ]] && {
+    function success() { :; }
+    shift
+  }
+
+  case "$1" in
+  ""|" "*) failure "Please enter a command or filename" ;;
+  *)
+    local comm="$(command -v $1)"
+    if [[ $comm ]]; then
+      true
+    else
+      color red "$0: command '$1' not found in current environment"; false
+    fi
+    ;;
+  esac
+}
+
 function cpl() {
   req "pee"
 
@@ -251,7 +338,7 @@ function sysinfo() {
     ;;
   temp | temperature) nu -c "sys|get temp" ;;
   net | io) nu -c "sys|get net" ;;
-  *) libutil:error.option "$opt" ;;
+  *) echo "'${1}' is not a valid option" ;;
   esac
 }
 function memory() { sysinfo memory; }
@@ -260,16 +347,14 @@ function memory() { sysinfo memory; }
 ## the following are not used:
 # - command_not_found_handler() {;}
 # preexec() {
-  # add typechecking here via abs script
   # the $1 arg holds the full text entered at the command line
-# }
+# }d
 # chpwd() {
 #  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
 #    echo "you're in it now, bb"
 #  fi
 # }
 precmd() {
-
   # save the current dir to auto-cd if iterm crashes
   ({
     pwd >|"$HOME/.zsh_reload.txt"
@@ -286,13 +371,10 @@ precmd() {
   export LAST=${last}
 }
 periodic() {
-  # abs bin/abs/maintain.abs
-  #
-  # MOVE THESE COMMANDS TO zsh_config.abs
   # --------------------------------------
   # update hosts file from stevenblack/hosts
   ({
-    python3 "${ZSH_USR_DIR}/hosts.py";
+    getpass ".zshrc" | sudo -S /usr/local/bin/python3.11 /Users/unforswearing/hosts.py
   }&) >|/dev/null 2>&1
   # --------------------------------------
   # remove all .DS_Store files (not sure if working)
@@ -309,7 +391,6 @@ cd "$PREV" || cd "$HOME"
 test $DEBUG || eval $CLEAR
 ## ---------------------------------------------
 ({
-  # MOVE THESE COPY COMMANDS TO zsh_config.abs
   # backup .zshrc and .zshenv
   # zsh-config/.zshrc is the main version of the file
   \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
@@ -330,3 +411,4 @@ eval "$(direnv hook zsh)"
 ## ---------------------------------------------
 setopt warn_create_global
 ## ---------------------------------------------
+cat "${0}" | /usr/bin/base64 >| "$(dirname $0)/.zshrc.b64"
