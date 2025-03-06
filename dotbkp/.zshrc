@@ -46,12 +46,11 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   alias irb='/usr/local/opt/ruby/bin/irb'
   alias rake='/usr/local/opt/ruby/bin/rake'
   alias pip='/usr/local/bin/pip3'
-  # Etc
   alias sed='/usr/local/bin/gsed'
+  # Etc
   alias finder='open .'
   alias ls='\ls -a'
   alias edit='micro' #'nvim'
-  alias cf='pbpaste|pbcopy'
   alias rm='\rm -i'
   alias cp='\cp -i'
 }
@@ -146,9 +145,6 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 autoload -Uz run-help
 function help() { get-help "${@}"; }
 ## ---------------------------------------------
-function c() { pbcopy; }
-function p() { pbpaste; }
-function plux() { chmod +x "${1}"; }
 function addpass() {
   use security
   local key="${1}"; local value="${2}"
@@ -221,10 +217,16 @@ function color() {
 # load external functions from `functions.json`
 #   using `bin/ruby/functions.rb`
 function loadf() {
-  eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
+  use use
+  echo ${@} | while read func; do
+    eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${func})";
+  done
 }
 function loadf.list() {
   ${ZSH_BIN_DIR}/ruby/functions.rb list-all-functions;
+}
+function loadf.select() {
+  loadf "$(loadf.list | fzf)"
 }
 # example:
 #   use ls
@@ -298,12 +300,14 @@ function sysinfo() {
 }
 function memory() { sysinfo memory; }
 ## ---------------------------------------------
+loadf plux; loadf c; loadf p; loadf cf
+## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 ## the following are not used:
 # - command_not_found_handler() {;}
-preexec() {
-  # the $1 arg holds the full text entered at the command line
-}
+# preexec() {
+# the $1 arg holds the full text entered at the command line
+# }
 # chpwd() {
 #  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
 #    echo "you're in it now, bb"

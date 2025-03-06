@@ -15,12 +15,12 @@ unless File.exist?(CONFIG_FILE)
   exit 1
 end
 
-config = JSON.parse(File.read(CONFIG_FILE))
+$config = JSON.parse(File.read(CONFIG_FILE))
 
-def print_functions(config)
-  if config['functions'] && !config['functions'].empty?
+def print_functions()
+  if $config['functions'] && !$config['functions'].empty?
     puts "# Functions"
-    config['functions'].each do |name, body|
+    $config['functions'].each do |name, body|
       puts "function #{name}() {"
       if body.is_a?(Array)
         # Handle array of lines
@@ -38,10 +38,10 @@ def print_functions(config)
   end
 end
 
-def get_function(config, key)
-  if config['functions'][key]
+def get_function(key)
+  if $config['functions'][key]
     puts "function #{key}() {"
-    config['functions'][key].each do |line|
+    $config['functions'][key].each do |line|
       puts " #{line}"
     end
     puts "}"
@@ -50,33 +50,33 @@ def get_function(config, key)
   end
 end
 
-def save_config(config)
-  File.write(CONFIG_FILE, JSON.pretty_generate(config))
+def save_config()
+  File.write(CONFIG_FILE, JSON.pretty_generate($config))
   puts "Saved functions.json"
 end
 
-def add_item(config, key, value)
-  config['functions'] ||= {}
-  config['functions'][key] = value.is_a?(Array) ? value : [value]
+def add_item(key, value)
+  $config['functions'] ||= {}
+  $config['functions'][key] = value.is_a?(Array) ? value : [value]
 
-  save_config(config)
+  save_config($config)
   puts "Added #{key || value} to functions.json."
 end
 
-def remove_item(config, key)
-  config['functions'].delete(key)
+def remove_item(key)
+  $config['functions'].delete(key)
 
-  save_config(config)
+  save_config($config)
   puts "Removed #{key} from functions.json."
 end
 
 case ARGV[0]
   # in shell: `loadf <name>`
   when "get"
-    get_function(config, ARGV[1])
+    get_function(ARGV[1])
   # in shell: `loadf.list`
   when "list-all-functions"
-    config['functions'].each do |name, body|
+    $config['functions'].each do |name, body|
       puts name
     end
 end

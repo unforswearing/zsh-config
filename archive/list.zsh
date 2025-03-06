@@ -1,6 +1,6 @@
 function list() {
-  # note: 
-  #  for complicated stuff, switch to python, 
+  # note:
+  #  for complicated stuff, switch to python,
   #  it will be easier than trying to use awk / arrays
   # ```bash
   # function py_array() {
@@ -21,19 +21,19 @@ function list() {
   # ```
   # list data_items = "data1, data2, data3"
   # data_items foreach item "function() { print $item; }"
-  # 
+  #
   # # or
   #
   # list foreach item $data_items "function() { print $item; }"
-  # ``` 
+  # ```
   _.util.isstr() {
     # unsetopt warncreateglobal
     # libutil:argtest "$1"
-    local testval="$1"  
+    local testval="$1"
     [[ $testval =~ [^0-9] ]]
   }
   _.util.quote() {
-    # libutil:argtest "$1"  
+    # libutil:argtest "$1"
     local input="$1"
     printf "%s" "$input" | sd "(^|$)" "\""
   }
@@ -44,9 +44,9 @@ function list() {
   list.print() {
     local _list="${1}"
     <<<"{ ${_list} }"
-  } 
+  }
   # list.get can only work if each item in the list is one string with no spaces
-  # quoting doesn't work, will have to use a different programming language 
+  # quoting doesn't work, will have to use a different programming language
   # to get around this issue (python is planned)
   list.get() {
     local _list="${1}"
@@ -102,6 +102,6 @@ function list() {
     filter) ;;
     contains) ;;
     *) eval "${arg}=${opt}"
-    ;; 
+    ;;
   esac
 }

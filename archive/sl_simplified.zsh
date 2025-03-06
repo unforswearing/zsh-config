@@ -58,12 +58,12 @@ error() {
 
   # Print the error message to stderr with a timestamp
   color red "$timestamp [ERROR] $message" >&2
-  
+
   # Log the error message to a file (optional)
   if [[ -n "$ERROR_LOG_FILE" ]]; then
     color red "$timestamp [ERROR] $message" >> "$ERROR_LOG_FILE"
   fi
-  
+
   # Print stack trace (optional)
   if [[ -n "$PRINT_STACK_TRACE" ]]; then
     echo "Stack trace:" >&2
@@ -72,7 +72,7 @@ error() {
       ((i++))
     done >&2
   fi
-  
+
   # Exit with the provided exit code (optional)
   if [[ "$exit_code" -ne 0 ]]; then
     exit "$exit_code"
@@ -87,20 +87,20 @@ function ifcmd() {
 # Function to retrieve user input with an optional message
 function input() {
   local message="$1"
-  
+
   # Print the message if provided
   if [[ -n "$message" ]]; then
     echo -n "$message "
   fi
-  
+
   # Retrieve and return user input
   read user_input
   echo "$user_input"
 }
 function num() {
-  { 
+  {
     libutil:argtest "$1" &&
-    libutil:argtest "$2" 
+    libutil:argtest "$2"
   } || return
   local name="$1"
   local value="$2"
@@ -112,9 +112,9 @@ function num() {
 # const utencil "spoon"
 declare -a consts
 function const() {
-  { 
+  {
     libutil:argtest "$1" &&
-    libutil:argtest "$2" 
+    libutil:argtest "$2"
   } || return
   local name="$1"
   shift
@@ -135,7 +135,7 @@ function isnum() {
 function isstr() {
   unsetopt warncreateglobal
   libutil:argtest "$1"
-  local testval="$1"  
+  local testval="$1"
   [[ "$testval" =~ [^0-9] ]]
 }
 function safequote() {

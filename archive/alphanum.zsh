@@ -25,14 +25,14 @@ function trim() {
   print "$opt" | sd "(^\s+|\s+$)" ""
 }
 function quote() {
-  libutil:argtest "$1"  
+  libutil:argtest "$1"
   local input="$1"
   printf "%s" "$input" | sd "(^|$)" "\""
 }
 # the resulting string is safetly quoted
 # and will not execute if used with eval
 function literal() {
-  libutil:argtest "$1"  
+  libutil:argtest "$1"
   local input="$1"
   local quoted=""
 
