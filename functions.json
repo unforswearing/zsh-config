@@ -1,0 +1,64 @@
+{
+  "functions": {
+    "please": [
+      "sudo !!"
+    ],
+    "reverse": [
+      "perl -e 'print reverse <>'"
+    ],
+    "filebak": [
+     "cp \"${1}\"{,.bak}"
+    ],
+    "filerest": [
+      "cp \"${1}\"{.bak,} && rm \"${1}.bak\""
+    ],
+    "dirbak": [
+      "cp -r \"${1}\" \"${1}.bak\""
+    ],
+    "dirrest": [
+      "cp -r \"${1}.bak\" \"${1}\" && \\",
+      "rm -rf \"${1}.bak\""
+    ],
+    "blue": [
+      "use color; color blue \"$@\""
+    ],
+    "log": [
+      "use color; color blue \"$@\""
+    ],
+    "green": [
+      "use color; color green \"$@\""
+    ],
+    "log.ok": [
+      "use color; color green \"$@\""
+    ],
+    "yellow": [
+      "use color; color yellow \"$@\""
+    ],
+    "log.warn": [
+      "use color; color yellow \"$@\""
+    ],
+    "red": [
+      "use color; color red \"$@\""
+    ],
+    "log.err": [
+      "use color; color red \"$@\""
+    ],
+    "atom": [
+      "eval \"function ${1}() print ${1}\""
+    ],
+    "symbol": [
+      "use xxd; echo \"${1:-$RANDOM}\" | xxd -p"
+    ],
+    "global": [
+      "unsetopt warncreateglobal",
+	    "eval \"${@}\"",
+      "setopt warncreateglobal"
+    ],
+    "timestamp": [
+      "date +'%Y-%m-%d %H:%M:%S'"
+    ],
+    "async": [
+      "({ eval \"$@\"; } &) >/dev/null 2>&1"
+    ]
+  }
+}

@@ -45,22 +45,15 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   alias ruby='/usr/local/opt/ruby/bin/ruby'
   alias irb='/usr/local/opt/ruby/bin/irb'
   alias rake='/usr/local/opt/ruby/bin/rake'
+  alias pip='/usr/local/bin/pip3'
   # Etc
-  alias finder='open .'
-  alias ls='ls -a'
-  alias purj='sudo purge && sudo purge && sudo purge'
-  alias pip='pip3'
-  alias edit='micro' #'nvim'
-  alias c="pbcopy"
-  alias p="pbpaste"
-  alias cf='pbpaste|pbcopy'
-  alias rm='rm -i'
-  alias cp='cp -i'
-  alias rmf='sudo rm -rf'
-  alias plux='chmod +x'
-  alias namesingle='vidir'
   alias sed='/usr/local/bin/gsed'
-  alias togglewifi='networksetup -setairportpower en1 off && sleep 3 && networksetup -setairportpower en1 on'
+  alias finder='open .'
+  alias ls='\ls -a'
+  alias edit='micro' #'nvim'
+  alias cf='pbpaste|pbcopy'
+  alias rm='\rm -i'
+  alias cp='\cp -i'
 }
 {
   export CLICOLOR=1
@@ -87,8 +80,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   export HISTFILE="$HOME/.history"
   export HISTSIZE=50000000
   export SAVEHIST=10000000
-  export HISTTIMEFORMAT='%F %T '
-  export HISTIGNORE="exit:bg:fg:history:clear:reload"
+  # history -i
+  export HISTTIMEFORMAT='%d%%y-%H%M%S'
+  export HISTIGNORE="exit:bg:fg:history:clear:reload:hist"
   setopt append_history
   setopt cshjunkie_history
   setopt hist_expire_dups_first
@@ -148,17 +142,37 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 }
 ## ---------------------------------------------
 # run-help / help
-(($ + alaises[run - help])) && unalias run-help >/dev/null 2>&1
+(($ + aliases[run - help])) && unalias run-help >/dev/null 2>&1
 autoload -Uz run-help
+function help() { get-help "${@}"; }
 ## ---------------------------------------------
+function c() { pbcopy; }
+function p() { pbpaste; }
+function plux() { chmod +x "${1}"; }
+function addpass() {
+  use security
+  local key="${1}"; local value="${2}"
+  security add-generic-password -a "$(whoami)" -s "${key}" -w "${value}"
+}
+function getpass() {
+  use security
+  local key="${1}"
+  security find-generic-password -w -s "${key}" -a "$(whoami)"
+}
+function rmpass() {
+  use security
+  local key="${1}"
+  security delete-generic-password -s "${key}" -a "$(whoami)"
+}
 function prev() {
   cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
 }
 function reload() {
   source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
 }
-function async() {
-  ({ eval "$@"; } &) >/dev/null 2>&1
+function purj() {
+  use getpass
+  getpass ".zshrc" | sudo -S purge >|/dev/null 2>&1
 }
 function debug() {
   case "${1}" in
@@ -175,76 +189,10 @@ function debug() {
   *) print "${DEBUG}" ;;
   esac
 }
-function addpass() {
-  local key="${1}"
-  local value="${2}"
-  security add-generic-password -a "$(whoami)" -s "${key}" -w "${value}"
-}
-function getpass() {
-  local key="${1}"
-  security find-generic-password -w -s "${key}" -a "$(whoami)"
-}
-function rmpass() {
-  local key="${1}"
-  security delete-generic-password -s "${key}" -a "$(whoami)"
-}
-# hot reload recently updated files w/o reloading the entire env
-function swap() {
-  unsetopt warn_create_global
-
-  hash -r
-  # save the current dir
-  pwd >|"$HOME/.zsh_reload.txt"
-
-  # attemt to hot reload config files
-  local fd_options=(
-    --type file
-    --absolute-path
-    --max-depth=1
-    --threads=2
-    --change-newer-than 1min
-  )
-  # source bin files
-  fd --base-directory ~/zsh-config/bin/zsh ${fd_options[@]} |
-    # source all recently updated files
-    while read item; do print "sourcing ${item}"; source "${item}"; done
-  # source usr files
-  # fd --base-directory ~/zsh-config/zsh ${fd_options[@]} |
-  #   # source all recently updated files
-  #   while read item; do print "sourcing ${item}"; source "${item}"; done
-
-  source "/Users/unforswearing/zsh-config/.zshrc"
-  setopt warn_create_global
-}
-function replify() {
-  command="${*}"
-  printf "Initialized REPL for [%s]
-  " "$command"
-  printf "%s> " "$command"
-  read -r input
-  while [ "$input" != "" ];
-  do
-      	eval "$command $input"
-  	printf "
-  %s> " "$command"
-      	read -r input
-  done
-}
-function xman() { man "${1}" | man2html | browser; }
-function pman() {
-  man -t "${1}" | open -f -a /Applications/Preview.app;
-}
-function sman() {
-  # type a command to read the man page
-  echo '' |
-    fzf --prompt='man> ' \
-      --height=$(tput lines) \
-      --padding=0 \
-      --margin=0% \
-      --preview-window=down,75% \
-      --layout=reverse \
-      --border \
-      --preview 'man {q}'
+function togglewifi() {
+  networksetup -setairportpower en1 off
+  sleep 3
+  networksetup -setairportpower en1 on
 }
 function color() {
   local red="\033[31m"
@@ -269,6 +217,14 @@ function color() {
     cyan) print "${cyan}$@${reset}" ;;
     help) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
   esac
+}
+# load external functions from `functions.json`
+#   using `bin/ruby/functions.rb`
+function loadf() {
+  eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
+}
+function loadf.list() {
+  ${ZSH_BIN_DIR}/ruby/functions.rb list-all-functions;
 }
 # example:
 #   use ls
@@ -298,9 +254,8 @@ function use() {
     ;;
   esac
 }
-
 function cpl() {
-  req "pee"
+  use "pee"
 
   OIFS="$IFS"
   IFS=$'\n\t'
@@ -324,7 +279,7 @@ function opts() {
 }
 function sysinfo() {
   # libutil:argtest "$1"
-  req nu
+  use nu
   case $1 in
   host) nu -c "sys|get host" ;;
   cpu) nu -c "sys|get cpu" ;;
@@ -338,7 +293,7 @@ function sysinfo() {
     ;;
   temp | temperature) nu -c "sys|get temp" ;;
   net | io) nu -c "sys|get net" ;;
-  *) echo "'${1}' is not a valid option" ;;
+  *) color red "'${1}' is not a valid option" ;;
   esac
 }
 function memory() { sysinfo memory; }
@@ -346,20 +301,19 @@ function memory() { sysinfo memory; }
 # BOTTOM: hooks / builtin event handlers
 ## the following are not used:
 # - command_not_found_handler() {;}
-# preexec() {
+preexec() {
   # the $1 arg holds the full text entered at the command line
-# }d
+}
 # chpwd() {
 #  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
 #    echo "you're in it now, bb"
 #  fi
 # }
-precmd() {
+function precmd() {
   # save the current dir to auto-cd if iterm crashes
   ({
     pwd >|"$HOME/.zsh_reload.txt"
   }&) >|/dev/null 2>&1
-
   export PREV="$(pwd)"
   # --------------------------------------
   local last="$(
@@ -368,13 +322,15 @@ precmd() {
       awk '{first=$1; $1=""; print $0;}' |
       sed 's/\"//g'
   )"
-  export LAST=${last}
+  export LAST="${last}"
 }
-periodic() {
+function periodic() {
   # --------------------------------------
   # update hosts file from stevenblack/hosts
   ({
-    getpass ".zshrc" | sudo -S /usr/local/bin/python3.11 /Users/unforswearing/hosts.py
+    # getpass = () => security find-generic-password -w -s "${key}" -a "$(whoami)";
+    getpass ".zshrc" | \
+    sudo -S /usr/local/bin/python3.11 "${ZSH_BIN_DIR}/python/hosts.py"
   }&) >|/dev/null 2>&1
   # --------------------------------------
   # remove all .DS_Store files (not sure if working)
@@ -382,13 +338,6 @@ periodic() {
   #  find . -name '*.DS_Store' -type f -ls -delete
   # }&) >|/dev/null 2>&1
 }
-## ---------------------------------------------
-# cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
-cd "$PREV" || cd "$HOME"
-## ---------------------------------------------
-# uses the `debug` function, see utils.zsh
-# do not clear output if debug is true, otherwise clear=clear
-test $DEBUG || eval $CLEAR
 ## ---------------------------------------------
 ({
   # backup .zshrc and .zshenv
@@ -401,14 +350,18 @@ test $DEBUG || eval $CLEAR
   echo "source $0" >| "${HOME}/.zshrc";
 }&) >|/dev/null 2>&1
 ## ---------------------------------------------
-# watch for new feed entries for unforswearing.com/feed
-# old code deleted -- whether this is needed remains to be seen.
+# cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
+cd "$PREV" || cd "$HOME"
+## ---------------------------------------------
+# uses the `debug` function, see utils.zsh
+# do not clear output if debug is true, otherwise clear=clear
+test $DEBUG || eval $CLEAR
+## ---------------------------------------------
+setopt warn_create_global
 ## ---------------------------------------------
 # LOAD COMPLETIONS LAST
 autoload compinit
 autoload bashcompinit
 eval "$(direnv hook zsh)"
 ## ---------------------------------------------
-setopt warn_create_global
-## ---------------------------------------------
-cat "${0}" | /usr/bin/base64 >| "$(dirname $0)/.zshrc.b64"
+cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"

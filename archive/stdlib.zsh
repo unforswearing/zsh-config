@@ -114,12 +114,12 @@ error() {
 
   # Print the error message to stderr with a timestamp
   color red "$timestamp [ERROR] $message" >&2
-  
+
   # Log the error message to a file (optional)
   if [[ -n "$ERROR_LOG_FILE" ]]; then
     color red "$timestamp [ERROR] $message" >> "$ERROR_LOG_FILE"
   fi
-  
+
   # Print stack trace (optional)
   if [[ -n "$PRINT_STACK_TRACE" ]]; then
     echo "Stack trace:" >&2
@@ -128,7 +128,7 @@ error() {
       ((i++))
     done >&2
   fi
-  
+
   # Exit with the provided exit code (optional)
   if [[ "$exit_code" -ne 0 ]]; then
     exit "$exit_code"
@@ -144,8 +144,8 @@ error() {
 # # Example of logging an error, printing a stack trace, and exiting the script
 # error 1 "This is a critical error message that will exit the script"
 # -----------------------------------------------
-function async() { ({ eval "$@"; } &) >/dev/null 2>&1 }
-function discard() { eval "$@" >|/dev/null 2>&1 }
+function async() { ({ eval "$@"; } &) >/dev/null 2>&1; }
+function discard() { eval "$@" >|/dev/null 2>&1; }
 # ###############################################
 # run a command in another language
 function use() {
@@ -160,12 +160,12 @@ function use() {
 # Function to retrieve user input with an optional message
 function input() {
   local message="$1"
-  
+
   # Print the message if provided
   if [[ -n "$message" ]]; then
     echo -n "$message "
   fi
-  
+
   # Retrieve and return user input
   read user_input
   echo "$user_input"
@@ -188,7 +188,7 @@ function or() { (($? == 0)) || "$@"; }
 declare -a stdtypes=()
 declare -a nils
 function nil() {
-  libutil:argtest "$1" || return 
+  libutil:argtest "$1" || return
   # a nil type
   # use `cmd discard` for sending commands to nothingness
   local name="$1"
@@ -200,9 +200,9 @@ function nil() {
 }
 declare -a nums
 function num() {
-  { 
+  {
     libutil:argtest "$1" &&
-    libutil:argtest "$2" 
+    libutil:argtest "$2"
   } || return
   local name="$1"
   local value="$2"
@@ -214,9 +214,9 @@ function num() {
 # const utencil "spoon"
 declare -a consts
 function const() {
-  { 
+  {
     libutil:argtest "$1" &&
-    libutil:argtest "$2" 
+    libutil:argtest "$2"
   } || return
   local name="$1"
   shift
@@ -264,7 +264,7 @@ function isnum() {
 function isstr() {
   unsetopt warncreateglobal
   libutil:argtest "$1"
-  local testval="$1"  
+  local testval="$1"
   [[ "$testval" =~ [^0-9] ]]
 }
 # function isarray() {
@@ -290,7 +290,7 @@ function strbuild() {
   # strbuild new "name"
   # name add "this is the next sentence."
   # name add $(safequote "here is some unsafe text: eval rm -rf. this string will not execute")
-  # name print 
+  # name print
   # name compile
   case "$1" in
   new) printf "%s" "${2}" ;;
@@ -632,10 +632,10 @@ function dirmod() {
   dir.backup() { cp -r "${1}" "${1}.bak"; }
   dir.restore() { cp -r "${1}.bak" "${1}" && rm -rf "${1}.bak"; }
   dir.parent() { dirname "${1:-(pwd)}"; }
-  dir.exists() { [[ -d "${1}" ]]; } 
-  dir.isempty() { 
-    local count=$(ls -la "${1}" | wc -l | trim.left) 
-    [[ $count -eq 0 ]];  
+  dir.exists() { [[ -d "${1}" ]]; }
+  dir.isempty() {
+    local count=$(ls -la "${1}" | wc -l | trim.left)
+    [[ $count -eq 0 ]];
   }
   case "$1" in
     new) dir.new "${2}" ;;
