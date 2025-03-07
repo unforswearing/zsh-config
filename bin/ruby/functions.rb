@@ -17,26 +17,26 @@ end
 
 $config = JSON.parse(File.read(CONFIG_FILE))
 
-def print_functions()
-  if $config['functions'] && !$config['functions'].empty?
-    puts "# Functions"
-    $config['functions'].each do |name, body|
-      puts "function #{name}() {"
-      if body.is_a?(Array)
-        # Handle array of lines
-        body.each do |line|
-          puts "  #{line}"
-        end
-      else
-        body.each_line do |line|
-          puts "  #{line.chomp}"
-        end
-      end
-      puts "}"
-      puts
-    end
-  end
-end
+# def print_functions()
+#   if $config['functions'] && !$config['functions'].empty?
+#     puts "# Functions"
+#     $config['functions'].each do |name, body|
+#       puts "function #{name}() {"
+#       if body.is_a?(Array)
+#         # Handle array of lines
+#         body.each do |line|
+#           puts "  #{line}"
+#         end
+#       else
+#         body.each_line do |line|
+#           puts "  #{line.chomp}"
+#         end
+#       end
+#       puts "}"
+#       puts
+#     end
+#   end
+# end
 
 def get_function(key)
   if $config['functions'][key]
@@ -55,11 +55,12 @@ def save_config()
   puts "Saved functions.json"
 end
 
+# add_item(key->string", value->array)-> void
 def add_item(key, value)
   $config['functions'] ||= {}
   $config['functions'][key] = value.is_a?(Array) ? value : [value]
 
-  save_config($config)
+  save_config()
   puts "Added #{key || value} to functions.json."
 end
 
@@ -74,6 +75,11 @@ case ARGV[0]
   # in shell: `loadf <name>`
   when "get"
     get_function(ARGV[1])
+  when "add"
+    # add_item(key, array)
+    keyname = ARGV[1]
+    ARGV.shift(2)
+    add_item(keyname, ARGV)
   # in shell: `loadf.list`
   when "list-all-functions"
     $config['functions'].each do |name, body|

@@ -190,6 +190,11 @@ function togglewifi() {
   sleep 3
   networksetup -setairportpower en1 on
 }
+function updatehosts() {
+  use nu; use gstat;
+  sudo nu -c 'http get "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" | save --force /etc/hosts' && \
+  echo "/etc/hosts updated: $(gstat -c '%y' /etc/hosts)"
+}
 function color() {
   local red="\033[31m"
   local green="\033[32m"
@@ -214,17 +219,21 @@ function color() {
     help) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
   esac
 }
+# manage the functions.json file using bin/ruby/functions.rb
+# ---
+# f add <name> <"cmd1" "cmd2" "cmd3 | cmd4" ...>
+# f get <name>
+# f list-all-functions
+# ---
+# note: use `loadf` to load a function into the current env.
+function f() {
+  "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
+}
 # load external functions from `functions.json`
 #   using `bin/ruby/functions.rb`
 function loadf() {
   use use
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
-}
-function loadf.list() {
-  ${ZSH_BIN_DIR}/ruby/functions.rb list-all-functions;
-}
-function loadf.select() {
-  loadf "$(loadf.list | fzf)"
 }
 # example:
 #   use ls
@@ -332,7 +341,8 @@ function periodic() {
   ({
     # getpass = () => security find-generic-password -w -s "${key}" -a "$(whoami)";
     getpass ".zshrc" | \
-    sudo -S /usr/local/bin/python3.11 "${ZSH_BIN_DIR}/python/hosts.py"
+    sudo -S /usr/local/opt/ruby/bin/ruby --disable=gems \
+    "${ZSH_BIN_DIR}/ruby/hosts.rb"
   }&) >|/dev/null 2>&1
   # --------------------------------------
   # remove all .DS_Store files (not sure if working)
@@ -366,4 +376,4 @@ autoload compinit
 autoload bashcompinit
 eval "$(direnv hook zsh)"
 ## ---------------------------------------------
-cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"
+# cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"

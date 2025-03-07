@@ -1,21 +1,48 @@
 {
   "functions": {
-    "async": ["({ eval \"$@\"; } &) >/dev/null 2>&1"],
-    "atom": ["eval \"function ${1}() echo ${1}\""],
-    "c": ["pbcopy"],
-    "cf": ["pbpaste|pbcopy"],
-    "dirbak": ["cp -r \"${1}\" \"${1}.bak\""],
-    "dirrest": ["cp -r \"${1}.bak\" \"${1}\" && \\", "rm -rf \"${1}.bak\""],
-    "enum.onchar": ["echo \"${1}\" | sd \"(^\\s+|\\s+$)\" \" | sd \"\" \"\n\""],
-    "enum.str": ["echo \"${1}\" | sd \" \" \"\\n\""],
-    "filebak": ["cp \"${1}\"{,.bak}"],
-    "filerest": ["cp \"${1}\"{.bak,} && rm \"${1}.bak\""],
+    "async": [
+      "({ eval \"$@\"; } &) >/dev/null 2>&1"
+    ],
+    "atom": [
+      "eval \"function ${1}() echo ${1}\""
+    ],
+    "c": [
+      "pbcopy"
+    ],
+    "calc": [
+      "echo \"$*\" | bc -l"
+    ],
+    "cf": [
+      "pbpaste|pbcopy"
+    ],
+    "dirbak": [
+      "cp -r \"${1}\" \"${1}.bak\""
+    ],
+    "dirrest": [
+      "cp -r \"${1}.bak\" \"${1}\" && \\",
+      "rm -rf \"${1}.bak\""
+    ],
+    "eachchar": [
+      "sd \"(^\\s+|\\s+$)\" \"\" | sd \"\" \"\n\""
+    ],
+    "eachword": [
+      "sd \" \" \"\\n\""
+    ],
+    "filebak": [
+      "cp \"${1}\"{,.bak}"
+    ],
+    "filerest": [
+      "cp \"${1}\"{.bak,} && rm \"${1}.bak\""
+    ],
     "global": [
+      "# use: global number=33",
       "unsetopt warncreateglobal",
       "eval \"${@}\"",
       "setopt warncreateglobal"
     ],
-    "isstr": ["[[ \"${1}\" =~ [^0-9] ]]"],
+    "isstr": [
+      "[[ \"${1}\" =~ [^0-9] ]]"
+    ],
     "loadf": [
       "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
       "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
@@ -31,13 +58,27 @@
       "local value=\"$(cat /dev/null)\"",
       "eval \"function $name() echo $value;\""
     ],
-    "p": ["pbpaste"],
-    "please": ["sudo !!"],
-    "plux": ["chmod +x \"${1}\""],
-    "reverse": ["perl -e 'print reverse <>'"],
-    "rm.dsstore": ["find $(pwd) -name '*.DS_Store' -type f -ls -delete"],
-    "rm.emptyfiles": ["find $(pwd) -type f -empty -print -delete"],
-    "rm.emptydir": ["find $(pwd) -type d -empty -print -delete"],
+    "p": [
+      "pbpaste"
+    ],
+    "please": [
+      "sudo !!"
+    ],
+    "plux": [
+      "chmod +x \"${1}\""
+    ],
+    "reverse": [
+      "perl -e 'print reverse <>'"
+    ],
+    "rm.dsstore": [
+      "find $(pwd) -name '*.DS_Store' -type f -ls -delete"
+    ],
+    "rm.emptydir": [
+      "find $(pwd) -type d -empty -print -delete"
+    ],
+    "rm.emptyfiles": [
+      "find $(pwd) -type f -empty -print -delete"
+    ],
     "safequote": [
       "local input=\"$1\"",
       "local quoted=\"\"",
@@ -47,8 +88,12 @@
       "# Return the safely quoted string",
       "echo \"$quoted\""
     ],
-    "symbol": ["use xxd; echo \"${1:-$RANDOM}\" | xxd -p"],
-    "timestamp": ["date +'%Y-%m-%d %H:%M:%S'"],
+    "symbol": [
+      "use xxd; echo \"${1:-$RANDOM}\" | xxd -p"
+    ],
+    "timestamp": [
+      "date +'%Y-%m-%d %H:%M:%S'"
+    ],
     "with": [
       "# like `use` in `.zshrc`, except one line",
       "command -v \"${1}\" && true || { echo \"${1}\" not found; false; }"
