@@ -96,7 +96,7 @@
     ],
     "with": [
       "# like `use` in `.zshrc`, except one line",
-      "command -v \"${1}\" && true || { echo \"${1}\" not found; false; }"
+      "{ command -v \"${1}\" >|/dev/null 2>&1; } >|/dev/null 2>&1 && true || { echo \"${1}\" not found; false; }"
     ],
     "checkuse": [
       "command -v use || echo 'use not available'"

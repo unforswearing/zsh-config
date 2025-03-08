@@ -235,13 +235,14 @@ function color() {
 # f list-all-functions
 # ---
 # note: use `loadf` to load a function into the current env.
+#       use `loadf unset` to remove a function from the env.
 function f() {
   "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
 }
 # load external functions from `functions.json`
 #   using `bin/ruby/functions.rb`
 function loadf() {
-  if [[ "$1" == "unset" ]]; then unset -f "${2}"; return; fi;
+  if [[ "$1" == "unset" ]]; then unset -f "${2}"; return $?; fi;
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
 # f get loadf > tmp.f && shellcheck --exclude=2148 --format=diff tmp.f | patch -p1 tmp.f
