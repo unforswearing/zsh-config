@@ -97,6 +97,23 @@
     "with": [
       "# like `use` in `.zshrc`, except one line",
       "command -v \"${1}\" && true || { echo \"${1}\" not found; false; }"
+    ],
+    "checkuse": [
+      "command -v use || echo 'use not available'"
+    ],
+    "red": [
+      "use color; color red \"$@\""
+    ],
+    "green": [
+      "use color",
+      "color green $@"
+    ],
+    "yellow": [
+      "use color",
+      "color yellow $@"
+    ],
+    "checkloadf": [
+      "use loadf"
     ]
   }
 }

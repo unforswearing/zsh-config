@@ -7,7 +7,7 @@
 #   - edit $PATH in `~zconf/.zshenv`
 # #################################################################
 # return if the shell is not interactive (the commands would have no use)
-trap "exec zsh" USR1 && [[ $- != *i* ]] && [ ! -t 0 ] && return
+# trap "exec zsh" USR1 && [[ $- != *i* ]] && [ ! -t 0 ] && return
 ## ---------------------------------------------
 setopt allexport
 unsetopt monitor
@@ -232,7 +232,6 @@ function f() {
 # load external functions from `functions.json`
 #   using `bin/ruby/functions.rb`
 function loadf() {
-  use use
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
 # example:
@@ -244,7 +243,7 @@ function use() {
     setopt warn_create_global
 
   function success() { color green "$caller: '$arg' loaded"; }
-  function failure() { color red "$caller: ${1}"; }
+  function failure() { color red "$caller: $arg"; }
 
   if [[ "$1" == ":mute" ]] && {
     function success() { :; }
@@ -256,12 +255,14 @@ function use() {
   *)
     local comm="$(command -v $1)"
     if [[ $comm ]]; then
+      # success
       true
     else
       color red "$0: command '$1' not found in current environment"; false
     fi
     ;;
   esac
+  caller=;arg=;
 }
 function cpl() {
   use "pee"
@@ -366,8 +367,10 @@ function periodic() {
 cd "$PREV" || cd "$HOME"
 ## ---------------------------------------------
 # uses the `debug` function, see utils.zsh
-# do not clear output if debug is true, otherwise clear=clear
+# do not clear output if debug is true, otherwise CLEAR=clear
 test $DEBUG || eval $CLEAR
+# if neither DEBUG nor CLEAR is set, set CLEAR=clear
+{ [[ -n $CLEAR ]] || [[ -n $DEBUG ]] ; } || export CLEAR=clear
 ## ---------------------------------------------
 setopt warn_create_global
 ## ---------------------------------------------
