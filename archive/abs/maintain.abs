@@ -1,0 +1,22 @@
+#!/usr/local/bin/abs
+
+base = require("./config.abs")
+root = base["config"].root
+
+# `maintain()` runs periodic zsh commands
+# env(PERIOD) == 90000
+f maintain() {
+  # backup .zshrc and .zshenv
+  # zsh-config/.zshrc is the main version of the file
+  exec("cp \"$root/.zshrc\" \"$root/dotbkp\"")
+  # bin/python/hosts.py is the main version of the file
+  exec("cp \"$config.python/hosts.py\" \"$config.dotbkp\"")
+  exec("cp \"$base.home\" \"$config.dotbkp\"")
+
+  # periodic commands
+  # update hosts file from stevenblack/hosts
+  exec("({ python3 \"$config.python/hosts.py\" }&) >|/dev/null 2>&1")
+  # --------------------------------------
+  # remove all .DS_Store files (not sure if working)
+  exec("({ find . -name '*.DS_Store' -type f -ls -delete }&) >|/dev/null 2>&1")
+}
