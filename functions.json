@@ -109,8 +109,7 @@
       "color green $@"
     ],
     "yellow": [
-      "use color",
-      "color yellow $@"
+      "color yellow \"$@\""
     ],
     "checkloadf": [
       "use loadf"

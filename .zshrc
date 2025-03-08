@@ -160,11 +160,20 @@ function rmpass() {
   local key="${1}"
   security delete-generic-password -s "${key}" -a "$(whoami)"
 }
+function reload() {
+  source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
+}
 function prev() {
   cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
 }
-function reload() {
-  source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
+function s() {
+  local arg="$1"
+  local dir=$({
+    cat "$HOME/.zsh_reload_prev.txt";
+    cat "$HOME/.zsh_reload_curr.txt";
+    } | sort -u | fzf --wrap --query="$arg" --select-1
+  );
+  cd "${dir}" || cd "$PWD"
 }
 function purj() {
   use getpass
@@ -226,13 +235,24 @@ function color() {
 # f list-all-functions
 # ---
 # note: use `loadf` to load a function into the current env.
+#       use `loadf unset` to remove a function from the env.
 function f() {
   "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
 }
 # load external functions from `functions.json`
 #   using `bin/ruby/functions.rb`
 function loadf() {
+  if [[ "$1" == "unset" ]]; then unset -f "${2}"; return $?; fi;
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
+}
+# f get loadf > tmp.f && shellcheck --exclude=2148 --format=diff tmp.f | patch -p1 tmp.f
+function loadf.test() {
+  local name="${1}"
+  /usr/local/bin/shellcheck \
+    --severity=warning \
+    --exclude=2148 \
+    --format=json <(f get "$name") | \
+        jq '.[].path = .[].file | .[].file = "'$name'"'
 }
 # example:
 #   use ls
@@ -258,7 +278,7 @@ function use() {
       # success
       true
     else
-      color red "$0: command '$1' not found in current environment"; false
+      color red "$0: command '$1' not found in shell or functions.json"; false
     fi
     ;;
   esac
@@ -313,20 +333,20 @@ loadf plux; loadf c; loadf p; loadf cf
 # BOTTOM: hooks / builtin event handlers
 ## the following are not used:
 # - command_not_found_handler() {;}
-# preexec() {
+function preexec() {
+  echo $CURR >>| "$HOME/.zsh_reload_curr.txt"
+  export CURR="$(pwd)"
 # the $1 arg holds the full text entered at the command line
-# }
-# chpwd() {
+}
+function chpwd() {
 #  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
 #    echo "you're in it now, bb"
 #  fi
-# }
+  echo $PREV >>| "$HOME/.zsh_reload_prev.txt"
+  export PREV="$CURR"
+}
 function precmd() {
-  # save the current dir to auto-cd if iterm crashes
-  ({
-    pwd >|"$HOME/.zsh_reload.txt"
-  }&) >|/dev/null 2>&1
-  export PREV="$(pwd)"
+  ({ ; }&) >|/dev/null 2>&1
   # --------------------------------------
   local last="$(
     history |
@@ -357,7 +377,7 @@ function periodic() {
   # zsh-config/.zshrc is the main version of the file
   \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
   # bin/python/hosts.py is the main version of the file
-  \cp "${ZSH_BIN_DIR}/python/hosts.py" "${ZSH_CONFIG_DIR}/dotbkp";
+  \cp "${ZSH_BIN_DIR}/ruby/hosts.rb" "${ZSH_CONFIG_DIR}/dotbkp";
   \cp "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/dotbkp";
   # source zsh-config/.zshrc from $HOME/.zshrc
   echo "source $0" >| "${HOME}/.zshrc";
