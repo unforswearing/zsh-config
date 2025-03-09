@@ -205,27 +205,43 @@ function updatehosts() {
   echo "/etc/hosts updated: $(gstat -c '%y' /etc/hosts)"
 }
 function color() {
-  local red="\033[31m"
-  local green="\033[32m"
-  local yellow="\033[33m"
-  local blue="\033[34m"
   local reset="\033[39m"
-  local black="\033[30m"
-  local white="\033[37m"
-  local magenta="\033[35m"
-  local cyan="\033[36m"
+
+  function red() {
+    local red="\033[31m"
+    print "${red}$@${reset}"
+  }
+  function green() {
+    local green="\033[32m"
+    print "${green}$@${reset}"
+  }
+  function yellow() {
+    local yellow="\033[33m"
+    print "${yellow}$@${reset}"
+  }
+  function blue() {
+    local blue="\033[34m"
+    print "${blue}$@${reset}"
+  }
+  function black() {
+    local black="\033[30m"
+    print "${black}$@${reset}"
+  }
+  function white() {
+    local white="\033[37m"
+    print "${white}$@${reset}"
+  }
+  function magenta() {
+    local magenta="\033[35m"
+    print "${magenta}$@${reset}"
+  }
+  function cyan() {
+    local cyan="\033[36m"
+    print "${cyan}$@${reset}"
+  }
   local opt="$1"
-  shift
   case "$opt" in
-    red) print "${red}$@${reset}" ;;
-    green) print "${green}$@${reset}" ;;
-    yellow) print "${yellow}$@${reset}" ;;
-    blue) print "${blue}$@${reset}" ;;
-    black) print "${black}$@${reset}" ;;
-    white) print "${white}$@${reset}" ;;
-    magenta) print "${magenta}$@${reset}" ;;
-    cyan) print "${cyan}$@${reset}" ;;
-    help) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
+    help|--help|-h) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
   esac
 }
 # manage the functions.json file using bin/ruby/functions.rb
@@ -329,10 +345,15 @@ function sysinfo() {
 function memory() { sysinfo memory; }
 ## ---------------------------------------------
 loadf plux; loadf c; loadf p; loadf cf
+color
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 ## the following are not used:
-# - command_not_found_handler() {;}
+# - function command_not_found_handler() {;}
+# function periodic() {
+  # Not sure the periodic function ever worked, really.
+  # Now running externally: hosts.rb (in Lingon.app)
+# }
 function preexec() {
   echo $CURR >>| "$HOME/.zsh_reload_curr.txt"
   export CURR="$(pwd)"
@@ -355,21 +376,6 @@ function precmd() {
       sed 's/\"//g'
   )"
   export LAST="${last}"
-}
-function periodic() {
-  # --------------------------------------
-  # update hosts file from stevenblack/hosts
-  ({
-    # getpass = () => security find-generic-password -w -s "${key}" -a "$(whoami)";
-    getpass ".zshrc" | \
-    sudo -S /usr/local/opt/ruby/bin/ruby --disable=gems \
-    "${ZSH_BIN_DIR}/ruby/hosts.rb"
-  }&) >|/dev/null 2>&1
-  # --------------------------------------
-  # remove all .DS_Store files (not sure if working)
-  # ({
-  #  find . -name '*.DS_Store' -type f -ls -delete
-  # }&) >|/dev/null 2>&1
 }
 ## ---------------------------------------------
 ({
