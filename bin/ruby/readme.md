@@ -1,5 +1,10 @@
 # Notes about using Ruby in the shell
 
+```cmd
+ruby -v
+ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [x86_64-darwin23]
+```
+
 ## Best Practices
 
 - Disable gems by default in the script shebang
@@ -9,15 +14,22 @@
 
 ## Links / Resources
 
-General Ruby
+### Bookmarks (Public)
+
+- https://raindrop.io/unforswearing/ruby-docs-53281973
+
+
+### General Ruby
+
+Overview
 
 - https://learnxinyminutes.com/ruby/
 
 File / Dir Processing
 
-- [Dir](https://ruby-doc.org/3.4.1/Dir.html)
-- [File](https://ruby-doc.org/3.4.1/File.html)
-- [FileUtils](https://ruby-doc.org/3.4.1/stdlibs/fileutils/FileUtils.html)
+- [Dir](https://ruby-doc.org/3.3.5/Dir.html)
+- [File](https://ruby-doc.org/3.3.5/File.html)
+- [FileUtils](https://ruby-doc.org/3.3.5/stdlibs/fileutils/FileUtils.html)
 
 General Shell Scripting
 
