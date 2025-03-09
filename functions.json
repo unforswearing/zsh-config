@@ -113,6 +113,25 @@
     ],
     "checkloadf": [
       "use loadf"
+    ],
+    "rgbtohex": [
+      "for var in \"$@\"; do",
+      "  printf '%x' \"$var\"",
+      "done",
+      "printf '\\n'"
+    ],
+    "hextorgb": [
+      "hex=\"$1\"",
+      "printf '%d %d %d\\n' 0x${hex:0:2} 0x${hex:2:2} 0x${hex:4:2}"
+    ],
+    "mdtohtml": [
+      "pandoc -f markdown -t html \"\""
+    ],
+    "wavtomp3": [
+      "sox \"$1\" -C 256 -r 44.1k \"$2\""
+    ],
+    "mp3towav": [
+      "sox \"$1\" \"$2\""
     ]
   }
 }
