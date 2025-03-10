@@ -132,6 +132,21 @@
     ],
     "mp3towav": [
       "sox \"$1\" \"$2\""
+    ],
+    "up": [
+      "cd .."
+    ],
+    "generate-tree-index": [
+      "rg --files | tree --fromfile -H ./ >| index.html"
+    ],
+    "generate-tree-map": [
+      "rg --files | tree --fromfile -d --noreport -H ./ | pandoc -f html -t commonmark >| map.md"
+    ],
+    "choosefile": [
+      "{ rg --files --hidden --glob '!*.git' --glob '!archive*' --glob '!plugin*' $@; echo \":exit\"; } | fzf;"
+    ],
+    "fileman": [
+      "while :; do ffile=$(choosefile); if [[ $ffile != \":exit\" ]]; then micro $ffile; else return; fi; done"
     ]
   }
 }

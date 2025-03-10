@@ -50,7 +50,7 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   # Etc
   alias finder='open .'
   alias ls='\ls -a'
-  alias edit='micro' #'nvim'
+  # alias edit='micro' #'nvim'
   alias rm='\rm -i'
   alias cp='\cp -i'
 }
@@ -242,6 +242,16 @@ function color() {
   local opt="$1"
   case "$opt" in
     help|--help|-h) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
+  esac
+}
+function edit() {
+  case "${1}" in
+    settings) "$EDITOR" "$HOME/.config/micro/settings.json" ;;
+    bindings) "$EDITOR" "$HOME/.config/micro/bindings.json" ;;
+    init) "$EDITOR" "$HOME/.config/micro/init.lua" ;;
+    zshrc) "$EDITOR" "$ZSH_CONFIG_DIR/.zshrc" ;;
+    zshenv) "$EDITOR" "$ZSH_CONFIG_DIR/.zshenv" ;;
+    *) "$EDITOR" "${@}" ;;
   esac
 }
 # manage the functions.json file using bin/ruby/functions.rb
