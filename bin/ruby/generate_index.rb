@@ -83,6 +83,14 @@ module HTML
   end
 end
 
+# example: $site/folio/folio.html
+ui = {
+  indentpipe => "│",
+  branchline => "──"
+  dirbranch => "├",
+  lastbranch => "└"
+}
+
 module Filter
   # exclude if file name matches `name`
   def self.filename(name)
