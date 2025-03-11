@@ -86,7 +86,7 @@ end
 # example: $site/folio/folio.html
 ui = {
   indentpipe => "│",
-  branchline => "──"
+  branchline => "─"
   dirbranch => "├",
   lastbranch => "└"
 }
