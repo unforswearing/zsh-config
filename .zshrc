@@ -370,9 +370,12 @@ function preexec() {
 # the $1 arg holds the full text entered at the command line
 }
 function chpwd() {
-#  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
-#    echo "you're in it now, bb"
-#  fi
+  # use like direnv
+  # when entering ~/zsh-config, load these:
+  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
+    use choosefile || loadf choosefile
+    use fileman || loadf fileman
+  fi
   echo $PREV >>| "$HOME/.zsh_reload_prev.txt"
   export PREV="$CURR"
 }
