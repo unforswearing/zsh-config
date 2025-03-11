@@ -44,11 +44,29 @@
 # Get a list of all directories in `Dir.pwd`
 # Dir.entries(Dir.pwd).select {|each| File.directory?(File.join(Dir.pwd, each))}
 
-# class workingDir
-# workingDir.pwd
-# workingDir.files -> []
-# workingDir.dirs -> []
-#
+# module WorkingDir
+#   def self.pwd()
+#     return Dir.pwd
+#   end
+#   def self.contents()
+#     return Dir.entries(self.pwd())
+#   end
+#   def self.dirs()
+#     @collector = []
+#     @listing = self.contents()
+#     @listing.select { |item|
+#       @collector << File.directory?(File.join(self.pwd(), item))
+#     }
+#     return @collector
+#   end
+#   def self.files()
+#     @collector = []
+#     @listing = self.contents()
+#     @listing.select { |item|
+#       @collector << File.file?(File.join(self.pwd(), item))
+#     }
+#   end
+# end
 
 # class html
 # html.cssFile
