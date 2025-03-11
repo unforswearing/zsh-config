@@ -41,59 +41,64 @@
     #  cd ..
     # done
 
-# Get a list of all directories in `Dir.pwd`
-# Dir.entries(Dir.pwd).select {|each| File.directory?(File.join(Dir.pwd, each))}
-
-# module WorkingDir
-#   def self.pwd()
-#     return Dir.pwd
-#   end
-#   def self.contents()
-#     return Dir.entries(self.pwd())
-#   end
-#   def self.dirs()
-#     @collector = []
-#     @listing = self.contents()
-#     @listing.select { |item|
-#       @collector << File.directory?(File.join(self.pwd(), item))
-#     }
-#     return @collector
-#   end
-#   def self.files()
-#     @collector = []
-#     @listing = self.contents()
-#     @listing.select { |item|
-#       @collector << File.file?(File.join(self.pwd(), item))
-#     }
-#   end
-# end
-
-# class html
-# html.cssFile
-# html.template -> {}
-# html.html -> {
-#   p('text', style='style'), br.., div.., span.., etc
-# }
-
-def print_dirfile_listing()
-  Dir.entries(Dir.pwd)
+# WorkingDir::pwd()
+# WorkingDir::contents()
+# WorkingDir::dirs()
+# WorkingDir::files()
+module WorkingDir
+  def self.pwd()
+    return Dir.pwd
+  end
+  def self.contents()
+    return Dir.entries(self.pwd())
+  end
+  def self.dirs()
+    @collector = []
+    @listing = self.contents()
+    @listing.select { |directory|
+      if File.directory?(directory)
+        @collector.append(directory)
+      end
+    }
+    return @collector
+  end
+  def self.files()
+    @collector = []
+    @listing = self.contents()
+    @listing.select { |file|
+      if File.file?(file)
+        @collector.append(file)
+      end
+    }
+    return @collector
+  end
 end
 
-# def filter_filename(name) -> exclude if file name matches `name`
-# def filter_dirname(name) -> exclude if dir name matches `name`
-# def filter_extension(ext) -> exclude if extension matches `ext`
-# def filter_pattern(regex) -> exclude if item of any type matches `regex`
-# def filter_include_only(type:str, arg:arr) ->
-#     exlude all items except those of `type` ("name", "ext", "regex")
-#     that matches `arg` (filename, dirname, extension, regex)
-
-def filter_only_dirs()
-  listing = print_dirfile_listing()
-  listing.select { |item|
-    File.directory?(File.join(Dir.pwd, item))
-  }
+module HTML
+  @@title = File.split(File.expand_path(WorkingDir::pwd())).pop()
+  def self.template()
+  end
+  def self.html()
+    # p('text', style='style'), br.., div.., span.., etc
+  end
 end
 
-if ARGV
-  puts filter_only_dirs()
+module Filter
+  # exclude if file name matches `name`
+  def self.filename(name)
+  end
+  # exclude if dir name matches `name`
+  def self.dirname(name)
+  end
+  # exclude if extension matches `ext`
+  def self.extension(ext)
+  end
+  # exclude if item of any type matches `regex`
+  def self.pattern(regex)
+  end
+  # exlude all items except those of `type` ("name", "ext", "regex")
+  # that matches `arg` (filename, dirname, extension, regex)
+  def self.include_only(type, arr)
+  end
 end
+
