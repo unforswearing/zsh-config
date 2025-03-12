@@ -17,26 +17,39 @@ end
 
 $config = JSON.parse(File.read(CONFIG_FILE))
 
-# def print_functions()
-#   if $config['functions'] && !$config['functions'].empty?
-#     puts "# Functions"
-#     $config['functions'].each do |name, body|
-#       puts "function #{name}() {"
-#       if body.is_a?(Array)
-#         # Handle array of lines
-#         body.each do |line|
-#           puts "  #{line}"
-#         end
-#       else
-#         body.each_line do |line|
-#           puts "  #{line.chomp}"
-#         end
-#       end
-#       puts "}"
-#       puts
-#     end
-#   end
-# end
+# Serialize_function relies on a function_body that
+# does not contain the `function` keyword. Eg:
+#
+#   fnname() {
+#     cmd...
+#     cmd...
+#   }
+#
+# Use the output of `whence` or `which` to avoid
+# the `function` keyword when serializing.
+#
+#   `whence -f fnname`
+#   `which fnname`
+#
+# Use: `f serialize-function "$(whence -f fnname)"`
+def serialize_function(function_body)
+  if function_body
+    split_body = function_body.lines.map { |line|
+      line.strip
+    }
+
+    name_unparsed = split_body[0].split()[0]
+    name = name_unparsed.gsub("()", "")
+    body = split_body[1..-2]
+
+    puts "Serialized function #{name}"
+
+    add_item(name, body)
+  else
+    puts "Please include function body"
+    puts "eg. `serialize-function \"\$(whence -f fname)\"`"
+  end
+end
 
 def get_function(key)
   if $config['functions'][key]
@@ -76,11 +89,16 @@ case ARGV[0]
   when "get"
     get_function(ARGV[1])
   when "add"
+    # f add <name> <command, [command...]>
     # add_item(key, array)
     keyname = ARGV[1]
     ARGV.shift(2)
     add_item(keyname, ARGV)
-  # in shell: `loadf.list`
+  # in shell: `f serialize <function>`
+  when "serialize-function"
+    functionbody = ARGV[1]
+    serialize_function(functionbody)
+  # in shell: `f list-all-functions`
   when "list-all-functions"
     $config['functions'].each do |name, body|
       puts name

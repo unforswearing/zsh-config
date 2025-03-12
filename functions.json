@@ -141,24 +141,6 @@
     ],
     "generate-tree-map": [
       "rg --files | tree --fromfile -d --noreport -H ./ | pandoc -f html -t commonmark >| map.md"
-    ],
-    "choosefile": [
-      "{ ",
-      "rg --files --hidden",
-      " --glob '!*.git' --glob '!archive*'",
-      " --glob '!plugin*' \$@",
-      "echo \":exit\"",
-      "} | fzf"
-    ],
-    "fileman": [
-      "use choosefile || loadf choosefile",
-      "while :; do ffile=$(choosefile); ",
-      "  if [[ $ffile != \":exit\" ]]; then",
-      "    micro $ffile",
-      "  else",
-      "    return",
-      "  fi",
-      "done"
     ]
   }
 }

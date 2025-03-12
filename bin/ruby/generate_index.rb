@@ -78,7 +78,7 @@ module HTML
   @@title = File.split(File.expand_path(WorkingDir::pwd())).pop()
   def self.template()
   end
-  def self.html()
+  def self.tag()
     # p('text', style='style'), br.., div.., span.., etc
   end
 end
