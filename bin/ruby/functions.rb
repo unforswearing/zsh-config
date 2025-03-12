@@ -23,35 +23,32 @@ end
 
 $config = JSON.parse(File.read(CONFIG_FILE))
 
-# External Command(s)
-module ExternalCmd
-  # Verify a stored functions.json item with shellcheck
-  def ExternalCmd.runShellcheck(filename)
-    retrieved_function = get_function(filename)
-    tmp_file = "/tmp/functions.rb.verify.#{filename}"
-    File.write(tmp_file, retrieved_function)
+# Verify a stored functions.json item with shellcheck
+def runShellcheck(filename)
+  retrieved_function = get_function(filename)
+  tmp_file = "/tmp/functions.rb.verify.#{filename}"
+  File.write(tmp_file, retrieved_function)
 
-    cmdroot = "/usr/local/bin/shellcheck"
-    options = [
-      "--severity=warning",
-      "--exclude=2148",
-      "--format=json"
-    ]
-    pipe = [
-      "|",
-      "jq '.[]'"
-    ]
+  cmdroot = "/usr/local/bin/shellcheck"
+  options = [
+    "--severity=warning",
+    "--exclude=2148",
+    "--format=json"
+  ]
+  pipe = [
+    "|",
+    "jq '.[]'"
+  ]
 
-    composed = proc { |generated_cmd|
-      generated_cmd = [cmdroot].append(options)
-      generated_cmd = generated_cmd.append(tmp_file)
-      generated_cmd = generated_cmd.append(pipe)
-      generated_cmd.flatten.join(" ")
-    }
+  composed = proc { |generated_cmd|
+    generated_cmd = [cmdroot].append(options)
+    generated_cmd = generated_cmd.append(tmp_file)
+    generated_cmd = generated_cmd.append(pipe)
+    generated_cmd.flatten.join(" ")
+  }
 
-    result_json = JSON.parse(`#{composed.call()}`)
-    puts JSON.pretty_generate(result_json)
-  end
+  result_json = JSON.parse(`#{composed.call()}`)
+  puts JSON.pretty_generate(result_json)
 end
 
 # Serialize_function relies on a function_body that
@@ -134,7 +131,7 @@ end
 case ARGV[0]
   # in shell: `loadf <name>`
   when "get"
-    get_function(ARGV[1])
+    puts get_function(ARGV[1])
   when "add"
     # f add <name> <command, [command...]>
     # add_item(key, array)
@@ -147,7 +144,7 @@ case ARGV[0]
     serialize_function(functionbody)
   when "verify-function"
     keyname = ARGV[1]
-    ExternalCmd.runShellcheck(keyname)
+    runShellcheck(keyname)
   # in shell: `f list-all-functions`
   when "list-all-functions"
     $config['functions'].sort.each do |name, body|
