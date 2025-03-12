@@ -1,8 +1,14 @@
 #!/usr/local/opt/ruby/bin/ruby --disable=gems
 
-# Start using Ruby by managing `functions.json`
-# In the shell, use `loadf <name>` to load a function
-#               use `loadf.list` to print a list of function names
+# Start using Ruby by managing `functions.json`.
+# Commands `loadf` and `f` are set in `.zshrc`.
+#
+# In the shell:
+#   - `loadf <name>` to load a function
+#   - `f list-all-functions` to print a list of function names
+#   - `f add <name> <cmd [cmd]...>` to add a function manually
+#   - `f serialize <functionbody>` to serialize and add a function
+#
 # Other options TBD
 
 require 'json'
@@ -16,6 +22,37 @@ unless File.exist?(CONFIG_FILE)
 end
 
 $config = JSON.parse(File.read(CONFIG_FILE))
+
+# External Command(s)
+module ExternalCmd
+  # Verify a stored functions.json item with shellcheck
+  def ExternalCmd.runShellcheck(filename)
+    retrieved_function = get_function(filename)
+    tmp_file = "/tmp/functions.rb.verify.#{filename}"
+    File.write(tmp_file, retrieved_function)
+
+    cmdroot = "/usr/local/bin/shellcheck"
+    options = [
+      "--severity=warning",
+      "--exclude=2148",
+      "--format=json"
+    ]
+    pipe = [
+      "|",
+      "jq '.[]'"
+    ]
+
+    composed = proc { |generated_cmd|
+      generated_cmd = [cmdroot].append(options)
+      generated_cmd = generated_cmd.append(tmp_file)
+      generated_cmd = generated_cmd.append(pipe)
+      generated_cmd.flatten.join(" ")
+    }
+
+    result_json = JSON.parse(`#{composed.call()}`)
+    puts JSON.pretty_generate(result_json)
+  end
+end
 
 # Serialize_function relies on a function_body that
 # does not contain the `function` keyword. Eg:
@@ -53,13 +90,22 @@ end
 
 def get_function(key)
   if $config['functions'][key]
-    puts "function #{key}() {"
+    function_parts = []
+    function_parts.append("function #{key}() {")
     $config['functions'][key].each do |line|
-      puts " #{line}"
+      function_parts.append(" #{line}")
     end
-    puts "}"
+    function_parts.append("}")
+    return function_parts.join("\n")
   else
     puts "Function #{key} doesn't exist."
+    return false
+  end
+end
+
+def validate_function(key)
+  if get_function(key)
+
   end
 end
 
@@ -69,19 +115,20 @@ def save_config()
 end
 
 # add_item(key->string", value->array)-> void
+# If `key` exists in $config['functions'], it will be overwritten
 def add_item(key, value)
   $config['functions'] ||= {}
   $config['functions'][key] = value.is_a?(Array) ? value : [value]
 
-  save_config()
   puts "Added #{key || value} to functions.json."
+  save_config()
 end
 
 def remove_item(key)
   $config['functions'].delete(key)
 
-  save_config($config)
   puts "Removed #{key} from functions.json."
+  save_config($config)
 end
 
 case ARGV[0]
@@ -98,9 +145,12 @@ case ARGV[0]
   when "serialize-function"
     functionbody = ARGV[1]
     serialize_function(functionbody)
+  when "verify-function"
+    keyname = ARGV[1]
+    ExternalCmd.runShellcheck(keyname)
   # in shell: `f list-all-functions`
   when "list-all-functions"
-    $config['functions'].each do |name, body|
+    $config['functions'].sort.each do |name, body|
       puts name
     end
 end

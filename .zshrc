@@ -272,14 +272,15 @@ function loadf() {
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
 # f get loadf > tmp.f && shellcheck --exclude=2148 --format=diff tmp.f | patch -p1 tmp.f
-function loadf.test() {
-  local name="${1}"
-  /usr/local/bin/shellcheck \
-    --severity=warning \
-    --exclude=2148 \
-    --format=json <(f get "$name") | \
-        jq '.[].path = .[].file | .[].file = "'$name'"'
-}
+# loadf.test is made obsolete by `f verify-function`
+# function loadf.test() {
+#   local name="${1}"
+#   /usr/local/bin/shellcheck \
+#     --severity=warning \
+#     --exclude=2148 \
+#     --format=json <(f get "$name") | \
+#         jq '.[].message'
+# }
 # example:
 #   use ls
 #   use zyx.null -> error

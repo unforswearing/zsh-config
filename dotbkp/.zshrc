@@ -278,7 +278,7 @@ function loadf.test() {
     --severity=warning \
     --exclude=2148 \
     --format=json <(f get "$name") | \
-        jq '.[].path = .[].file | .[].file = "'$name'"'
+        jq '.[].message'
 }
 # example:
 #   use ls
