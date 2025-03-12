@@ -40,3 +40,8 @@ General Shell Scripting
 HTTP Requests
 
 - https://www.twilio.com/en-us/blog/5-ways-make-http-requests-ruby#The-standard-netHTTP
+
+## To Do
+
+- Make a script that will incrementally build a shell command of medium complexity.
+  - See `runShellcheck` in `functions.rb` for an example of how this could work.

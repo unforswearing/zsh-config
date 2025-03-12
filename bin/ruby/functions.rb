@@ -27,6 +27,7 @@ $config = JSON.parse(File.read(CONFIG_FILE))
 def runShellcheck(filename)
   retrieved_function = get_function(filename)
   tmp_file = "/tmp/functions.rb.verify.#{filename}"
+
   File.write(tmp_file, retrieved_function)
 
   cmdroot = "/usr/local/bin/shellcheck"
@@ -35,10 +36,7 @@ def runShellcheck(filename)
     "--exclude=2148",
     "--format=json"
   ]
-  pipe = [
-    "|",
-    "jq '.[]'"
-  ]
+  pipe = [ "|", "jq '.[]'" ]
 
   composed = proc { |generated_cmd|
     generated_cmd = [cmdroot].append(options)
@@ -47,7 +45,9 @@ def runShellcheck(filename)
     generated_cmd.flatten.join(" ")
   }
 
-  result_json = JSON.parse(`#{composed.call()}`)
+  cmd_result = `#{composed.call()}`
+  result_json = JSON.parse(cmd_result)
+
   puts JSON.pretty_generate(result_json)
 end
 
@@ -74,10 +74,14 @@ def serialize_function(function_body)
 
     name_unparsed = split_body[0].split()[0]
     name = name_unparsed.gsub("()", "")
+
     body = split_body[1..-2]
 
     puts "Serialized function #{name}"
 
+    # options:
+    # 1. choose to view serialized function json
+    # 2. choose to add serialized function to functions.json file
     add_item(name, body)
   else
     puts "Please include function body"
@@ -97,12 +101,6 @@ def get_function(key)
   else
     puts "Function #{key} doesn't exist."
     return false
-  end
-end
-
-def validate_function(key)
-  if get_function(key)
-
   end
 end
 
