@@ -13,6 +13,8 @@
 
 require 'json'
 require 'fileutils'
+require_relative 'colors'
+require_relative 'use'
 
 CONFIG_FILE = File.expand_path('~/zsh-config/functions.json')
 
@@ -48,6 +50,8 @@ def runShellcheck(filename)
   cmd_result = `#{composed.call()}`
   result_json = JSON.parse(cmd_result)
 
+  File.delete(tmp_file)
+
   puts JSON.pretty_generate(result_json)
 end
 
@@ -77,15 +81,15 @@ def serialize_function(function_body)
 
     body = split_body[1..-2]
 
-    puts "Serialized function #{name}"
+    puts "Serialized function '#{name}'.".green
 
     # options:
     # 1. choose to view serialized function json
     # 2. choose to add serialized function to functions.json file
     add_item(name, body)
   else
-    puts "Please include function body"
-    puts "eg. `serialize-function \"\$(whence -f fname)\"`"
+    puts "Please include function body.".red
+    puts "eg. `serialize-function \"\$(whence -f fname)\"`.".italic
   end
 end
 
@@ -99,14 +103,14 @@ def get_function(key)
     function_parts.append("}")
     return function_parts.join("\n")
   else
-    puts "Function #{key} doesn't exist."
+    puts "Function '#{key}' doesn\'t exist.".red
     return false
   end
 end
 
 def save_config()
   File.write(CONFIG_FILE, JSON.pretty_generate($config))
-  puts "Saved functions.json"
+  puts "Saved 'functions.json'.".green
 end
 
 # add_item(key->string", value->array)-> void
@@ -115,14 +119,14 @@ def add_item(key, value)
   $config['functions'] ||= {}
   $config['functions'][key] = value.is_a?(Array) ? value : [value]
 
-  puts "Added #{key || value} to functions.json."
+  puts "Added #{key || value} to 'functions.json'.".green
   save_config()
 end
 
 def remove_item(key)
   $config['functions'].delete(key)
 
-  puts "Removed #{key} from functions.json."
+  puts "Removed #{key} from 'functions.json'.".green
   save_config($config)
 end
 
