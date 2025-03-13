@@ -258,6 +258,8 @@ function edit() {
 # ---
 # f add <name> <"cmd1" "cmd2" "cmd3 | cmd4" ...>
 # f get <name>
+# f serialize-function <name>
+# f verify-function <name>
 # f list-all-functions
 # ---
 # note: use `loadf` to load a function into the current env.
@@ -271,19 +273,9 @@ function loadf() {
   if [[ "$1" == "unset" ]]; then unset -f "${2}"; return $?; fi;
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
-# f get loadf > tmp.f && shellcheck --exclude=2148 --format=diff tmp.f | patch -p1 tmp.f
-# loadf.test is made obsolete by `f verify-function`
-# function loadf.test() {
-#   local name="${1}"
-#   /usr/local/bin/shellcheck \
-#     --severity=warning \
-#     --exclude=2148 \
-#     --format=json <(f get "$name") | \
-#         jq '.[].message'
-# }
 # example:
-#   use ls
-#   use zyx.null -> error
+#   use ls (check if command `ls` is available in environment)
+#   use zyx.null (checking for a command that does not exist throws error)
 function use() {
   unsetopt warn_create_global && \
     caller="$0" && arg="$1" && \

@@ -25,7 +25,21 @@ end
 
 $config = JSON.parse(File.read(CONFIG_FILE))
 
+# f get loadf > tmp.f && \
+#   shellcheck --exclude=2148 --format=diff tmp.f | patch -p1 tmp.f
+#
+# loadf.test is made obsolete by `f verify-function`
+# function loadf.test() {
+#   local name="${1}"
+#   /usr/local/bin/shellcheck \
+#     --severity=warning \
+#     --exclude=2148 \
+#     --format=json <(f get "$name") | \
+#         jq '.[].message'
+# }
+#
 # Verify a stored functions.json item with shellcheck
+#
 def runShellcheck(filename)
   retrieved_function = get_function(filename)
   tmp_file = "/tmp/functions.rb.verify.#{filename}"
@@ -70,6 +84,9 @@ end
 #   `which fnname`
 #
 # Use: `f serialize-function "$(whence -f fnname)"`
+# Future options:
+# 1. choose to view serialized function json
+# 2. choose to add serialized function to functions.json file
 def serialize_function(function_body)
   if function_body
     split_body = function_body.lines.map { |line|
@@ -83,9 +100,6 @@ def serialize_function(function_body)
 
     puts "Serialized function '#{name}'.".green
 
-    # options:
-    # 1. choose to view serialized function json
-    # 2. choose to add serialized function to functions.json file
     add_item(name, body)
   else
     puts "Please include function body.".red
