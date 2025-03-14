@@ -103,10 +103,9 @@ def serialize_function(function_body, add=false)
     exit 1
   end
 
-  function_body
-    split_body = function_body.lines.map { |line|
-      line.strip
-  }
+  split_body = function_body.lines.map do |line|
+    line.strip
+  end
 
   name_unparsed = split_body[0].split()[0]
 
@@ -119,6 +118,20 @@ def serialize_function(function_body, add=false)
   add ? add_item(name, body) : exit
 end
 
+# when this file is used in another ruby script via
+# `require_relative "functions"`, use `get_function`
+# to load a function that can be used in shell commands
+# executed by ruby. for example:
+#
+# ```ruby
+# # function timestamp() {\n date +'%Y-%m-%d %H:%M:%S'\n}
+#
+# require_relative "functions"
+#
+# func = get_function "timestamp"
+# system("#{func}; timestamp")
+# ```
+#
 def get_function(key)
   if $config['functions'][key]
     function_parts = []
@@ -168,11 +181,9 @@ case ARGV[0]
     add_item(keyname, ARGV)
   # in shell: `f serialize <function>`
   when "serialize-function"
-    functionbody = ARGV[1]
-    serialize_function(functionbody)
+    serialize_function(ARGV[1])
   when "serialize-and-add"
-    functionbody = ARGV[1]
-    serialize_function(functionbody, true)
+    serialize_function(ARGV[1], true)
   when "verify-function"
     keyname = ARGV[1]
     runShellcheck(keyname)
