@@ -13,7 +13,7 @@ setopt allexport
 unsetopt monitor
 unsetopt warn_create_global
 ## ---------------------------------------------
-source ~/powerlevel10k/powerlevel10k.zsh-theme && source ~/.p10k.zsh
+eval "$(starship init zsh)"
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ## ---------------------------------------------
@@ -54,6 +54,7 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   alias cp='\cp -i'
 }
 {
+  export STARSHIP_CONFIG="${ZSH_CONFIG_DIR}/settings/starship.toml"
   export CLICOLOR=1
   export EDITOR="micro" #"hx" #"nvim" #"micro"
   export GPG_TTY=$TTY
@@ -140,9 +141,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 }
 ## ---------------------------------------------
 # run-help / help
-(($ + aliases[run - help])) && unalias run-help >/dev/null 2>&1
-autoload -Uz run-help
-function help() { get-help "${@}"; }
+# (($ + aliases[run - help])) && unalias run-help >/dev/null 2>&1
+# autoload -Uz run-help
+# function help() { get-help "${@}"; }
 ## ---------------------------------------------
 function rb() {
   "/usr/local/opt/ruby/bin/ruby" --disable=gems -e "$@"
@@ -187,11 +188,13 @@ function debug() {
     # sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
     export DEBUG=true
     export CLEAR=
+    set -x
     ;;
   "f" | "false")
     # sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
     export DEBUG=false
     export CLEAR="clear"
+    set +x
     ;;
   *) print "${DEBUG}" ;;
   esac
@@ -288,31 +291,7 @@ function loadf() {
 #   use ls (check if command `ls` is available in environment)
 #   use zyx.null (checking for a command that does not exist throws error)
 function use() {
-  unsetopt warn_create_global && \
-    caller="$0" && arg="$1" && \
-    setopt warn_create_global
-
-  function success() { color green "$caller: '$arg' loaded"; }
-  function failure() { color red "$caller: $arg"; }
-
-  if [[ "$1" == ":mute" ]] && {
-    function success() { :; }
-    shift
-  }
-
-  case "$1" in
-  ""|" "*) failure "Please enter a command or filename" ;;
-  *)
-    local comm="$(command -v $1)"
-    if [[ $comm ]]; then
-      # success
-      true
-    else
-      color red "$0: command '$1' not found in shell or functions.json"; false
-    fi
-    ;;
-  esac
-  caller=;arg=;
+  test $(command -v "$1")
 }
 function cpl() {
   use "pee"
@@ -372,6 +351,7 @@ color
   # Now running externally: hosts.rb (in Lingon.app)
 # }
 function preexec() {
+  unsetopt warncreateglobal
   echo $CURR >>| "$HOME/.zsh_reload_curr.txt"
   export CURR="$(pwd)"
 # the $1 arg holds the full text entered at the command line
@@ -380,13 +360,13 @@ function chpwd() {
   # use like direnv
   # when entering ~/zsh-config, load these:
   if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
-    use choosefile || loadf choosefile
-    use fileman || loadf fileman
+    echo "configuration"
   fi
   echo $PREV >>| "$HOME/.zsh_reload_prev.txt"
   export PREV="$CURR"
 }
 function precmd() {
+  unsetopt warncreateglobal
   ({ ; }&) >|/dev/null 2>&1
   # --------------------------------------
   local last="$(
@@ -423,6 +403,6 @@ setopt warn_create_global
 # LOAD COMPLETIONS LAST
 autoload compinit
 autoload bashcompinit
-eval "$(direnv hook zsh)"
+# eval "$(direnv hook zsh)"
 ## ---------------------------------------------
 # cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"
