@@ -48,7 +48,6 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   alias pip='/usr/local/bin/pip3'
   alias sed='/usr/local/bin/gsed'
   # Etc
-  alias finder='open .'
   alias ls='\ls -a'
   # alias edit='micro' #'nvim'
   alias rm='\rm -i'
@@ -338,11 +337,12 @@ function opts() {
     print $optvalue
   fi
 }
+function finder() { open "${1}"; }
 # function modified() { use gstat && gstat -c '%y' "${1}"; }
 function modified() { use rb && rb "puts File.mtime(\"${1}\")"; }
 function sysinfo() {
   # libutil:argtest "$1"
-  use nu
+  use nu; use color
   case $1 in
   host) nu -c "sys|get host" ;;
   cpu) nu -c "sys|get cpu" ;;

@@ -142,9 +142,15 @@
     "generate-tree-map": [
       "rg --files | tree --fromfile -d --noreport -H ./ | pandoc -f html -t commonmark >| map.md"
     ],
-    "grepms": [
-      "echo \"gremps\"",
-      "ls -a"
+    "togglewifi": [
+      "networksetup -setairportpower en1 off",
+      "sleep 3",
+      "networksetup -setairportpower en1 on"
+    ],
+    "browser": [
+      "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
+      "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
+      "\"${ZSH_BIN_DIR}/ruby/browser.rb\""
     ]
   }
 }

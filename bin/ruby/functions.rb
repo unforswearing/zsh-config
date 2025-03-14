@@ -97,28 +97,26 @@ end
 # 1. choose to view serialized function json
 # 2. choose to add serialized function to functions.json file
 def serialize_function(function_body, add=false)
-  if function_body
-    split_body = function_body.lines.map { |line|
-      line.strip
-    }
-
-    name_unparsed = split_body[0].split()[0]
-    name = name_unparsed.gsub("()", "")
-
-    body = split_body[1..-2]
-
-    puts "Serialized function '#{name}'.".green
-    puts JSON.pretty_generate({ name => body })
-
-    case add
-      when true
-        add_item(name, body)
-    end
-
-  else
+  unless defined?(function_body)
     puts "Please include function body.".red
     puts "eg. `serialize-function \"\$(whence -f fname)\"`.".italic
+    exit 1
   end
+
+  function_body
+    split_body = function_body.lines.map { |line|
+      line.strip
+  }
+
+  name_unparsed = split_body[0].split()[0]
+
+  name = name_unparsed.gsub("()", "")
+  body = split_body[1..-2]
+
+  puts "Serialized function '#{name}'.".green
+  puts JSON.pretty_generate({ name => body })
+
+  add ? add_item(name, body) : exit
 end
 
 def get_function(key)
