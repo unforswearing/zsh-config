@@ -141,6 +141,10 @@
     ],
     "generate-tree-map": [
       "rg --files | tree --fromfile -d --noreport -H ./ | pandoc -f html -t commonmark >| map.md"
+    ],
+    "grepms": [
+      "echo \"gremps\"",
+      "ls -a"
     ]
   }
 }

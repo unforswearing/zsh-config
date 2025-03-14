@@ -11,6 +11,9 @@ ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [x86_64-darwin23]
   - `#!/usr/bin/env ruby --disable=gems`
   - or using `ruby` via `brew`
     - `#!/usr/local/opt/ruby/bin/ruby --disable=gems`
+- `.zshrc` contains a function called `rb` that uses the full path and `--disable=gems` option to run the above in functions / interactively.
+- Oneliners can use `ARGV` like so:
+  - `ruby --disable=gems -e "puts 'hello ${ARGV[0]}'" "world"` -> "hello world"
 
 ## Links / Resources
 

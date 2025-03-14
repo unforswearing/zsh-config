@@ -6,7 +6,6 @@
 #   - Since ruby scripts can't access my `.zshrc` environment,
 #     there is no reason to try and check for loaded zsh functions.
 #
-require_relative 'colors'
 
 def use?(program)
   ENV['PATH'].split(File::PATH_SEPARATOR).any? do |directory|

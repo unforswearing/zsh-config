@@ -42,9 +42,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
   # standard aliases
   # ---
   # Languages
-  alias ruby='/usr/local/opt/ruby/bin/ruby'
   alias irb='/usr/local/opt/ruby/bin/irb'
   alias rake='/usr/local/opt/ruby/bin/rake'
+  alias ruby='/usr/local/opt/ruby/bin/ruby'
   alias pip='/usr/local/bin/pip3'
   alias sed='/usr/local/bin/gsed'
   # Etc
@@ -145,6 +145,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 autoload -Uz run-help
 function help() { get-help "${@}"; }
 ## ---------------------------------------------
+function rb() {
+  "/usr/local/opt/ruby/bin/ruby" --disable=gems -e "$@"
+}
 function addpass() {
   use security
   local key="${1}"; local value="${2}"
@@ -200,9 +203,18 @@ function togglewifi() {
   networksetup -setairportpower en1 on
 }
 function updatehosts() {
-  use nu; use gstat;
-  sudo nu -c 'http get "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts" | save --force /etc/hosts' && \
-  echo "/etc/hosts updated: $(gstat -c '%y' /etc/hosts)"
+  use nu; use ruby; use modified;
+  local cmd=$(ruby --disable=gems -e '
+    puts [
+        ["http", "get", ""].join(" "),
+        "https://raw.githubusercontent.com/",
+        "StevenBlack/hosts/master/alternates/",
+        "fakenews-gambling/hosts"
+    ].join("")
+  ')
+
+  sudo nu -c "$cmd | save --force /etc/hosts" && \
+  echo "/etc/hosts updated: $(modified /etc/hosts)"
 }
 function color() {
   local reset="\033[39m"
@@ -326,6 +338,8 @@ function opts() {
     print $optvalue
   fi
 }
+# function modified() { use gstat && gstat -c '%y' "${1}"; }
+function modified() { use rb && rb "puts File.mtime(\"${1}\")"; }
 function sysinfo() {
   # libutil:argtest "$1"
   use nu

@@ -42,6 +42,11 @@ $config = JSON.parse(File.read(CONFIG_FILE))
 #
 def runShellcheck(filename)
   retrieved_function = get_function(filename)
+  unless defined?(filename) && defined?(retrieved_function)
+    puts "No function body passed to 'runShellcheck'".red
+    exit 1
+  end
+
   tmp_file = "/tmp/functions.rb.verify.#{filename}"
 
   File.write(tmp_file, retrieved_function)
@@ -62,11 +67,15 @@ def runShellcheck(filename)
   }
 
   cmd_result = `#{composed.call()}`
-  result_json = JSON.parse(cmd_result)
+
+  if cmd_result.length == 0
+    puts "No errors were found in function '#{filename}'.".green
+  else
+    result_json = JSON.parse(cmd_result)
+    puts JSON.pretty_generate(result_json)
+  end
 
   File.delete(tmp_file)
-
-  puts JSON.pretty_generate(result_json)
 end
 
 # Serialize_function relies on a function_body that
@@ -87,7 +96,7 @@ end
 # Future options:
 # 1. choose to view serialized function json
 # 2. choose to add serialized function to functions.json file
-def serialize_function(function_body)
+def serialize_function(function_body, add=false)
   if function_body
     split_body = function_body.lines.map { |line|
       line.strip
@@ -99,8 +108,13 @@ def serialize_function(function_body)
     body = split_body[1..-2]
 
     puts "Serialized function '#{name}'.".green
+    puts JSON.pretty_generate({ name => body })
 
-    add_item(name, body)
+    case add
+      when true
+        add_item(name, body)
+    end
+
   else
     puts "Please include function body.".red
     puts "eg. `serialize-function \"\$(whence -f fname)\"`.".italic
@@ -118,7 +132,7 @@ def get_function(key)
     return function_parts.join("\n")
   else
     puts "Function '#{key}' doesn\'t exist.".red
-    return false
+    exit 1
   end
 end
 
@@ -158,6 +172,9 @@ case ARGV[0]
   when "serialize-function"
     functionbody = ARGV[1]
     serialize_function(functionbody)
+  when "serialize-and-add"
+    functionbody = ARGV[1]
+    serialize_function(functionbody, true)
   when "verify-function"
     keyname = ARGV[1]
     runShellcheck(keyname)
