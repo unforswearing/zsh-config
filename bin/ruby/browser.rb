@@ -8,13 +8,13 @@
 
 require_relative "colors"
 
-# `ARGF.read` turns `ARGV` into a text stream for accepting pipes
+# `ARGF.read` turns `ARGV` into a text stream for accepting pipes.
+# because `ARGF` is being used, this script does not recognize `ARGV`.
 # using `STDIN.tty?` to determine if text has been piped to this script
 #   -> see: https://stackoverflow.com/a/25358600
-case STDIN.tty?
-  when true
-    puts "No input to browser.rb".red
-    exit 1
+if STDIN.tty?
+  puts "No input to browser.rb".red
+  exit 1
 end
 
 input = ARGF.read
