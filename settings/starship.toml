@@ -4,7 +4,7 @@
 # format = "$all"
 format = "$shlvl$directory$git_branch$git_commit$git_state$git_metrics$git_status$package$deno$elixir$golang$haskell$julia$lua$nim$nodejs$perl$python$quarto$ruby$typst$memory_usage$direnv$env_var$crystal$sudo$cmd_duration$line_break$battery$character"
 
-right_format = "$shell$time$localip"
+right_format = "$shell$time"
 # continuation_prompt = "[∙](bright-black) "
 scan_timeout = 30
 command_timeout = 500
@@ -105,8 +105,8 @@ disabled = true
 
 [git_branch]
 format = "[$symbol$branch(:$remote_branch)]($style) "
-symbol = ""
-style = "bold purple"
+symbol = ":: "
+style = "white"
 truncation_length = 9223372036854775807
 truncation_symbol = "…"
 only_attached = false
@@ -117,7 +117,7 @@ disabled = false
 [git_commit]
 commit_hash_length = 7
 format = '[\($hash$tag\)]($style) '
-style = "green bold"
+style = "green"
 only_detached = true
 disabled = false
 tag_symbol = ""
@@ -140,14 +140,14 @@ cherry_pick = "CHERRY-PICKING"
 bisect = "BISECTING"
 am = "AM"
 am_or_rebase = "AM/REBASE"
-style = "bold yellow"
+style = "yellow"
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
 disabled = false
 
 [git_status]
 # format = '([\[$all_status$ahead_behind\]]($style) )'
 format = '([\[$modified$conflicted$renamed$untracked$staged$ahead_behind\]]($style) )'
-style = "blue"
+style = "black"
 stashed = '\$'
 modified = "modified"
 conflicted = "conflicted"
