@@ -2,7 +2,7 @@
 "$schema" = "https://starship.rs/config-schema.json"
 
 # format = "$all"
-format = "$shell$time$line_break$shlvl$directory$git_branch$git_commit$git_state$git_metrics$git_status$package$deno$elixir$golang$haskell$julia$lua$nim$nodejs$perl$python$quarto$ruby$typst$memory_usage$direnv$env_var$crystal$sudo$cmd_duration$line_break$battery$character"
+format = "$time$shell$line_break$shlvl$directory$git_branch$git_commit$git_state$git_metrics$git_status$package$deno$elixir$golang$haskell$julia$lua$nim$nodejs$perl$python$quarto$ruby$typst$memory_usage$direnv$env_var$crystal$sudo$cmd_duration$line_break$battery$character"
 
 right_format = ""
 # continuation_prompt = "[∙](bright-black) "
@@ -149,13 +149,13 @@ disabled = false
 format = '([\[$modified$conflicted$renamed$untracked$staged$ahead_behind\]]($style) )'
 style = "black"
 stashed = '\$'
-modified = "modified"
-conflicted = "conflicted"
-renamed = "renamed"
-untracked = "untracked"
-staged = "staged"
-ahead = " push"
-behind = " pull"
+modified = "++"
+conflicted = "xx"
+renamed = ">>"
+untracked = "<>"
+staged = "ok"
+ahead = "⌃"
+behind = "⌄"
 typechanged = ""
 up_to_date = ""
 diverged = ""
@@ -339,7 +339,7 @@ detect_variables = [
 [shell]
 format = "[$indicator]($style) "
 bash_indicator = "bash"
-zsh_indicator = "zsh"
+zsh_indicator = ""
 nu_indicator = "nu"
 cmd_indicator = "cmd"
 unknown_indicator = "???"
