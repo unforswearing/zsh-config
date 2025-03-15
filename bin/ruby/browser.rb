@@ -8,11 +8,16 @@
 
 require_relative "colors"
 
-input = ARGF.read
-unless defined?(input)
-  puts "No input to browser.rb".red
-  exit 1
+# `ARGF.read` turns `ARGV` into a text stream for accepting pipes
+# using `STDIN.tty?` to determine if text has been piped to this script
+#   -> see: https://stackoverflow.com/a/25358600
+case STDIN.tty?
+  when true
+    puts "No input to browser.rb".red
+    exit 1
 end
+
+input = ARGF.read
 
 tmpfile = "/tmp/browser.rb.tmp#{rand(10**5)}.html"
 File.write(tmpfile, input)

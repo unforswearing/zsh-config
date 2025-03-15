@@ -16,10 +16,10 @@ follow_symlinks = true
 [profiles]
 
 [bun]
-format = "via [$symbol($version )]($style)"
-version_format = "v${raw}"
-symbol = "🥟 "
-style = "bold red"
+format = "[$symbol]($style)"
+version_format = ""
+symbol = "bun "
+style = "black"
 disabled = false
 detect_extensions = []
 detect_files = [
@@ -40,18 +40,18 @@ disabled = false
 
 [cmd_duration]
 min_time = 500
-format = "took [$duration]($style) "
-style = "yellow bold"
+format = "[$duration]($style) "
+style = "yellow"
 show_milliseconds = false
 disabled = false
 show_notifications = false
 min_time_to_notify = 45000
 
 [deno]
-format = "via [$symbol($version )]($style)"
+format = "[$symbol]($style)"
 version_format = "v${raw}"
 symbol = "deno "
-style = "green bold"
+style = "black"
 disabled = false
 detect_extensions = []
 detect_files = [
@@ -71,7 +71,7 @@ fish_style_pwd_dir_length = 0
 use_logical_path = true
 format = "[$path]($style)[$read_only]($read_only_style) "
 repo_root_format = "[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
-style = "cyan bold"
+style = "cyan"
 disabled = false
 read_only = "🔒"
 read_only_style = "red"
@@ -84,7 +84,7 @@ use_os_path_sep = true
 [direnv]
 format = "[$symbol$loaded/$allowed]($style) "
 symbol = "direnv "
-style = "bold bright-yellow"
+style = "yellow"
 disabled = true
 detect_extensions = []
 detect_files = [".envrc"]
@@ -163,10 +163,10 @@ ignore_submodules = false
 disabled = false
 
 [golang]
-format = "via [$symbol($version )]($style)"
-version_format = "v${raw}"
-symbol = "🐹 "
-style = "bold cyan"
+format = "[$symbol]($style)"
+version_format = ""
+symbol = "go "
+style = "black"
 disabled = false
 not_capable_style = "bold red"
 detect_extensions = ["go"]
@@ -182,10 +182,10 @@ detect_files = [
 detect_folders = ["Godeps"]
 
 [haskell]
-format = "via [$symbol($version )]($style)"
-version_format = "v${raw}"
-symbol = "λ "
-style = "bold purple"
+format = "[$symbol]($style)"
+version_format = ""
+symbol = "haskell "
+style = "black"
 disabled = false
 detect_extensions = [
     "hs",
@@ -200,7 +200,7 @@ detect_folders = []
 
 [hostname]
 ssh_only = true
-ssh_symbol = "🌐 "
+ssh_symbol = "ssh "
 trim_at = "."
 detect_env_vars = []
 format = "[$ssh_symbol$hostname]($style) in "
@@ -208,10 +208,10 @@ style = "green dimmed bold"
 disabled = false
 
 [julia]
-format = "via [$symbol($version )]($style)"
-version_format = "v${raw}"
-symbol = "ஃ "
-style = "bold purple"
+format = "[$symbol]($style)"
+version_format = ""
+symbol = "julia "
+style = "black"
 disabled = false
 detect_extensions = ["jl"]
 detect_files = [
@@ -227,10 +227,10 @@ style = "yellow bold"
 disabled = true
 
 [lua]
-format = "via [$symbol($version )]($style)"
-version_format = "v${raw}"
-symbol = "🌙 "
-style = "bold blue"
+format = "[$symbol]($style)"
+version_format = ""
+symbol = "lua "
+style = "black"
 lua_binary = "lua"
 disabled = false
 detect_extensions = ["lua"]
@@ -245,11 +245,11 @@ symbol = "🐏 "
 disabled = true
 
 [nim]
-format = "via [$symbol($version )]($style)"
+format = "[$symbol]($style)"
 version_format = "v${raw}"
-symbol = "👑 "
-style = "yellow bold"
-disabled = false
+symbol = "nim "
+style = "black"
+disabled = true
 detect_extensions = [
     "nim",
     "nims",
@@ -259,10 +259,10 @@ detect_files = ["nim.cfg"]
 detect_folders = []
 
 [nodejs]
-format = ""
+format = "[$symbol]($style)"
 version_format = ""
-symbol = "node"
-style = "green"
+symbol = "node "
+style = "black"
 disabled = false
 not_capable_style = "red"
 detect_extensions = [
@@ -291,10 +291,10 @@ python_binary = [
     "python3",
     "python2",
 ]
-format = ''
+format = "[$symbol]($style)"
 version_format = ""
-style = "yellow"
-symbol = "python "
+style = "black"
+symbol = "py "
 disabled = false
 detect_extensions = ["py"]
 detect_files = [
@@ -309,20 +309,20 @@ detect_files = [
 detect_folders = []
 
 [quarto]
-format = "via [$symbol($version )]($style)"
+format = "[$symbol]($style)"
 version_format = "v${raw}"
-symbol = "⨁ "
-style = "bold #75AADB"
+symbol = "quarto "
+style = "black"
 disabled = false
 detect_extensions = ["qmd"]
 detect_files = ["_quarto.yml"]
 detect_folders = []
 
 [ruby]
-format = "ruby"
-version_format = "v${raw}"
-symbol = "ruby"
-style = "red"
+format = "[$symbol]($style)"
+version_format = ""
+symbol = "rb "
+style = "black"
 disabled = true
 detect_extensions = ["rb"]
 detect_files = [
@@ -348,7 +348,7 @@ disabled = false
 [shlvl]
 threshold = 2
 format = "[$symbol$shlvl]($style) "
-symbol = "↕️  "
+symbol = " "
 repeat = false
 repeat_offset = 0
 style = "bold yellow"
@@ -386,10 +386,10 @@ utc_time_offset = "local"
 time_range = "-"
 
 [typst]
-format = "via [$symbol($version )]($style)"
+format = "[$symbol]($style)"
 version_format = "v${raw}"
-symbol = "t "
-style = "bold #0093A7"
+symbol = "typ "
+style = "black"
 disabled = false
 detect_extensions = ["typ"]
 detect_files = ["template.typ"]
