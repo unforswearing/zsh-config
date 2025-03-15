@@ -2,9 +2,9 @@
 "$schema" = "https://starship.rs/config-schema.json"
 
 # format = "$all"
-format = "$shlvl$directory$git_branch$git_commit$git_state$git_metrics$git_status$package$deno$elixir$golang$haskell$julia$lua$nim$nodejs$perl$python$quarto$ruby$typst$memory_usage$direnv$env_var$crystal$sudo$cmd_duration$line_break$battery$character"
+format = "$shell$time$line_break$shlvl$directory$git_branch$git_commit$git_state$git_metrics$git_status$package$deno$elixir$golang$haskell$julia$lua$nim$nodejs$perl$python$quarto$ruby$typst$memory_usage$direnv$env_var$crystal$sudo$cmd_duration$line_break$battery$character"
 
-right_format = "$shell$time"
+right_format = ""
 # continuation_prompt = "[∙](bright-black) "
 scan_timeout = 30
 command_timeout = 500
@@ -30,17 +30,17 @@ detect_folders = []
 
 [character]
 format = "$symbol "
-success_symbol = "[>](bold green)"
-error_symbol = "[>](bold red)"
-vimcmd_symbol = "[<](bold green)"
-vimcmd_visual_symbol = "[<](bold yellow)"
-vimcmd_replace_symbol = "[<](bold purple)"
-vimcmd_replace_one_symbol = "[<](bold purple)"
+success_symbol = "[>](blue)"
+error_symbol = "[>](red)"
+vimcmd_symbol = "[<](green)"
+vimcmd_visual_symbol = "[<](yellow)"
+vimcmd_replace_symbol = "[<](purple)"
+vimcmd_replace_one_symbol = "[<](purple)"
 disabled = false
 
 [cmd_duration]
 min_time = 500
-format = "[$duration]($style) "
+format ="([$duration]($style))"
 style = "yellow"
 show_milliseconds = false
 disabled = false
@@ -71,7 +71,7 @@ fish_style_pwd_dir_length = 0
 use_logical_path = true
 format = "[$path]($style)[$read_only]($read_only_style) "
 repo_root_format = "[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
-style = "cyan"
+style = "blue"
 disabled = false
 read_only = "🔒"
 read_only_style = "red"
@@ -343,7 +343,7 @@ zsh_indicator = "zsh"
 nu_indicator = "nu"
 cmd_indicator = "cmd"
 unknown_indicator = "???"
-style = "black"
+style = "black italic"
 disabled = false
 
 [shlvl]
@@ -380,7 +380,7 @@ disabled = true
 
 [time]
 format = "[$time]($style) "
-style = "black"
+style = "black italic"
 use_12hr = true
 disabled = false
 utc_time_offset = "local"
