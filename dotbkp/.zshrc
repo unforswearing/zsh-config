@@ -382,7 +382,6 @@ function precmd() {
   # backup .zshrc and .zshenv
   # zsh-config/.zshrc is the main version of the file
   \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
-  # bin/python/hosts.py is the main version of the file
   \cp "${ZSH_BIN_DIR}/ruby/hosts.rb" "${ZSH_CONFIG_DIR}/dotbkp";
   \cp "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/dotbkp";
   # source zsh-config/.zshrc from $HOME/.zshrc
