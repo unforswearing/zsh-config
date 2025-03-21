@@ -1,4 +1,4 @@
-#!/usr/local/opt/ruby/bin/ruby --disable=gems
+#!/usr/bin/env -S /usr/local/opt/ruby/bin/ruby --disable=gems
 
 # Start using Ruby by managing `functions.json`.
 # Commands `loadf` and `f` are set in `.zshrc`.
@@ -22,6 +22,7 @@
 #
 # Other options TBD
 #
+
 require 'json'
 require 'fileutils'
 require_relative 'colors'
