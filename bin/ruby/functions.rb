@@ -4,13 +4,24 @@
 # Commands `loadf` and `f` are set in `.zshrc`.
 #
 # In the shell:
-#   - `loadf <name>` to load a function
-#   - `f list-all-functions` to print a list of function names
-#   - `f add <name> <cmd [cmd]...>` to add a function manually
-#   - `f serialize <functionbody>` to serialize and add a function
+#
+#   `loadf <name>`
+#     - load a function
+#
+#   `f list-all-functions`
+#     - print a list of function names
+#
+#   `f add <name> <cmd [cmd]...>`
+#     - add a function manually
+#
+#   `f serialize-function <functionbody>`
+#     - serialize and add a function
+#
+#   `f serialize-and-add <functionbody>`
+#     - serialize and add a function
 #
 # Other options TBD
-
+#
 require 'json'
 require 'fileutils'
 require_relative 'colors'
