@@ -1,0 +1,13 @@
+#!/usr/local/bin/abs
+
+# `rabs "base.config.abs"`
+base = require("./config.abs")
+
+# act as an inline evaluator for abs oneliners on the
+# command line or in scripts, a la python, lua, etc.
+# there may be a better way to do this, haven't found it yet
+# ./rabs.abs "[1,2].filter(f(x) { x > 1 })" -> [2]
+self = args()[1]
+script_args = args()[2:]
+
+echo(eval(script_args[0]))

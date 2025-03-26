@@ -1,7 +1,11 @@
 # Zsh Config
 
-My overly complicated z-shell configuration files. 
+Somewhat complicated `zsh` configuration scripts. The overall size of the usable 
+configuration in this repository is actively shrinking. See [Archive](/archive/)
+for a full history of settings, scripts, and dsl experiments which ultimately 
+went unused. 
 
+<<<<<<< HEAD
 > NOTE: The docs below need to be updated
 
 This config was created as a way to understand the inner-workings of zsh without relying on the popular frameworks. I also wanted to take advantage of other shells and programming languages throughout my environment, so you will see references to commands run with python and other languages, as well as functions that use nushell to interact with my system. The customization options in `zsh` create a DSL of sorts that includes string and math objects, as well as some filesystem and database functions.
@@ -74,3 +78,7 @@ Automated updates of [StevenBlack/hosts](https://github.com/StevenBlack/hosts) d
 - [lnks.bash](https://github.com/unforswearing/lnks)
 
 A script for printing / saving Google Chrome urls from the terminal on MacOS. 
+=======
+- See [WORKFLOW.md](/WORKFLOW.md) to understand how this configuration is used.
+- See [LOG.md](/LOG.md) for "rationale".
+>>>>>>> 3c4e5536b9e029343ca620b87bda4fbbbdb81eec

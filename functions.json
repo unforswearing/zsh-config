@@ -1,0 +1,181 @@
+{
+  "functions": {
+    "async": [
+      "({ eval \"$@\"; } &) >/dev/null 2>&1"
+    ],
+    "atom": [
+      "eval \"function ${1}() echo ${1}\""
+    ],
+    "c": [
+      "pbcopy"
+    ],
+    "calc": [
+      "echo \"$*\" | bc -l"
+    ],
+    "cf": [
+      "pbpaste|pbcopy"
+    ],
+    "dirbak": [
+      "cp -r \"${1}\" \"${1}.bak\""
+    ],
+    "dirrest": [
+      "cp -r \"${1}.bak\" \"${1}\" && \\",
+      "rm -rf \"${1}.bak\""
+    ],
+    "eachchar": [
+      "sd \"(^\\s+|\\s+$)\" \"\" | sd \"\" \"\n\""
+    ],
+    "eachword": [
+      "sd \" \" \"\\n\""
+    ],
+    "filebak": [
+      "cp \"${1}\"{,.bak}"
+    ],
+    "filerest": [
+      "cp \"${1}\"{.bak,} && rm \"${1}.bak\""
+    ],
+    "global": [
+      "# use: global number=33",
+      "unsetopt warncreateglobal",
+      "eval \"${@}\"",
+      "setopt warncreateglobal"
+    ],
+    "isstr": [
+      "[[ \"${1}\" =~ [^0-9] ]]"
+    ],
+    "loadf": [
+      "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
+      "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
+      "eval \"$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})\""
+    ],
+    "loadf.list": [
+      "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
+      "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
+      "${ZSH_BIN_DIR}/ruby/functions.rb list-all-functions"
+    ],
+    "nil": [
+      "local name=\"$1\"",
+      "local value=\"$(cat /dev/null)\"",
+      "eval \"function $name() echo $value;\""
+    ],
+    "p": [
+      "pbpaste"
+    ],
+    "please": [
+      "sudo !!"
+    ],
+    "plux": [
+      "chmod +x \"${1}\""
+    ],
+    "reverse": [
+      "perl -e 'print reverse <>'"
+    ],
+    "rm.dsstore": [
+      "find $(pwd) -name '*.DS_Store' -type f -ls -delete"
+    ],
+    "rm.emptydir": [
+      "find $(pwd) -type d -empty -print -delete"
+    ],
+    "rm.emptyfiles": [
+      "find $(pwd) -type f -empty -print -delete"
+    ],
+    "safequote": [
+      "local input=\"$1\"",
+      "local quoted=\"\"",
+      "",
+      "# Escape special characters",
+      "quoted=$(printf '%q' \"$input\")",
+      "# Return the safely quoted string",
+      "echo \"$quoted\""
+    ],
+    "symbol": [
+      "use xxd; echo \"${1:-$RANDOM}\" | xxd -p"
+    ],
+    "timestamp": [
+      "date +'%Y-%m-%d %H:%M:%S'"
+    ],
+    "with": [
+      "# like `use` in `.zshrc`, except one line",
+      "{ command -v \"${1}\" >|/dev/null 2>&1; } >|/dev/null 2>&1 && true || { echo \"${1}\" not found; false; }"
+    ],
+    "checkuse": [
+      "command -v use || echo 'use not available'"
+    ],
+    "red": [
+      "use color; color red \"$@\""
+    ],
+    "green": [
+      "use color",
+      "color green $@"
+    ],
+    "yellow": [
+      "color yellow \"$@\""
+    ],
+    "checkloadf": [
+      "use loadf"
+    ],
+    "rgbtohex": [
+      "for var in \"$@\"; do",
+      "  printf '%x' \"$var\"",
+      "done",
+      "printf '\\n'"
+    ],
+    "hextorgb": [
+      "hex=\"$1\"",
+      "printf '%d %d %d\\n' 0x${hex:0:2} 0x${hex:2:2} 0x${hex:4:2}"
+    ],
+    "mdtohtml": [
+      "pandoc -f markdown -t html \"\""
+    ],
+    "wavtomp3": [
+      "sox \"$1\" -C 256 -r 44.1k \"$2\""
+    ],
+    "mp3towav": [
+      "sox \"$1\" \"$2\""
+    ],
+    "up": [
+      "cd .."
+    ],
+    "generate-tree-index": [
+      "rg --files | tree --fromfile -H ./ >| index.html"
+    ],
+    "generate-tree-map": [
+      "rg --files | tree --fromfile -d --noreport -H ./ | pandoc -f html -t commonmark >| map.md"
+    ],
+    "togglewifi": [
+      "networksetup -setairportpower en1 off",
+      "sleep 3",
+      "networksetup -setairportpower en1 on"
+    ],
+    "browser": [
+      "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
+      "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
+      "\"${ZSH_BIN_DIR}/ruby/browser.rb\""
+    ],
+    "links": [
+      "__util.require osascript > /dev/null 2>&1",
+      "_pull () {",
+      "osascript <<EOT",
+      "tell application \"Google Chrome\"",
+      "set links to get URL of tabs of first window",
+      "return links",
+      "end tell",
+      "EOT",
+      "}",
+      "local count",
+      "count=\"$(",
+      "_pull | grep -i \"$srch\" | sed \"s|^ ||g\" | wc -l",
+      ")\"",
+      "local links",
+      "links=\"$(",
+      "_pull | tr ',' '\\n' | grep -i \"$srch\" | sed \"s|^ ||g\"",
+      ")\"",
+      "if [[ \"$count\" -eq 0 ]]",
+      "then",
+      "echo \"Error: No matching links\"",
+      "else",
+      "echo \"$links\"",
+      "fi"
+    ]
+  }
+}

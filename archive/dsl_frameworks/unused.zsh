@@ -662,7 +662,7 @@ preexec_alt_var_syntax() {
   #   echo "${current}" | awk '{for (i=2; i<=NF;i++) print $i}' | tr ' ' '\n' >>"$HOME/.zsh_args"
   #   # make all vars readonly?
   #  create_typed_function "${current}"
-  typemismatcherror() { echo "type mismatch: $1 is not type $2" }
+  typemismatcherror() { echo "type mismatch: $1 is not type $2" };
   #   # set non function types
   #   # varname : type -> value
   local name

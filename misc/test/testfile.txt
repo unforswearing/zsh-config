@@ -1,0 +1,25 @@
+This is a file to test transclusion using micro editor `textfilter`.
+
+First, we add some text before the transclusion to see if the command modifies the content of the file. These two sentences are probably good enough.
+
+Next we use the section below this line to transclude a section of text from another file. This file is called "testtransclude.txt". Move the cursor to the next empty line and use the ctrl-r in micro to run `textfilter cat testtransclude.txt`
+
+this is some content transcluded from 'testtransclude.txt
+all done.
+
+It worked.
+
+Lets try again with the new `transclude` command:
+
+this is some content transcluded from 'testtransclude.txt
+all done.
+
+it wored again. Hooray.
+
+Lets try something else
+
+/usr/local/bin/bash
+/bin/zsh
+/usr/local/bin/micro
+
+

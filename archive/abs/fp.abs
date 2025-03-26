@@ -1,0 +1,116 @@
+# fp: basic file and dir operations for Abs and Zsh.
+
+color = require("color.abs")
+
+fp = {}
+
+builtins = {
+    "cat": "/bin/cat",
+    "ls": "/bin/ls",
+    "rm": "/bin/rm",
+    "touch": "/usr/bin/touch",
+    "mkdir": "/bin/mkdir",
+    "cp": "/bin/cp",
+}
+
+fp["fexists"] = f(file) { `test -f $file`.ok }
+fp["dexists"] = f(dir) { `test -d $dir`.ok }
+
+fp["cat"] = f(file) {
+    cat = builtins.cat
+    # if var file is not empty and if $fle exists, cat $file
+    if !!file && fp.fexists(file) {
+        `$cat $file`
+    } else {
+        msg = color.red("file '%s' does not exist.")
+        echo(msg, file)
+    }
+}
+
+fp["ls"] = f(dir = pwd()) {
+    ls = builtins.ls
+    # if var dir is not empty and if $dir exists, ls $dir
+    if !!dir && fp.dexists(dir) {
+        `$ls $dir`
+    } else {
+        msg = color.red("dir '%s' does not exist.")
+        echo(msg, dir)
+    }
+}
+
+# only works on files for now
+fp["rm"] = f(item) {
+    rm = builtins.rm
+    if !!item && fp.fexists(item) {
+        `$rm $item`
+    } else {
+        msg = color.red("unable to remove '%s'.")
+        echo(msg, item)
+    }
+}
+
+fp["newfile"] = f(name) {
+    touch = builtins.touch
+    # if var name is not empty, touch $dir
+    if !!name {
+        `$touch $name`
+    } else {
+        msg = color.red("unable to create file '%s'")
+        echo(msg, name)
+    }
+}
+
+fp["newdir"] = f(name) {
+    mkdir = builtins.mkdir
+    # if var name is not empty, mkdir $name
+    if !!name {
+        `$mkdir $name`
+    } else {
+        msg = color.red("unable to make dir '%s'")
+        echo(msg, name)
+    }
+}
+
+# copy
+fp["copyfile"] = f(src, dest) {
+    cp = builtins.cp
+    # if vars src and dest are not empty, cp $src $dest
+    if !!src && !!dest && fp.fexists(src) {
+        `$cp $src $dest`
+    } else {
+        msg = color.red("source file '%s' does not exist.")
+        echo(msg, src)
+    }
+}
+
+# copydir
+fp["copydir"] = f(src, dest) {
+    cp = builtins.cp
+    # if vars src and dest are not empty, cp -r $src $dest
+    if !!src && !!dest && fp.dexists(src) {
+        `$cp -r $src $dest`
+    } else {
+        msg = color.red("source dir '%s' does not exist.")
+        echo(msg, src)
+    }
+}
+
+fp["write"] = f(file, content) {
+    if !!file && !!content {
+        `echo $content > $file`
+    } else {
+        msg = color.red("unable to write file '%s'")
+        echo(msg, file)
+    }
+}
+
+fp["append"] = f(file, content) {
+    if !!file && !!content {
+        `echo $content >> $file`
+    } else {
+        msg = color.red("unable to append to file '%s'")
+        echo(msg, file)
+    }
+}
+
+return fp
