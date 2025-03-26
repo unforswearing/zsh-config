@@ -1,0 +1,15 @@
+// https://github.com/yoav-lavi/melody
+// attempts to match the float pseudotype
+<start>;
+either {
+  option of "-";
+  option of "+";
+}
+
+either {
+  some of <digit>;
+  1 of ".";
+}
+
+some of <digit>;
+<end>;

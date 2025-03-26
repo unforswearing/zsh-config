@@ -1,20 +1,20 @@
-#!/opt/local/bin/zsh
+#!/usr/local/bin/zsh
 source "/Users/unforswearing/zsh-config/bin/stdlib.zsh"
 generate_binfile () {
 	unsetopt no_append_create
 	unsetopt no_clobber
 	local bindir="/Users/unforswearing/zsh-config/src/bin" 
-	path+="$bindir" 
+	typeset PATH="${bindir}:$PATH" 
 	local functionname="${1}" 
 	local functionbody
 	functionbody=$(declare -f "$functionname") 
 	local binfile="${bindir}/${functionname}" 
 	local argitems=("\"" "$" "@" "\"") 
-	puts "#!/opt/local/bin/zsh" > "$binfile"
+	print "#!/usr/local/bin/zsh" > "$binfile"
 	{
-		puts "source "${stdlib}""
-		puts "$functionbody"
-		puts "$functionname "$(puts "$argitems" | sd " " "")""
+		print "source "${stdlib}""
+		print "$functionbody"
+		print "$functionname "$(print "$argitems" | sd " " "")""
 	} >> "$binfile"
 	chmod +x "$binfile"
 	setopt no_append_create

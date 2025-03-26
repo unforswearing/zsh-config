@@ -1,5 +1,16 @@
 # Log 
 
+## Changes, 5/31/2023
+
+Lua is set up to run scripts
+
+instead of Lua for types, use Python. Including:
+
+- typing: https://docs.python.org/3/library/typing.html
+- mypy: https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html#cheat-sheet-py3
+
+with these I do not have to use some weird / outdated / incompatible typed lua dialect like teal (cool, but requires type files and examples are non-existent), or luau (incompatible with MacOS < 10.12), or Terra (systems programming library that calls itself a language built onto Lua), and etc. 
+
 ## Changes, 5/23/2023
 
 Moved contents of bin files to bin/stdlib.zsh, as sourcing loops became annoying.

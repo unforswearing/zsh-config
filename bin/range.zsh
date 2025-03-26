@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # shellcheck disable=2051
-environ "stdlib"
+# environ "stdlib"
 # formatted ranges
 # do not quote - range can be alpha or num
 #  - maybe: range int $1 $2 / range str "$1" "$2"
@@ -9,7 +9,7 @@ environ "stdlib"
 range() { 
   local incrementor="..${3:-1}"
   # shellcheck disable=2051
-  print {"$1".."$2""$incrementor"}
+  printf {"$1".."$2""$incrementor"}
 }
 # a range of integers
 range.int() {
