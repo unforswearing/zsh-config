@@ -75,7 +75,7 @@ module WorkingDir
 end
 
 module HTML
-  @@title = File.split(File.expand_path(WorkingDir::pwd())).pop()
+  @title = File.split(File.expand_path(WorkingDir::pwd())).pop()
   def self.template()
   end
   def self.tag()

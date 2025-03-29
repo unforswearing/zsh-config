@@ -1,6 +1,7 @@
 #!/usr/local/bin/zsh
 
 export GITHUB_API_TOKEN=$(grep '^.*$' "$HOME/.github.token") >|/dev/null 2>&1
+export GITHUB_TOKEN="${GITHUB_API_TOKEN}"
 
 path=(
   $path

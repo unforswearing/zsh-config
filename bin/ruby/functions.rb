@@ -152,7 +152,8 @@ def get_function(key)
       function_parts.append(" #{line}")
     end
     function_parts.append("}")
-    return function_parts.join("\n")
+    function_composed = function_parts.join("\n")
+    return function_composed
   else
     puts "Function '#{key}' doesn\'t exist.".red
     exit 1

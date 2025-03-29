@@ -32,6 +32,11 @@ export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
+## ---------------------------------------------
+# https://github.com/unforswearing/aliaser
+export ALIASER_SOURCE="${ZSH_BIN_DIR}/bash/aliaser.sh"
+source "${ALIASER_SOURCE}"
+## ---------------------------------------------
 {
   ## ---------------------------------------------
   # suffix aliases

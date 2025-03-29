@@ -153,29 +153,23 @@
       "\"${ZSH_BIN_DIR}/ruby/browser.rb\""
     ],
     "links": [
-      "__util.require osascript > /dev/null 2>&1",
-      "_pull () {",
-      "osascript <<EOT",
-      "tell application \"Google Chrome\"",
-      "set links to get URL of tabs of first window",
-      "return links",
-      "end tell",
-      "EOT",
-      "}",
-      "local count",
-      "count=\"$(",
-      "_pull | grep -i \"$srch\" | sed \"s|^ ||g\" | wc -l",
-      ")\"",
-      "local links",
-      "links=\"$(",
-      "_pull | tr ',' '\\n' | grep -i \"$srch\" | sed \"s|^ ||g\"",
-      ")\"",
-      "if [[ \"$count\" -eq 0 ]]",
-      "then",
-      "echo \"Error: No matching links\"",
-      "else",
-      "echo \"$links\"",
-      "fi"
+      "osascript -e \"tell application \\\"Google Chrome\\\" to get URL of tabs of windows\" | \\",
+      "sd \",\" \"\\n\" | awk '{$1=$1}1'"
+    ],
+    "express": [
+      "local name=\"${1}\"",
+      "shift",
+      "local value=\"${@}\"",
+      "eval \"function ${name}() { echo ${value}; }\""
+    ],
+    "fail": [
+      "echo \"failed\" && false"
+    ],
+    "success": [
+      "echo \"success\" && true"
+    ],
+    "is": [
+      "bash \"$ZSH_BIN_DIR/bash/is.sh\" \"$@\""
     ]
   }
 }
