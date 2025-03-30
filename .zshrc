@@ -73,7 +73,7 @@ source "${ALIASER_SOURCE}"
   export VISUAL="$EDITOR"
   export XDG_CACHE_HOME="${HOME}/.cache"
   export XDG_CONFIG_HOME="${HOME}/.config"
-  export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle"
+  export FZF_DEFAULT_OPTS="--border --exact --layout=reverse --no-bold --cycle --height=80"
   export GOPATH="$HOME/go"
   export HOMEBREW_NO_ANALYTICS=1
   export HOMEBREW_NO_AUTO_UPDATE=0
@@ -122,6 +122,7 @@ source "${ALIASER_SOURCE}"
   export ZSH_PLUGIN_DIR="$ZSH_CONFIG_DIR/plugin"
   source "$ZSH_PLUGIN_DIR/fzf-zsh/fzf-zsh-plugin.plugin.zsh"
   source "$ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  source "$ZSH_PLUGIN_DIR/zsh-fzf-history-search/zsh-fzf-history-search.zsh"
   source "$ZSH_PLUGIN_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
   source "$ZSH_PLUGIN_DIR/3v1n0/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh"
 }
