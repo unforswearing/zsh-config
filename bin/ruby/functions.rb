@@ -35,6 +35,7 @@ unless File.exist?(CONFIG_FILE)
   exit 1
 end
 
+# dollar sign == global
 $config = JSON.parse(File.read(CONFIG_FILE))
 
 # f get loadf > tmp.f && \
@@ -165,7 +166,7 @@ def save_config()
   puts "Saved 'functions.json'.".green
 end
 
-# add_item(key->string", value->array)-> void
+# add_item(key->string, value->array)-> void
 # If `key` exists in $config['functions'], it will be overwritten
 def add_item(key, value)
   $config['functions'] ||= {}
