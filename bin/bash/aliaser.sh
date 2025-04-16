@@ -179,3 +179,4 @@ EOF
 
 alias projects_dir='cd "$HOME/projects"'
 alias wakeup='sleep 2 && echo awake'
+alias updatehosts='getpass ".zshrc" | sudo -S /usr/local/opt/ruby/bin/ruby --disable=gems "${ZSH_BIN_DIR}/ruby/hosts.rb"'
