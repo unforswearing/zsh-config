@@ -363,11 +363,13 @@ color
 function command_not_found_handler() {
 #   # eventually add a way to check for an operator
 #   # and just echo the text that follows, eg:
-#   # ':words to echo | sd "to echo" "were echoed" -> "words were echoed"'
+#   # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"'
+  typeset -A ZSH_HIGHLIGHT_REGEXP
+  ZSH_HIGHLIGHT_REGEXP+=('^@.*' fg=green,bold)
   echo "$@" | rb "strarg = ARGF.read
     pipearg = strarg.split('')
     firstchar = pipearg[0]
-    if firstchar == ':'
+    if firstchar == '@'
       pipearg.shift()
       puts pipearg.join()
     else
