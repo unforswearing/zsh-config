@@ -1,0 +1,122 @@
+#!/bin/bash
+
+GIT_EXEC="/usr/local/bin/git"
+
+__h_get_remote() {
+  echo "$(
+    "$GIT_EXEC" remote -v | \
+      awk -F" " '{print $1}' | \
+      head -n 1
+  )"
+}
+
+__h_get_default() {
+  git remote show origin | grep "HEAD branch" | cut -d " " -f 5
+}
+
+# opt: movechanges
+_move_to_last_commit() {
+  "$GIT_EXEC" commit --amend --no-edit --allow-empty "$@"
+}
+
+# opt: undomerge
+_undo_merge() {
+  "$GIT_EXEC" reset --hard ORIG_HEAD
+}
+
+# Updates your fork from upstream master and pushes the updates to your origin fork
+# opt: updatefork
+_update_fork() {
+  "$GIT_EXEC" checkout master
+  "$GIT_EXEC" fetch upstream master
+  "$GIT_EXEC" merge upstream/master
+  "$GIT_EXEC" push origin master
+}
+
+# Rebase your current branch for last n($1) commits
+# Its going to be interactive
+# opt: rebase
+_rebase_to_n() {
+  if [ -z "$1" ]
+      then val=2
+  else
+      val=$1
+  fi
+  "$GIT_EXEC" rebase -i HEAD~"$val"
+}
+
+# Updates your current branch with origin/master even if you have uncommited changes
+# dirty so it will use stash to temporarly store your changes,
+# sync with origin/master and then put your changes back
+# opt: bkchanges
+_stash_and_restore_changes() {
+  "$GIT_EXEC" stash
+  update
+  "$GIT_EXEC" stash pop
+}
+
+# opt: checkmaster
+_check_master() {
+  remote="$(__h_get_remote)"
+  "$GIT_EXEC" fetch "$remote"
+  "$GIT_EXEC" status
+}
+
+_fix_commit() {
+  remote="$(__h_get_remote)"
+
+  echo "Pulling commit from $remote"
+  "$GIT_EXEC" pull "$remote" master
+  echo "run 'git push $remote master' to push commit change to $remote"
+}
+
+_fix_ignore() {
+  "$GIT_EXEC" rm -r --cached .
+}
+
+_fix_stash() {
+  rm .git/refs/stash .git/logs/refs/stash
+}
+
+_remove_local_changes() {
+  "$GIT_EXEC" fetch --all
+  # @todo get remote master or main and use whatever is set
+  "$GIT_EXEC" reset --hard origin/main
+}
+
+_help() {
+  echo "usage: "
+  echo "   git [ checkmaster | movechanges | undolocal | undomerge | "
+  echo "         fixcommit | fixignore | updatefork | rebase | bkchanges ]"
+}
+
+case "${1}" in
+  "check-master"|"-c"|"--check-master")
+    _check_master ;;
+  # ------------------------------------ #
+  "move-changes"|"-m"|"--move-changes")
+    _move_to_last_commit "$@" ;;
+  # ------------------------------------ #
+  "undo-local"|"-l"|"--undo-local")
+    _remove_local_changes ;;
+  # ------------------------------------ #
+  "undo-merge"|"-g"|"--undo-merge")
+    _undo_merge ;;
+  # ------------------------------------ #
+  "fix-commit"|"-f"|"--fix-commit")
+    _fix_commit ;;
+  # ------------------------------------ #
+  "fix-ignore"|"-i"|"--fix-ignore")
+    _fix_ignore ;;
+  # ------------------------------------ #
+  "update-fork"|"-k"|"--update-fork")
+    _update_fork ;;
+  # ------------------------------------ #
+  "rebase"|"-r"|"--rebase")
+    _rebase_to_n "$@" ;;
+  # ------------------------------------ #
+  "backup-changes"|"-b"|"--backup-changes")
+    _stash_and_restore_changes ;;
+  # ------------------------------------ #
+  ""|"help"|"--help"|"-h") _help ;;
+esac

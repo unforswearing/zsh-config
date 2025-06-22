@@ -54,6 +54,7 @@ source "${ALIASER_SOURCE}"
   alias sed='/usr/local/bin/gsed'
   # Etc
   alias ls='\ls -a'
+  # 'edit' is now a function.
   # alias edit='micro' #'nvim'
   alias rm='\rm -i'
   alias cp='\cp -i'
@@ -86,7 +87,7 @@ source "${ALIASER_SOURCE}"
   export SAVEHIST=10000000
   # history -i
   export HISTTIMEFORMAT='%d%%y-%H%M%S'
-  export HISTIGNORE="exit:bg:fg:history:clear:reload:hist"
+  export HISTIGNORE="edit:exit:bg:fg:clear:reload:hist"
   setopt append_history
   setopt cshjunkie_history
   setopt hist_expire_dups_first
@@ -94,6 +95,11 @@ source "${ALIASER_SOURCE}"
   setopt hist_reduce_blanks
   setopt inc_append_history
   setopt share_history
+  setopt HIST_IGNORE_DUPS
+  setopt HIST_IGNORE_ALL_DUPS
+  setopt HIST_IGNORE_SPACE
+  setopt HIST_FIND_NO_DUPS
+  setopt HIST_SAVE_NO_DUPS
 }
 {
   # setopt
@@ -228,7 +234,8 @@ function updatehosts() {
   ')
 
   sudo nu -c "$cmd | save --force /etc/hosts" && \
-  echo "/etc/hosts updated: $(modified /etc/hosts)"
+  echo "/etc/hosts updated: $(modified /etc/hosts)" || \
+  echo "unable to update /etc/hosts."
 }
 function color() {
   local reset="\033[39m"
@@ -277,6 +284,7 @@ function edit() {
     init) "$EDITOR" "$HOME/.config/micro/init.lua" ;;
     zshrc) "$EDITOR" "$ZSH_CONFIG_DIR/.zshrc" ;;
     zshenv) "$EDITOR" "$ZSH_CONFIG_DIR/.zshenv" ;;
+    help) echo "edit [ settings | bindings | init | zshrc | zshenv | <file> ]" ;;
     *) "$EDITOR" "${@}" ;;
   esac
 }
@@ -361,11 +369,9 @@ color
 #   # not sure if the periodic function actually works...
 # }
 function command_not_found_handler() {
-#   # eventually add a way to check for an operator
-#   # and just echo the text that follows, eg:
-#   # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"'
-  typeset -A ZSH_HIGHLIGHT_REGEXP
-  ZSH_HIGHLIGHT_REGEXP+=('^@.*' fg=green,bold)
+  # add a way to check for an operator
+  # and just echo the text that follows, eg:
+  # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"'
   echo "$@" | rb "strarg = ARGF.read
     pipearg = strarg.split('')
     firstchar = pipearg[0]
@@ -431,3 +437,4 @@ autoload bashcompinit
 # eval "$(direnv hook zsh)"
 ## ---------------------------------------------
 # cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"
+# source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

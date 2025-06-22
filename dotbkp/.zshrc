@@ -54,6 +54,7 @@ source "${ALIASER_SOURCE}"
   alias sed='/usr/local/bin/gsed'
   # Etc
   alias ls='\ls -a'
+  # 'edit' is now a function.
   # alias edit='micro' #'nvim'
   alias rm='\rm -i'
   alias cp='\cp -i'
@@ -86,7 +87,7 @@ source "${ALIASER_SOURCE}"
   export SAVEHIST=10000000
   # history -i
   export HISTTIMEFORMAT='%d%%y-%H%M%S'
-  export HISTIGNORE="exit:bg:fg:history:clear:reload:hist"
+  export HISTIGNORE="edit:exit:bg:fg:clear:reload:hist"
   setopt append_history
   setopt cshjunkie_history
   setopt hist_expire_dups_first
@@ -94,6 +95,11 @@ source "${ALIASER_SOURCE}"
   setopt hist_reduce_blanks
   setopt inc_append_history
   setopt share_history
+  setopt HIST_IGNORE_DUPS
+  setopt HIST_IGNORE_ALL_DUPS
+  setopt HIST_IGNORE_SPACE
+  setopt HIST_FIND_NO_DUPS
+  setopt HIST_SAVE_NO_DUPS
 }
 {
   # setopt
@@ -151,9 +157,13 @@ source "${ALIASER_SOURCE}"
 # autoload -Uz run-help
 # function help() { get-help "${@}"; }
 ## ---------------------------------------------
+function lnks() {
+  /Users/unforswearing/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/__Github/lnks-cli/src/main.sh "$@"
+}
 function rb() {
   "/usr/local/opt/ruby/bin/ruby" --disable=gems -e "$@"
 }
+# using 'security *-generic-password' as a simple k/v store
 function addpass() {
   use security
   local key="${1}"; local value="${2}"
@@ -177,6 +187,7 @@ function prev() {
 }
 function s() {
   local arg="$1"
+  # if $arg == "rm" ...
   local dir=$({
     cat "$HOME/.zsh_reload_prev.txt";
     cat "$HOME/.zsh_reload_curr.txt";
@@ -212,6 +223,7 @@ function togglewifi() {
 }
 function updatehosts() {
   use nu; use ruby; use modified;
+  # wild stuff ahead: using ruby to generate a nushell command
   local cmd=$(ruby --disable=gems -e '
     puts [
         ["http", "get", ""].join(" "),
@@ -222,7 +234,8 @@ function updatehosts() {
   ')
 
   sudo nu -c "$cmd | save --force /etc/hosts" && \
-  echo "/etc/hosts updated: $(modified /etc/hosts)"
+  echo "/etc/hosts updated: $(modified /etc/hosts)" || \
+  echo "unable to update /etc/hosts."
 }
 function color() {
   local reset="\033[39m"
@@ -271,6 +284,7 @@ function edit() {
     init) "$EDITOR" "$HOME/.config/micro/init.lua" ;;
     zshrc) "$EDITOR" "$ZSH_CONFIG_DIR/.zshrc" ;;
     zshenv) "$EDITOR" "$ZSH_CONFIG_DIR/.zshenv" ;;
+    help) echo "edit [ settings | bindings | init | zshrc | zshenv | <file> ]" ;;
     *) "$EDITOR" "${@}" ;;
   esac
 }
@@ -328,7 +342,7 @@ function modified() { use rb && rb "puts File.mtime(\"${1}\")"; }
 function sysinfo() {
   # libutil:argtest "$1"
   use nu; use color
-  case $1 in
+  case "$1" in
   host) nu -c "sys|get host" ;;
   cpu) nu -c "sys|get cpu" ;;
   disks) nu -c "sys|get disks" ;;
@@ -350,12 +364,24 @@ loadf plux; loadf c; loadf p; loadf cf
 color
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
-## the following are not used:
-# - function command_not_found_handler() {;}
+#
 # function periodic() {
-  # Not sure the periodic function ever worked, really.
-  # Now running externally: hosts.rb (in Lingon.app)
+#   # not sure if the periodic function actually works...
 # }
+function command_not_found_handler() {
+  # add a way to check for an operator
+  # and just echo the text that follows, eg:
+  # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"'
+  echo "$@" | rb "strarg = ARGF.read
+    pipearg = strarg.split('')
+    firstchar = pipearg[0]
+    if firstchar == '@'
+      pipearg.shift()
+      puts pipearg.join()
+    else
+      puts \"zsh: command not found: #{strarg}\"
+    end"
+}
 function preexec() {
   unsetopt warncreateglobal
   echo $CURR >>| "$HOME/.zsh_reload_curr.txt"
@@ -411,3 +437,4 @@ autoload bashcompinit
 # eval "$(direnv hook zsh)"
 ## ---------------------------------------------
 # cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"
+# source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

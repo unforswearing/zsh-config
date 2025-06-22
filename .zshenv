@@ -25,7 +25,6 @@ path=(
   "/Applications/Sublime Text.app/Contents/SharedSupport/bin"
   "/Users/unforswearing/bin"
   "/Users/unforswearing/go/bin"
-  # "/Users/unforswearing/zsh-config/bin"
   "/Users/unforswearing/.cargo/bin"
   "/Users/unforswearing/.local/bin"
   "/Users/unforswearing/.deno/bin"
@@ -33,6 +32,7 @@ path=(
   "/Users/unforswearing/.bun/bin"
   "/Users/unforswearing/.iterm2/bin"
   "/Users/unforswearing/.fzf/bin"
+  "/Users/unforswearing/zsh-config/bin/bash"
 )
 
 eval $(luarocks path)
