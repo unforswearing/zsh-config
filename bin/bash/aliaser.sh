@@ -9,6 +9,7 @@
 # shellcheck enable=require-variable-braces
 
 # aliaser is a self-editing alias management tool.
+##:: aliaser-version=v2.1.1
 function aliaser() {
   command -v gsed >|/dev/null 2>&1 || {
     echo "'gsed' not found. aliaser on MacOS requires 'gsed'."
@@ -70,8 +71,8 @@ EOF
   aliaser_self="${ALIASER_SOURCE}"
 
   _list() {
-   # shellcheck disable=SC2016
-   gsed -n '/\#\#\:\:\~ Aliases \~\:\:\#\#/,$p' "${aliaser_self}"
+    # shellcheck disable=SC2016
+    gsed -n '/\#\#\:\:\~ Aliases \~\:\:\#\#/,$p' "${aliaser_self}"
   }
   # _encoded_header() {
   #  echo "IyM6On4gQWxpYXNlcyB+OjojIw=="
@@ -116,9 +117,9 @@ EOF
     # aliaser lastcmd "name"
     prev=$(
       history |
-      /usr/bin/tail -n 1 |
-      /usr/bin/awk '{first=$1; $1=""; print $0;}' |
-      /usr/bin/awk '{$1=$1}1'
+        /usr/bin/tail -n 1 |
+        /usr/bin/awk '{first=$1; $1=""; print $0;}' |
+        /usr/bin/awk '{$1=$1}1'
     )
     composed_alias="alias ${2}='${prev}'"
     eval "${composed_alias}"
@@ -136,34 +137,39 @@ EOF
       return
     }
     printf '%s\n' "${matches}" |
-      grep -v "$(_decoded_header)" |
+      /usr/bin/grep -v "$(_decoded_header)" |
       fzf --disabled --select-1 --exit-0 |
-      awk -F= '{print $2}' |
-      sd "\'" ""
-    ;;
-  debug)
-    echo "[DEBUG]"
-    debug_cmd_types() {
-      type -a gsed
-      type -a awk
-      type -a cat
-      type -a rm
-      type -a tail
-      type -a fzf
-    }
-    debug_cmd_types
+      /usr/bin/awk -F= '{print $2}' |
+      gsed -E "s/^'//g;s/'$//g"
     ;;
   clearall)
     header="$(_decoded_header)"
     # shellcheck disable=SC2016
     gsed -i '/'"${header}"'/,$d' "${aliaser_self}"
-    echo "${header}" >> "${aliaser_self}"
+    echo "${header}" >>"${aliaser_self}"
     echo "All aliases have been deleted."
-  ;;
+    ;;
+  debug)
+    echo "[DEBUG]"
+    debug_cmd_types() {
+      type -a cat
+      type -a awk
+      type -a grep
+      type -a rm
+      type -a tail
+      type -a fzf
+      type -a gsed
+    }
+    debug_cmd_types
+    ;;
+  "")
+    echo "Error: Empty argument. Run 'aliaser help' for assistance."
+    ;;
   *)
+
     # aliaser "zsh_config='cd ~/zsh-config'"
     eval "alias ${*}"
-    echo "alias ${*}" >> "${aliaser_self}"
+    echo "alias ${*}" >>"${aliaser_self}"
     echo "Added:"
     echo "  > alias ${*}"
     echo
@@ -176,7 +182,4 @@ EOF
 ## ---------------
 
 ##::~ Aliases ~::##
-
-alias projects_dir='cd "$HOME/projects"'
-alias wakeup='sleep 2 && echo awake'
-alias updatehosts='getpass ".zshrc" | sudo -S /usr/local/opt/ruby/bin/ruby --disable=gems "${ZSH_BIN_DIR}/ruby/hosts.rb"'
+alias sayhi='echo hello'

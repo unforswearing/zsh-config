@@ -65,11 +65,7 @@ def runShellcheck(filename)
   File.write(tmp_file, retrieved_function)
 
   cmdroot = "/usr/local/bin/shellcheck"
-  options = [
-    "--severity=warning",
-    "--exclude=2148",
-    "--format=json"
-  ]
+  options = %w[--severity=warning --exclude=2148 --format=json]
   pipe = [ "|", "jq '.[]'" ]
 
   composed = proc { |generated_cmd|

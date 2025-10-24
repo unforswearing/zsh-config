@@ -102,14 +102,16 @@
       "command -v use || echo 'use not available'"
     ],
     "red": [
-      "use color; color red \"$@\""
+      "print -P '%F{red}$@'"
     ],
     "green": [
-      "use color",
-      "color green $@"
+      "print -P '%F{green}$@'"
     ],
     "yellow": [
-      "color yellow \"$@\""
+      "print -P '%F{yellow}$@'"
+    ],
+    "blue": [
+      "print -P '%F{blue}$@'"
     ],
     "checkloadf": [
       "use loadf"
@@ -170,6 +172,9 @@
     ],
     "is": [
       "bash \"$ZSH_BIN_DIR/bash/is.sh\" \"$@\""
+    ],
+    "finder": [
+      "open \"${1}\""
     ]
   }
 }

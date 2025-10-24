@@ -5,15 +5,15 @@
 #   - $ZDOTDIR is set to $HOME/zsh-config
 # `~zconf/.zshenv`:
 #   - edit $PATH in `~zconf/.zshenv`
+#   - add API keys to `~zconf/.zshenv`
 # #################################################################
-# return if the shell is not interactive (the commands would have no use)
-# trap "exec zsh" USR1 && [[ $- != *i* ]] && [ ! -t 0 ] && return
 ## ---------------------------------------------
 setopt allexport
 unsetopt monitor
 unsetopt warn_create_global
 ## ---------------------------------------------
 eval "$(starship init zsh)"
+## ---------------------------------------------
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ## ---------------------------------------------
@@ -36,6 +36,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 # https://github.com/unforswearing/aliaser
 export ALIASER_SOURCE="${ZSH_BIN_DIR}/bash/aliaser.sh"
 source "${ALIASER_SOURCE}"
+# ---
+source "$ZSH_CONFIG_DIR/pass.zsh"
+source "$ZSH_CONFIG_DIR/debug.zsh"
 ## ---------------------------------------------
 {
   ## ---------------------------------------------
@@ -50,6 +53,7 @@ source "${ALIASER_SOURCE}"
   alias irb='/usr/local/opt/ruby/bin/irb'
   alias rake='/usr/local/opt/ruby/bin/rake'
   alias ruby='/usr/local/opt/ruby/bin/ruby'
+  alias python='/usr/local/bin/python3'
   alias pip='/usr/local/bin/pip3'
   alias sed='/usr/local/bin/gsed'
   # Etc
@@ -157,33 +161,24 @@ source "${ALIASER_SOURCE}"
 # autoload -Uz run-help
 # function help() { get-help "${@}"; }
 ## ---------------------------------------------
-function lnks() {
-  /Users/unforswearing/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/__Github/lnks-cli/src/main.sh "$@"
-}
+#  FUNCTIONS
+## ---------------------------------------------
+# rb "puts 'hello from ruby'"
 function rb() {
   "/usr/local/opt/ruby/bin/ruby" --disable=gems -e "$@"
 }
-# using 'security *-generic-password' as a simple k/v store
-function addpass() {
-  use security
-  local key="${1}"; local value="${2}"
-  security add-generic-password -a "$(whoami)" -s "${key}" -w "${value}"
-}
-function getpass() {
-  use security
-  local key="${1}"
-  security find-generic-password -w -s "${key}" -a "$(whoami)"
-}
-function rmpass() {
-  use security
-  local key="${1}"
-  security delete-generic-password -s "${key}" -a "$(whoami)"
+# py "print('hello from python')"
+function py() {
+  "/usr/local/bin/python3" -c "$@"
 }
 function reload() {
   source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
 }
 function prev() {
   cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
+}
+function cpl() {
+  copy "$LAST"
 }
 function s() {
   local arg="$1"
@@ -195,87 +190,19 @@ function s() {
   );
   cd "${dir}" || cd "$PWD"
 }
+function copy() {
+  cat "${1}" >|/dev/null 2>&1 || echo "${@}" | pbcopy
+}
 function purj() {
   use getpass
   getpass ".zshrc" | sudo -S purge >|/dev/null 2>&1
 }
-function debug() {
-  case "${1}" in
-  "t" | "true")
-    # sed -i 's/local DEBUG=false/local DEBUG=true/' ~/.zshrc
-    export DEBUG=true
-    export CLEAR=
-    set -x
-    ;;
-  "f" | "false")
-    # sed -i 's/local DEBUG=true/local DEBUG=false/' ~/.zshrc
-    export DEBUG=false
-    export CLEAR="clear"
-    set +x
-    ;;
-  *) print "${DEBUG}" ;;
-  esac
-}
-function togglewifi() {
-  networksetup -setairportpower en1 off
-  sleep 3
-  networksetup -setairportpower en1 on
-}
 function updatehosts() {
-  use nu; use ruby; use modified;
-  # wild stuff ahead: using ruby to generate a nushell command
-  local cmd=$(ruby --disable=gems -e '
-    puts [
-        ["http", "get", ""].join(" "),
-        "https://raw.githubusercontent.com/",
-        "StevenBlack/hosts/master/alternates/",
-        "fakenews-gambling/hosts"
-    ].join("")
-  ')
-
-  sudo nu -c "$cmd | save --force /etc/hosts" && \
-  echo "/etc/hosts updated: $(modified /etc/hosts)" || \
-  echo "unable to update /etc/hosts."
+  ruby ${ZSH_BIN_DIR}/ruby/hosts.rb
 }
-function color() {
-  local reset="\033[39m"
-
-  function red() {
-    local red="\033[31m"
-    print "${red}$@${reset}"
-  }
-  function green() {
-    local green="\033[32m"
-    print "${green}$@${reset}"
-  }
-  function yellow() {
-    local yellow="\033[33m"
-    print "${yellow}$@${reset}"
-  }
-  function blue() {
-    local blue="\033[34m"
-    print "${blue}$@${reset}"
-  }
-  function black() {
-    local black="\033[30m"
-    print "${black}$@${reset}"
-  }
-  function white() {
-    local white="\033[37m"
-    print "${white}$@${reset}"
-  }
-  function magenta() {
-    local magenta="\033[35m"
-    print "${magenta}$@${reset}"
-  }
-  function cyan() {
-    local cyan="\033[36m"
-    print "${cyan}$@${reset}"
-  }
-  local opt="$1"
-  case "$opt" in
-    help|--help|-h) print "colors <red|green|yellow|blue|black|magenta|cyan> string" ;;
-  esac
+function clearhosts() {
+  use nu;
+  sudo nu -c "echo 'https://0.0.0.0' | save --force /etc/hosts"
 }
 function edit() {
   case "${1}" in
@@ -301,36 +228,22 @@ function edit() {
 function f() {
   "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
 }
-# load external functions from `functions.json`
-#   using `bin/ruby/functions.rb`
+# load external functions from `functions.json` using `bin/ruby/functions.rb`
 function loadf() {
   if [[ "$1" == "unset" ]]; then unset -f "${2}"; return $?; fi;
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
-# example:
-#   use ls (check if command `ls` is available in environment)
-#   use zyx.null (checking for a command that does not exist throws error)
+# if function "name" is currently in the zsh env, serialize and add to functions.json
+function addf() {
+  f serialize-and-add "$(whence -f ${1})"
+}
 function use() {
   test $(command -v "$1")
-}
-function cpl() {
-  use "pee"
-
-  OIFS="$IFS"
-  IFS=$'\n\t'
-
-  local comm=$(
-    history | tail -n 1 | awk '{first=$1; $1=""; print $0;}'
-  )
-
-  echo "${comm}" | pee "pbcopy" "cat - | sd '^\s+' ''"
-
-  IFS="$OIFS"
 }
 function opts() {
   setopt ksh_option_print
   if [[ -z ${options[$1]} ]]; then
-    # libutil:error.notfound "$1"
+    red "option not found: $1"
   else
     local optvalue=${options[$1]}
     print $optvalue
@@ -340,8 +253,7 @@ function finder() { open "${1}"; }
 # function modified() { use gstat && gstat -c '%y' "${1}"; }
 function modified() { use rb && rb "puts File.mtime(\"${1}\")"; }
 function sysinfo() {
-  # libutil:argtest "$1"
-  use nu; use color
+  use nu;
   case "$1" in
   host) nu -c "sys|get host" ;;
   cpu) nu -c "sys|get cpu" ;;
@@ -355,43 +267,44 @@ function sysinfo() {
     ;;
   temp | temperature) nu -c "sys|get temp" ;;
   net | io) nu -c "sys|get net" ;;
-  *) color red "'${1}' is not a valid option" ;;
+  *) red "'${1}' is not a valid option" ;;
   esac
 }
 function memory() { sysinfo memory; }
 ## ---------------------------------------------
-loadf plux; loadf c; loadf p; loadf cf
-color
+loadf plux; loadf c; loadf p; loadf cf; loadf red; loadf green; loadf yellow
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
-#
+# ---
 # function periodic() {
 #   # not sure if the periodic function actually works...
 # }
 function command_not_found_handler() {
-  # add a way to check for an operator
-  # and just echo the text that follows, eg:
+  # The ruby commands below will allow "@" to act as
+  # an alias for "echo" to print the text that follows, eg:
   # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"'
+  # Note: this will print variable values but will not execute commands.
   echo "$@" | rb "strarg = ARGF.read
     pipearg = strarg.split('')
     firstchar = pipearg[0]
     if firstchar == '@'
       pipearg.shift()
-      puts pipearg.join()
+      puts pipearg.join().strip
     else
-      puts \"zsh: command not found: #{strarg}\"
+      puts \"[zsh] command not found: #{strarg}\"
     end"
 }
 function preexec() {
   unsetopt warncreateglobal
   echo $CURR >>| "$HOME/.zsh_reload_curr.txt"
   export CURR="$(pwd)"
-# the $1 arg holds the full text entered at the command line
+  # the $1 arg holds the full text entered at the command line
 }
 function chpwd() {
-  # use like direnv
-  # when entering ~/zsh-config, load these:
+  # eventually use like direnv and load folder-specific shell functions / commands
+  # todo: load any utilities that will help with creating my zsh config below
   if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
+    # load utilities here...
     echo "configuration"
   fi
   echo $PREV >>| "$HOME/.zsh_reload_prev.txt"
@@ -399,8 +312,6 @@ function chpwd() {
 }
 function precmd() {
   unsetopt warncreateglobal
-  ({ ; }&) >|/dev/null 2>&1
-  # --------------------------------------
   local last="$(
     history |
       gtail -n 1 |
@@ -414,7 +325,7 @@ function precmd() {
   # backup .zshrc and .zshenv
   # zsh-config/.zshrc is the main version of the file
   \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
-  \cp "${ZSH_BIN_DIR}/ruby/hosts.rb" "${ZSH_CONFIG_DIR}/dotbkp";
+  \cp "${ZSH_CONFIG_DIR}/dotbkp";
   \cp "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/dotbkp";
   # source zsh-config/.zshrc from $HOME/.zshrc
   echo "source $0" >| "${HOME}/.zshrc";
@@ -423,7 +334,7 @@ function precmd() {
 # cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 cd "$PREV" || cd "$HOME"
 ## ---------------------------------------------
-# uses the `debug` function, see utils.zsh
+# DEBUG and CLEAR can be set by using the `debug` function, see debug.zsh
 # do not clear output if debug is true, otherwise CLEAR=clear
 test $DEBUG || eval $CLEAR
 # if neither DEBUG nor CLEAR is set, set CLEAR=clear
@@ -437,4 +348,3 @@ autoload bashcompinit
 # eval "$(direnv hook zsh)"
 ## ---------------------------------------------
 # cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"
-# source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
