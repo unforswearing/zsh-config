@@ -27,7 +27,7 @@ User-created functions are stored in `functions.json` and use `bin/ruby/function
 
 ### `.zshenv`
 
-API keys and $PATH environment variable are stored in `.zshenv`. This file is generally complete as-is, and is rarely managed.
+API keys and `$PATH` environment variable are stored in `.zshenv`. This file is generally complete as-is, and is rarely managed.
 
 ## History
 
