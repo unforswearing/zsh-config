@@ -185,6 +185,81 @@
       "local optvalue=${options[$1]}",
       "print $optvalue",
       "fi"
+    ],
+    "em": [
+      "echo -e \"\\e[3m${@}\\e[0m\""
+    ],
+    "bkpconfig": [
+      "(",
+      "{",
+      "\\cp \"${ZSH_CONFIG_DIR}/.zshrc\" \"${ZSH_CONFIG_DIR}/dotbkp\"",
+      "\\cp \"${HOME}/.zshenv\" \"${ZSH_CONFIG_DIR}/dotbkp\"",
+      "echo \"source $0\" >| \"${HOME}/.zshrc\"",
+      "} &",
+      ") >| /dev/null 2>&1"
+    ],
+    "use": [
+      "test $(command -v \"$1\")"
+    ],
+    "rb": [
+      "\"/usr/local/opt/ruby/bin/ruby\" --disable=gems -e \"$@\""
+    ],
+    "py": [
+      "\"/usr/local/bin/python3\" -c \"$@\""
+    ],
+    "reload": [
+      "source \"${ZSH_CONFIG_DIR}/.zshrc\" || exec zsh"
+    ],
+    "prev": [
+      "cd \"${PREV}\" || cd < \"${HOME}/.zsh_reload.txt\""
+    ],
+    "cpl": [
+      "copy \"$LAST\""
+    ],
+    "s": [
+      "local arg=\"$1\"",
+      "local dir=$({",
+      "cat \"$HOME/.zsh_reload_prev.txt\";",
+      "cat \"$HOME/.zsh_reload_curr.txt\";",
+      "} | sort -u | fzf --wrap --query=\"$arg\" --select-1",
+      ")",
+      "cd \"${dir}\" || cd \"$PWD\""
+    ],
+    "copy": [
+      "if [ -z \"$1\" ]",
+      "then",
+      "echo \"copy <file|variable|text>\"",
+      "fi",
+      "if [ -f \"$1\" ]",
+      "then",
+      "cat \"$1\" | pbcopy",
+      "echo \"copied file: $1\"",
+      "fi",
+      "if [ -n \"${(P)1}\" ]",
+      "then",
+      "echo \"${(P)1}\" | pbcopy",
+      "echo \"copied variable: $1\"",
+      "fi",
+      "echo \"$1\" | pbcopy"
+    ],
+    "modified": [
+      "rb \"puts File.mtime(\\\"${1}\\\")\""
+    ],
+    "memory": [
+      "nu -c \"{",
+      "free: (sys|get mem|get free),",
+      "used: (sys|get mem|get used),",
+      "total: (sys|get mem|get total)",
+      "}\""
+    ],
+    "purj": [
+      "security find-generic-password -w -s \".zshrc\" -a \"$(whoami)\" | sudo -S purge >| /dev/null 2>&1"
+    ],
+    "updatehosts": [
+      "/usr/local/opt/ruby/bin/ruby ${ZSH_BIN_DIR}/ruby/hosts.rb"
+    ],
+    "clearhosts": [
+      "sudo nu -c \"echo 'https://0.0.0.0' | save --force /etc/hosts\""
     ]
   }
 }

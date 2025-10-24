@@ -156,70 +156,6 @@ source "$ZSH_CONFIG_DIR/sysinfo.zsh"
 ## ---------------------------------------------
 #  FUNCTIONS
 ## ---------------------------------------------
-# rb "puts 'hello from ruby'"
-function rb() {
-  "/usr/local/opt/ruby/bin/ruby" --disable=gems -e "$@"
-}
-# py "print('hello from python')"
-function py() {
-  "/usr/local/bin/python3" -c "$@"
-}
-function reload() {
-  source "${ZSH_CONFIG_DIR}/.zshrc" || exec zsh
-}
-function prev() {
-  cd "${PREV}" || cd < "${HOME}/.zsh_reload.txt"
-}
-function cpl() {
-  copy "$LAST"
-}
-function s() {
-  local arg="$1"
-  # if $arg == "rm" ...
-  local dir=$({
-    cat "$HOME/.zsh_reload_prev.txt";
-    cat "$HOME/.zsh_reload_curr.txt";
-    } | sort -u | fzf --wrap --query="$arg" --select-1
-  );
-  cd "${dir}" || cd "$PWD"
-}
-function copy() {
-  if [ -z "$1" ]; then
-      echo "copy <file|variable|text>"
-  fi
-  if [ -f "$1" ]; then
-    cat "$1" | pbcopy
-    echo "copied file: $1"
-  fi
-  # check if arg is a variable (testing parameter expansion)
-  if [ -n "${(P)1}" ]; then
-    echo "${(P)1}" | pbcopy
-    echo "copied variable: $1"
-  fi
-  # fall through case - argument is probably a string
-  echo "$1" | pbcopy
-}
-function purj() {
-  security find-generic-password -w -s ".zshrc" -a "$(whoami)" | \
-    sudo -S purge >|/dev/null 2>&1
-}
-function updatehosts() {
-  ruby ${ZSH_BIN_DIR}/ruby/hosts.rb
-}
-function clearhosts() {
-  sudo nu -c "echo 'https://0.0.0.0' | save --force /etc/hosts"
-}
-function edit() {
-  case "${1}" in
-    settings) "$EDITOR" "$HOME/.config/micro/settings.json" ;;
-    bindings) "$EDITOR" "$HOME/.config/micro/bindings.json" ;;
-    init) "$EDITOR" "$HOME/.config/micro/init.lua" ;;
-    zshrc) "$EDITOR" "$ZSH_CONFIG_DIR/.zshrc" ;;
-    zshenv) "$EDITOR" "$ZSH_CONFIG_DIR/.zshenv" ;;
-    help) echo "edit [ settings | bindings | init | zshrc | zshenv | <file> ]" ;;
-    *) "$EDITOR" "${@}" ;;
-  esac
-}
 # manage the functions.json file using bin/ruby/functions.rb
 # ---
 # f add <name> <"cmd1" "cmd2" "cmd3 | cmd4" ...>
@@ -243,25 +179,39 @@ function loadf() {
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
 function import() { loadf "$@" ; }
-function use() {
-  test $(command -v "$1")
-}
-# function modified() { use gstat && gstat -c '%y' "${1}"; }
-function modified() { rb "puts File.mtime(\"${1}\")"; }
-function memory() {
-  nu -c "{
-    free: (sys|get mem|get free),
-    used: (sys|get mem|get used),
-    total: (sys|get mem|get total)
-  }"
-}
-## ---------------------------------------------
-loadf plux; loadf c; loadf p; loadf cf; loadf red; loadf green; loadf yellow
+# ---
+# Load functions from `$ZSH_CONFIG_DIR/functions.json`
+(function {
+  loadf c; # alias for pbcopy
+  loadf cf; # clear extraneous formatting on clipboard text
+  loadf clearhosts; # remove all entries from /etc/hosts
+  loadf copy; # copy var, file contents, or text
+  loadf cpl; # copy the last command to the clipbaord
+  loadf edit; # edit config files or <filename>
+  loadf green; # print green text
+  loadf memory; # display current memory stats
+  loadf modified; # show when <file> was last modified
+  loadf p; # alias for pbpaste
+  loadf plux; # alias for chmod +x <file>
+  loadf prev; # navigate to the previous directory
+  loadf purj; # purge system memory
+  loadf py; # run a python command: py "print('hello from python')"
+  loadf rb; # run a ruby command: rb "puts 'hello from ruby'"
+  loadf red; # print red text
+  loadf reload; # reload the zsh environment to apply changes
+  loadf s; # search and navigate to recent directories
+  loadf updatehosts; # update /etc/hosts with StevenBlack/hosts
+  loadf use; # alias for command -v <cmd_name>
+  loadf yellow; # print yellow text
+} >|/dev/null 2>&1) &
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 # ---
 # function periodic() {
-#   # not sure if the periodic function actually works...
+#  # not sure if the periodic function actually works...
+# }
+# function preexec() {
+#  # the $1 arg holds the full text entered at the command line
 # }
 function command_not_found_handler() {
   # The ruby commands below will allow "@" to act as
@@ -278,9 +228,6 @@ function command_not_found_handler() {
       puts \"[zsh] command not found: #{strarg}\"
     end"
 }
-function preexec() {
-  # the $1 arg holds the full text entered at the command line
-}
 function chpwd() {
   # eventually use like direnv and load folder-specific shell functions / commands
   # todo: load any utilities that will help with creating my zsh config below
@@ -290,24 +237,12 @@ function chpwd() {
   fi
 }
 function precmd() {
-  unsetopt warncreateglobal
+  unsetopt warn_create_global
   local last="$(
-    history |
-      gtail -n 1 |
-      awk '{first=$1; $1=""; print $0;}' |
-      sed 's/\"//g'
+    history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}' | sed 's/\"//g'
   )"
   export LAST="${last}"
 }
-## ---------------------------------------------
-({
-  # backup .zshrc and .zshenv
-  # zsh-config/.zshrc is the main version of the file
-  \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
-  \cp "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/dotbkp";
-  # source zsh-config/.zshrc from $HOME/.zshrc
-  echo "source $0" >| "${HOME}/.zshrc";
-}&) >|/dev/null 2>&1
 ## ---------------------------------------------
 # cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
 cd "$PREV" || cd "$HOME"
@@ -325,4 +260,5 @@ autoload compinit
 autoload bashcompinit
 # eval "$(direnv hook zsh)"
 ## ---------------------------------------------
-# cat "${0}" | /usr/bin/base64 >| "${ZSH_CONFIG_DIR}/.zshrc.b64"
+# Backup .zshrc and .zshenv to $ZSH_CONFIG_DIR/dotbkp
+loadf bkpconfig && bkpconfig
