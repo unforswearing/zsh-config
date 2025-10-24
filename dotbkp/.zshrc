@@ -37,8 +37,9 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 export ALIASER_SOURCE="${ZSH_BIN_DIR}/bash/aliaser.sh"
 source "${ALIASER_SOURCE}"
 # ---
-source "$ZSH_CONFIG_DIR/pass.zsh"
 source "$ZSH_CONFIG_DIR/debug.zsh"
+source "$ZSH_CONFIG_DIR/pass.zsh"
+source "$ZSH_CONFIG_DIR/sysinfo.zsh"
 ## ---------------------------------------------
 {
   ## ---------------------------------------------
@@ -48,7 +49,6 @@ source "$ZSH_CONFIG_DIR/debug.zsh"
   # -g == global alias. global as in expands anywhere on the current line
   ## ---------------------------------------------
   # standard aliases
-  # ---
   # Languages
   alias irb='/usr/local/opt/ruby/bin/irb'
   alias rake='/usr/local/opt/ruby/bin/rake'
@@ -58,8 +58,6 @@ source "$ZSH_CONFIG_DIR/debug.zsh"
   alias sed='/usr/local/bin/gsed'
   # Etc
   alias ls='\ls -a'
-  # 'edit' is now a function.
-  # alias edit='micro' #'nvim'
   alias rm='\rm -i'
   alias cp='\cp -i'
 }
@@ -156,11 +154,6 @@ source "$ZSH_CONFIG_DIR/debug.zsh"
   zstyle ':completion:*' verbose true
 }
 ## ---------------------------------------------
-# run-help / help
-# (($ + aliases[run - help])) && unalias run-help >/dev/null 2>&1
-# autoload -Uz run-help
-# function help() { get-help "${@}"; }
-## ---------------------------------------------
 #  FUNCTIONS
 ## ---------------------------------------------
 # rb "puts 'hello from ruby'"
@@ -191,17 +184,29 @@ function s() {
   cd "${dir}" || cd "$PWD"
 }
 function copy() {
-  cat "${1}" >|/dev/null 2>&1 || echo "${@}" | pbcopy
+  if [ -z "$1" ]; then
+      echo "copy <file|variable|text>"
+  fi
+  if [ -f "$1" ]; then
+    cat "$1" | pbcopy
+    echo "copied file: $1"
+  fi
+  # check if arg is a variable (testing parameter expansion)
+  if [ -n "${(P)1}" ]; then
+    echo "${(P)1}" | pbcopy
+    echo "copied variable: $1"
+  fi
+  # fall through case - argument is probably a string
+  echo "$1" | pbcopy
 }
 function purj() {
-  use getpass
-  getpass ".zshrc" | sudo -S purge >|/dev/null 2>&1
+  security find-generic-password -w -s ".zshrc" -a "$(whoami)" | \
+    sudo -S purge >|/dev/null 2>&1
 }
 function updatehosts() {
   ruby ${ZSH_BIN_DIR}/ruby/hosts.rb
 }
 function clearhosts() {
-  use nu;
   sudo nu -c "echo 'https://0.0.0.0' | save --force /etc/hosts"
 }
 function edit() {
@@ -228,49 +233,28 @@ function edit() {
 function f() {
   "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
 }
+# if function "name" is currently in the zsh env, serialize and add to functions.json
+function addf() {
+  f serialize-and-add "$(whence -f ${1})"
+}
 # load external functions from `functions.json` using `bin/ruby/functions.rb`
 function loadf() {
   if [[ "$1" == "unset" ]]; then unset -f "${2}"; return $?; fi;
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
-# if function "name" is currently in the zsh env, serialize and add to functions.json
-function addf() {
-  f serialize-and-add "$(whence -f ${1})"
-}
+function import() { loadf "$@" ; }
 function use() {
   test $(command -v "$1")
 }
-function opts() {
-  setopt ksh_option_print
-  if [[ -z ${options[$1]} ]]; then
-    red "option not found: $1"
-  else
-    local optvalue=${options[$1]}
-    print $optvalue
-  fi
-}
-function finder() { open "${1}"; }
 # function modified() { use gstat && gstat -c '%y' "${1}"; }
-function modified() { use rb && rb "puts File.mtime(\"${1}\")"; }
-function sysinfo() {
-  use nu;
-  case "$1" in
-  host) nu -c "sys|get host" ;;
-  cpu) nu -c "sys|get cpu" ;;
-  disks) nu -c "sys|get disks" ;;
-  mem | memory)
-    nu -c "{
-        free: (sys|get mem|get free),
-        used: (sys|get mem|get used),
-        total: (sys|get mem|get total)
-      }"
-    ;;
-  temp | temperature) nu -c "sys|get temp" ;;
-  net | io) nu -c "sys|get net" ;;
-  *) red "'${1}' is not a valid option" ;;
-  esac
+function modified() { rb "puts File.mtime(\"${1}\")"; }
+function memory() {
+  nu -c "{
+    free: (sys|get mem|get free),
+    used: (sys|get mem|get used),
+    total: (sys|get mem|get total)
+  }"
 }
-function memory() { sysinfo memory; }
 ## ---------------------------------------------
 loadf plux; loadf c; loadf p; loadf cf; loadf red; loadf green; loadf yellow
 ## ---------------------------------------------
@@ -295,9 +279,6 @@ function command_not_found_handler() {
     end"
 }
 function preexec() {
-  unsetopt warncreateglobal
-  echo $CURR >>| "$HOME/.zsh_reload_curr.txt"
-  export CURR="$(pwd)"
   # the $1 arg holds the full text entered at the command line
 }
 function chpwd() {
@@ -307,8 +288,6 @@ function chpwd() {
     # load utilities here...
     echo "configuration"
   fi
-  echo $PREV >>| "$HOME/.zsh_reload_prev.txt"
-  export PREV="$CURR"
 }
 function precmd() {
   unsetopt warncreateglobal
@@ -325,7 +304,6 @@ function precmd() {
   # backup .zshrc and .zshenv
   # zsh-config/.zshrc is the main version of the file
   \cp "${ZSH_CONFIG_DIR}/.zshrc" "${ZSH_CONFIG_DIR}/dotbkp";
-  \cp "${ZSH_CONFIG_DIR}/dotbkp";
   \cp "${HOME}/.zshenv" "${ZSH_CONFIG_DIR}/dotbkp";
   # source zsh-config/.zshrc from $HOME/.zshrc
   echo "source $0" >| "${HOME}/.zshrc";

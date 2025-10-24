@@ -175,6 +175,16 @@
     ],
     "finder": [
       "open \"${1}\""
+    ],
+    "opts": [
+      "setopt ksh_option_print",
+      "if [[ -z ${options[$1]} ]]",
+      "then",
+      "red \"option not found: $1\"",
+      "else",
+      "local optvalue=${options[$1]}",
+      "print $optvalue",
+      "fi"
     ]
   }
 }
