@@ -1,3 +1,34 @@
 # Zsh Config
 
-Somewhat complicated `zsh` configuration scripts. The overall size of the usable configuration in this repository is actively shrinking. See [Archive](/archive/) for a full history of settings, scripts, and dsl experiments which ultimately went unused.
+Somewhat complicated `zsh` configuration scripts, ruby/bash/nushell helpers, and other experiments.
+
+## Environment
+
+```tree
+.
+└── archive
+└── bin
+│   └── bash
+│   └── dev
+│   └── js
+│   └── ruby
+└── dotbkp
+└── plugin
+└── settings
+└── .zshenv
+└── .zshrc
+```
+
+### `.zshrc`
+
+All settings, aliases, plugins, and zsh builtin functions are set in `.zshrc`
+
+User-created functions are stored in `functions.json` and use `bin/ruby/functions.rb` (plus a few helpers in `.zshrc`) to manage functions in my zsh environment. Management includes adding new functions to `functions.json`, serialize a function, verify a functions correctness, etc.
+
+### `.zshenv`
+
+API keys and $PATH environment variable are stored in `.zshenv`. This file is generally complete as-is, and is rarely managed.
+
+## History
+
+See [Archive](/archive/) for a full history of settings, scripts, and dsl experiments which ultimately went unused.

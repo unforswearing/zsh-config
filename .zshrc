@@ -32,7 +32,7 @@ export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
 cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
-## ---------------------------------------------
+## ---
 # https://github.com/unforswearing/aliaser
 export ALIASER_SOURCE="${ZSH_BIN_DIR}/bash/aliaser.sh"
 source "${ALIASER_SOURCE}"
@@ -40,14 +40,13 @@ source "${ALIASER_SOURCE}"
 source "$ZSH_CONFIG_DIR/debug.zsh"
 source "$ZSH_CONFIG_DIR/pass.zsh"
 source "$ZSH_CONFIG_DIR/sysinfo.zsh"
-## ---------------------------------------------
 {
   ## ---------------------------------------------
   # suffix aliases
   alias -s git='git clone'
-  ## ---------------------------------------------
+  ## ---
   # -g == global alias. global as in expands anywhere on the current line
-  ## ---------------------------------------------
+  ## ---
   # standard aliases
   # Languages
   alias irb='/usr/local/opt/ruby/bin/irb'
