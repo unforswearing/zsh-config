@@ -1,12 +1,14 @@
 #!/usr/local/bin/zsh
-# ##################################################################
-# Zsh Configuration Outline
-# `$HOME/.zprofile`:
-#   - $ZDOTDIR is set to $HOME/zsh-config
-# `~zconf/.zshenv`:
-#   - edit $PATH in `~zconf/.zshenv`
-#   - add API keys to `~zconf/.zshenv`
-# #################################################################
+## ---------------------------------------------
+# This file is "$HOME/zsh-config/.zshrc"
+# ---
+# => All settings, aliases, plugins, and zsh builtin functions are set in this file.
+# => Zsh functions are stored in "$HOME/zsh-config/functions.json" and managed
+#    using "$HOME/zsh-config/bin/ruby/functions.rb" and the "f", "loadf", and "addf"
+#    helper functions set in this file (see "FUNCTIONS" section below).
+# ---
+# ** Edit $PATH in "$HOME/zsh-config/.zshenv"
+# ** Add API keys to "$HOME/zsh-config/.zshenv"
 ## ---------------------------------------------
 setopt allexport
 unsetopt monitor
@@ -250,10 +252,9 @@ function chpwd() {
 }
 function precmd() {
   unsetopt warn_create_global
-  local last="$(
+  export LAST="$(
     history | gtail -n 1 | awk '{first=$1; $1=""; print $0;}' | sed 's/\"//g'
   )"
-  export LAST="${last}"
 }
 ## ---------------------------------------------
 # cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
