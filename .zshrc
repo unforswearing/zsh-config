@@ -159,14 +159,6 @@ source "${ALIASER_SOURCE}"
 # manage the `$ZSH_CONFIG_DIR/functions.json` file using
 # `$ZSH_CONFIG_DIR/bin/ruby/functions.rb`
 # ---
-# f add <name> <"cmd1" "cmd2" "cmd3 | cmd4" ...>
-# f get <name>
-# f serialize-function <name>
-# f verify-function <name>
-# f list-all-functions
-# ---
-# note: use `loadf` to load a function into the current env.
-#       use `loadf unset` to remove a function from the env.
 function f() {
   "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
 }
@@ -176,10 +168,19 @@ function addf() {
 }
 # load external functions from `functions.json` using `bin/ruby/functions.rb`
 function loadf() {
-  if [[ "$1" == "unset" ]]; then unset -f "${2}"; return $?; fi;
   eval "$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})";
 }
-function import() { loadf "$@" ; }
+function choosef() {
+  local fname="$(f list-all-functions | fzf)"
+  test ! -z "$fname" && {
+    loadf "$fname"
+    green "$fname loaded."
+  } || red "no function selected."
+}
+function unsetf() {
+  unset -f "${2}"
+  return $?
+}
 # ---
 # Load functions from `$ZSH_CONFIG_DIR/functions.json`
 function {
