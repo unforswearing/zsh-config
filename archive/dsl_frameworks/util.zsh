@@ -1,3 +1,5 @@
+#!/usr/local/bin/zsh
+
 # shellcheck shell=bash
 # ---
 libutil:argtest() {
