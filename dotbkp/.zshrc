@@ -184,6 +184,7 @@ function unsetf() {
 function {
   loadf cf; # clear extraneous formatting on clipboard text
   loadf clearhosts; # remove all entries from /etc/hosts
+  loadf copy; # copy file contents / var values / text to the clipboard
   loadf cpl; # copy the last command to the clipbaord
   loadf edit; # edit config files or <filename>
   loadf green; # print green text
@@ -200,8 +201,6 @@ function {
   loadf updatehosts; # update /etc/hosts with StevenBlack/hosts
   loadf use; # alias for command -v <cmd_name>
   loadf yellow; # print yellow text
-  # the following functions are too large / complex for the function management system.
-  source "$ZSH_BIN_DIR/zsh/copy.zsh"
   source "$ZSH_BIN_DIR/zsh/debug.zsh"
   source "$ZSH_BIN_DIR/zsh/pass.zsh"
   source "$ZSH_BIN_DIR/zsh/sysinfo.zsh"
