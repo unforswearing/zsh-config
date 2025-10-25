@@ -40,20 +40,18 @@ export ALIASER_SOURCE="${ZSH_BIN_DIR}/bash/aliaser.sh"
 source "${ALIASER_SOURCE}"
 {
   ## ---------------------------------------------
-  # suffix aliases
+  ## suffix aliases
   alias -s git='git clone'
-  ## ---
   # -g == global alias. global as in expands anywhere on the current line
-  ## ---
-  # standard aliases
-  # Languages
+  # ---
+  ## standard aliases
+  # Note: aliases created on the fly should use aliaser.sh
   alias irb='/usr/local/opt/ruby/bin/irb'
   alias rake='/usr/local/opt/ruby/bin/rake'
   alias ruby='/usr/local/opt/ruby/bin/ruby'
   alias python='/usr/local/bin/python3'
   alias pip='/usr/local/bin/pip3'
   alias sed='/usr/local/bin/gsed'
-  # Etc
   alias c='pbcopy'
   alias p='pbpaste'
   alias cf='pbpaste|pbcopy'
@@ -155,9 +153,9 @@ source "${ALIASER_SOURCE}"
 }
 ## ---------------------------------------------
 #  FUNCTIONS
-## ---------------------------------------------
-# manage the `$ZSH_CONFIG_DIR/functions.json` file using
-# `$ZSH_CONFIG_DIR/bin/ruby/functions.rb`
+# ---
+# Zsh helpers to manage the `$ZSH_CONFIG_DIR/functions.json` file
+# using `$ZSH_CONFIG_DIR/bin/ruby/functions.rb`
 # ---
 function f() {
   "${ZSH_BIN_DIR}/ruby/functions.rb" "$@"
