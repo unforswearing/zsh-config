@@ -15,7 +15,7 @@ unsetopt warn_create_global
 eval "$(starship init zsh)"
 ## ---------------------------------------------
 # brew install zsh-syntax-highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 ## ---------------------------------------------
 # stop vi mode from loading automatically
 bindkey -e
@@ -36,10 +36,6 @@ cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 # https://github.com/unforswearing/aliaser
 export ALIASER_SOURCE="${ZSH_BIN_DIR}/bash/aliaser.sh"
 source "${ALIASER_SOURCE}"
-# ---
-source "$ZSH_CONFIG_DIR/debug.zsh"
-source "$ZSH_CONFIG_DIR/pass.zsh"
-source "$ZSH_CONFIG_DIR/sysinfo.zsh"
 {
   ## ---------------------------------------------
   # suffix aliases
@@ -56,6 +52,9 @@ source "$ZSH_CONFIG_DIR/sysinfo.zsh"
   alias pip='/usr/local/bin/pip3'
   alias sed='/usr/local/bin/gsed'
   # Etc
+  alias c='pbcopy'
+  alias p='pbpaste'
+  alias cf='pbpaste|pbcopy'
   alias ls='\ls -a'
   alias rm='\rm -i'
   alias cp='\cp -i'
@@ -181,17 +180,14 @@ function loadf() {
 function import() { loadf "$@" ; }
 # ---
 # Load functions from `$ZSH_CONFIG_DIR/functions.json`
-(function {
-  loadf c; # alias for pbcopy
+function {
   loadf cf; # clear extraneous formatting on clipboard text
   loadf clearhosts; # remove all entries from /etc/hosts
-  loadf copy; # copy var, file contents, or text
   loadf cpl; # copy the last command to the clipbaord
   loadf edit; # edit config files or <filename>
   loadf green; # print green text
   loadf memory; # display current memory stats
   loadf modified; # show when <file> was last modified
-  loadf p; # alias for pbpaste
   loadf plux; # alias for chmod +x <file>
   loadf prev; # navigate to the previous directory
   loadf purj; # purge system memory
@@ -203,7 +199,12 @@ function import() { loadf "$@" ; }
   loadf updatehosts; # update /etc/hosts with StevenBlack/hosts
   loadf use; # alias for command -v <cmd_name>
   loadf yellow; # print yellow text
-} >|/dev/null 2>&1) &
+  # the following functions are too large / complex for the function management system.
+  source "$ZSH_BIN_DIR/zsh/copy.zsh"
+  source "$ZSH_BIN_DIR/zsh/debug.zsh"
+  source "$ZSH_BIN_DIR/zsh/pass.zsh"
+  source "$ZSH_BIN_DIR/zsh/sysinfo.zsh"
+}
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
 # ---
@@ -218,13 +219,24 @@ function command_not_found_handler() {
   # an alias for "echo" to print the text that follows, eg:
   # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"'
   # Note: this will print variable values but will not execute commands.
-  echo "$@" | rb "strarg = ARGF.read
+  # Todo: if pipearg matches funcions.json item, try to dynamically load it.
+  echo "$@" | rb "require 'json'
+    strarg = ARGF.read
     pipearg = strarg.split('')
+    cmd_arg = strarg.split(' ')
     firstchar = pipearg[0]
     if firstchar == '@'
       pipearg.shift()
       puts pipearg.join().strip
     else
+      function_file = File.expand_path('~/zsh-config/functions.json')
+      config_functions = JSON.parse(File.read(function_file))['functions']
+      config_functions.sort.each do |name, body|
+        if name == cmd_arg[0]
+          puts \"[zsh] function '#{name}' is not loaded. run 'loadf #{name}'\"
+          return
+        end
+      end
       puts \"[zsh] command not found: #{strarg}\"
     end"
 }

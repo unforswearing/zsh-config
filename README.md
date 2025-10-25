@@ -12,6 +12,7 @@ Somewhat complicated `zsh` configuration scripts, ruby/bash/nushell helpers, and
 │   └── dev
 │   └── js
 │   └── ruby
+│   └── zsh
 └── dotbkp
 └── plugin
 └── settings

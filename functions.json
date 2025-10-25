@@ -6,14 +6,8 @@
     "atom": [
       "eval \"function ${1}() echo ${1}\""
     ],
-    "c": [
-      "pbcopy"
-    ],
     "calc": [
       "echo \"$*\" | bc -l"
-    ],
-    "cf": [
-      "pbpaste|pbcopy"
     ],
     "dirbak": [
       "cp -r \"${1}\" \"${1}.bak\""
@@ -43,23 +37,10 @@
     "isstr": [
       "[[ \"${1}\" =~ [^0-9] ]]"
     ],
-    "loadf": [
-      "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
-      "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
-      "eval \"$(${ZSH_BIN_DIR}/ruby/functions.rb get ${1})\""
-    ],
-    "loadf.list": [
-      "ZSH_CONFIG_DIR=\"$HOME/zsh-config\"",
-      "ZSH_BIN_DIR=\"$ZSH_CONFIG_DIR/bin\"",
-      "${ZSH_BIN_DIR}/ruby/functions.rb list-all-functions"
-    ],
     "nil": [
       "local name=\"$1\"",
       "local value=\"$(cat /dev/null)\"",
       "eval \"function $name() echo $value;\""
-    ],
-    "p": [
-      "pbpaste"
     ],
     "please": [
       "sudo !!"
@@ -79,27 +60,11 @@
     "rm.emptyfiles": [
       "find $(pwd) -type f -empty -print -delete"
     ],
-    "safequote": [
-      "local input=\"$1\"",
-      "local quoted=\"\"",
-      "",
-      "# Escape special characters",
-      "quoted=$(printf '%q' \"$input\")",
-      "# Return the safely quoted string",
-      "echo \"$quoted\""
-    ],
     "symbol": [
       "use xxd; echo \"${1:-$RANDOM}\" | xxd -p"
     ],
     "timestamp": [
       "date +'%Y-%m-%d %H:%M:%S'"
-    ],
-    "with": [
-      "# like `use` in `.zshrc`, except one line",
-      "{ command -v \"${1}\" >|/dev/null 2>&1; } >|/dev/null 2>&1 && true || { echo \"${1}\" not found; false; }"
-    ],
-    "checkuse": [
-      "command -v use || echo 'use not available'"
     ],
     "red": [
       "print -P '%F{red}$@'"
@@ -112,9 +77,6 @@
     ],
     "blue": [
       "print -P '%F{blue}$@'"
-    ],
-    "checkloadf": [
-      "use loadf"
     ],
     "rgbtohex": [
       "for var in \"$@\"; do",
@@ -194,7 +156,7 @@
       "{",
       "\\cp \"${ZSH_CONFIG_DIR}/.zshrc\" \"${ZSH_CONFIG_DIR}/dotbkp\"",
       "\\cp \"${HOME}/.zshenv\" \"${ZSH_CONFIG_DIR}/dotbkp\"",
-      "echo \"source $0\" >| \"${HOME}/.zshrc\"",
+      "echo \"source ${ZSH_CONFIG_DIR}/.zshrc\" >| \"${HOME}/.zshrc\"",
       "} &",
       ") >| /dev/null 2>&1"
     ],
@@ -224,23 +186,6 @@
       "} | sort -u | fzf --wrap --query=\"$arg\" --select-1",
       ")",
       "cd \"${dir}\" || cd \"$PWD\""
-    ],
-    "copy": [
-      "if [ -z \"$1\" ]",
-      "then",
-      "echo \"copy <file|variable|text>\"",
-      "fi",
-      "if [ -f \"$1\" ]",
-      "then",
-      "cat \"$1\" | pbcopy",
-      "echo \"copied file: $1\"",
-      "fi",
-      "if [ -n \"${(P)1}\" ]",
-      "then",
-      "echo \"${(P)1}\" | pbcopy",
-      "echo \"copied variable: $1\"",
-      "fi",
-      "echo \"$1\" | pbcopy"
     ],
     "modified": [
       "rb \"puts File.mtime(\\\"${1}\\\")\""
