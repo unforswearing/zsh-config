@@ -205,6 +205,9 @@
     ],
     "clearhosts": [
       "sudo nu -c \"echo 'https://0.0.0.0' | save --force /etc/hosts\""
+    ],
+    "trie": [
+      "\\ls -a -aR | grep \":$\" | perl -pe 's/:$//;s/[^-][^\\/]*\\//    /g;s/^    (\\S)/└── \\1/;s/(^    |    (?= ))/│   /g;s/    (\\S)/└── \\1/'"
     ]
   }
 }

@@ -257,9 +257,6 @@ function precmd() {
   )"
 }
 ## ---------------------------------------------
-# cd $(cat $HOME/.zsh_reload.txt) || cd $HOME
-cd "$PREV" || cd "$HOME"
-## ---------------------------------------------
 # DEBUG and CLEAR can be set by using the `debug` function, see debug.zsh
 # do not clear output if debug is true, otherwise CLEAR=clear
 test $DEBUG || eval $CLEAR
@@ -275,3 +272,5 @@ autoload bashcompinit
 ## ---------------------------------------------
 # Backup .zshrc and .zshenv to $ZSH_CONFIG_DIR/dotbkp
 loadf bkpconfig && bkpconfig
+## ---------------------------------------------
+cd "$PREV" || cd "$HOME"

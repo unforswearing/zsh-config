@@ -80,8 +80,11 @@ def runShellcheck(filename)
   if cmd_result.length == 0
     puts "No errors were found in function '#{filename}'.".green
   else
-    result_json = JSON.parse(cmd_result)
-    puts JSON.pretty_generate(result_json)
+    puts "Errors found in function '#{filename}':".red
+    puts "=".red * 25
+    puts cmd_result.red
+    # result_json = JSON.parse(cmd_result)
+    # puts JSON.pretty_generate(result_json)
   end
 
   File.delete(tmp_file)
