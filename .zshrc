@@ -30,8 +30,6 @@ fi
 # export ALIAS=($(alias))
 export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
-#
-cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
 ## ---
@@ -175,10 +173,6 @@ function choosef() {
     green "$fname loaded."
   } || red "no function selected."
 }
-function unsetf() {
-  unset -f "${2}"
-  return $?
-}
 # ---
 # Load functions from `$ZSH_CONFIG_DIR/functions.json`
 function {
@@ -243,7 +237,7 @@ function command_not_found_handler() {
 function chpwd() {
   # eventually use like direnv and load folder-specific shell functions / commands
   # todo: load any utilities that will help with creating my zsh config below
-  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
+  if [[ $(pwd) == "${ZSH_CONFIG_DIR}" ]]; then
     # load utilities here...
     echo "configuration"
   fi

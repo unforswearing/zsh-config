@@ -1,23 +1,25 @@
 # Zsh Config
 
-Somewhat complicated `zsh` configuration scripts, ruby/bash/nushell helpers, and other experiments.
+Somewhat complicated `zsh` configuration scripts, `ruby`/`bash`/`nushell`/`javascript` helpers, and other experiments. The eventual goal is to manage most of this config via `ruby` (formerly `abs` and `lua`).
 
 ## Environment
 
 ```tree
 .
-└── archive
+└── archives
 └── bin
 │   └── bash
 │   └── dev
 │   └── js
 │   └── ruby
+│   │   └── functions.rb
 │   └── zsh
 └── dotbkp
 └── plugin
 └── settings
 └── .zshenv
 └── .zshrc
+└── functions.json
 ```
 
 ### `.zshrc`

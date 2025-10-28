@@ -30,8 +30,6 @@ fi
 # export ALIAS=($(alias))
 export ZSH_CONFIG_DIR="$HOME/zsh-config"
 export ZSH_BIN_DIR="$ZSH_CONFIG_DIR/bin"
-#
-cat "$ZSH_CONFIG_DIR/.zshenv" >| "$HOME/.zshenv"
 ## ---------------------------------------------
 # exports, hash, aliases, options, bindkey, import function, moving source files
 ## ---
@@ -185,7 +183,7 @@ function {
   loadf cf; # clear extraneous formatting on clipboard text
   loadf clearhosts; # remove all entries from /etc/hosts
   loadf copy; # copy file contents / var values / text to the clipboard
-  loadf cpl; # copy the last command to the clipbaord
+  loadf cpl; # copy the last command to the clipboard
   loadf edit; # edit config files or <filename>
   loadf green; # print green text
   loadf memory; # display current memory stats
@@ -201,9 +199,8 @@ function {
   loadf updatehosts; # update /etc/hosts with StevenBlack/hosts
   loadf use; # alias for command -v <cmd_name>
   loadf yellow; # print yellow text
-  source "$ZSH_BIN_DIR/zsh/debug.zsh"
+  # "pass.zsh" is a lib of functions for various password store / kv actions.
   source "$ZSH_BIN_DIR/zsh/pass.zsh"
-  source "$ZSH_BIN_DIR/zsh/sysinfo.zsh"
 }
 ## ---------------------------------------------
 # BOTTOM: hooks / builtin event handlers
@@ -244,7 +241,7 @@ function command_not_found_handler() {
 function chpwd() {
   # eventually use like direnv and load folder-specific shell functions / commands
   # todo: load any utilities that will help with creating my zsh config below
-  if [[ $(pwd) == "/Users/unforswearing/zsh-config" ]]; then
+  if [[ $(pwd) == "${ZSH_CONFIG_DIR}" ]]; then
     # load utilities here...
     echo "configuration"
   fi
