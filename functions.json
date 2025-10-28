@@ -252,6 +252,17 @@
       "(net | io) nu -c \"sys|get net\" ;;",
       "(*) red \"'${1}' is not a valid option\" ;;",
       "esac"
+    ],
+    "edit": [
+      "case \"${1}\" in",
+      "(settings) \"$EDITOR\" \"$HOME/.config/micro/settings.json\" ;;",
+      "(bindings) \"$EDITOR\" \"$HOME/.config/micro/bindings.json\" ;;",
+      "(init) \"$EDITOR\" \"$HOME/.config/micro/init.lua\" ;;",
+      "(zshrc) \"$EDITOR\" \"$ZSH_CONFIG_DIR/.zshrc\" ;;",
+      "(zshenv) \"$EDITOR\" \"$ZSH_CONFIG_DIR/.zshenv\" ;;",
+      "(help) echo \"edit [ settings | bindings | init | zshrc | zshenv | <file> ]\" ;;",
+      "(*) \"$EDITOR\" \"${@}\" ;;",
+      "esac"
     ]
   }
 }

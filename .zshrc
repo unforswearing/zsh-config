@@ -208,31 +208,13 @@ function {
 #  # the $1 arg holds the full text entered at the command line
 # }
 function command_not_found_handler() {
-  # The ruby commands below will (1) allow "@" to act as
+  # The ruby script below will (1) allow "@" to act as
   # an alias for "echo" to print the text that follows, eg:
   # '@words to echo | sd "to echo" "were echoed" -> "words were echoed"',
   # and (2) provide a warning if a cmd name is an unloaded functions.json item.
   # Note: (1) will print variable values but will not execute commands.
   # Todo: For (2), try to dynamically load functions.json item instead of just warning.
-  echo "$@" | rb "require 'json'
-    strarg = ARGF.read
-    pipearg = strarg.split('')
-    cmd_arg = strarg.split(' ')
-    firstchar = pipearg[0]
-    if firstchar == '@'
-      pipearg.shift()
-      puts pipearg.join().strip
-    else
-      function_file = File.expand_path('~/zsh-config/functions.json')
-      config_functions = JSON.parse(File.read(function_file))['functions']
-      config_functions.sort.each do |name, body|
-        if name == cmd_arg[0]
-          puts \"[zsh] function '#{name}' is not loaded. run 'loadf #{name}'\"
-          return
-        end
-      end
-      puts \"[zsh] command not found: #{strarg}\"
-    end"
+  echo "$@" | "bin/ruby/command_not_found_handler.rb"
 }
 function chpwd() {
   # eventually use like direnv and load folder-specific shell functions / commands
